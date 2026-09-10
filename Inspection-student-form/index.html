@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajoneuvon tarkastus</title>
+    <link rel="stylesheet" href="student-form.css">
+    <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    rel="stylesheet">
+</head>
+<body>
+    <main class="inspection-page">
+        <!---Header--->
+        <header class="inspection-header">
+            <button class="back-button" type="button">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+
+            <h1>Ajoneuvon tarkastus</h1>
+        </header>
+
+        <!---Vehicle Information--->
+        <section class="vehicle-information">
+            <div class="vehicle-info">
+                <div class="vehicle-icon">
+                    <span class="material-symbols-outlined">local_shipping</span>
+                     <p class="form-icon"><strong> Fleet Manager</strong></p>
+                </div>
+                <h2 class="vehicle-name">Toyota Corolla</h2>
+                <p class="vehicle-type">Vetoauto</p>
+                <p class="vehicle-status">Käytössä</p> <p class="vehicle-license">ABC-123</p>
+                <!---progress bar--->
+            </div>
+
+            <!---Kilometers--->
+            <div class="vehicle-kilometers">
+                <div class="kilometers-icon">
+                    <span class="material-symbols-outlined">speed</span>
+                    <p class="kilometers-text">Kilometrit</p>
+                </div>
+                  <p class="kilometers-value">120 000 km</p>
+            </div>
+
+            <!----Open faults-->
+            <div class="vehicle-faults">
+                <div class="faults-icon">
+                    <span class="material-symbols-outlined">report_problem</span>
+                     <p class="faults-text">Avoimet viat</p>
+                </div>
+                <p class="faults-value">2</p>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

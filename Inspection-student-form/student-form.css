@@ -1,0 +1,286 @@
+/* ================================
+   RESET
+================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f7fa;
+    color: #1f2937;
+}
+
+
+/* ================================
+   MAIN PAGE
+================================ */
+.inspection-page {
+    width: 100%;
+    max-width: 700px;
+    margin: 20px auto;
+    padding: 24px 20px 40px;
+    background-color: #34aeda;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+
+/* ================================
+   HEADER
+================================ */
+.inspection-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.inspection-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.back-button {
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 12px;
+
+    background: white;
+    color: #374151;
+
+    cursor: pointer;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    transition: 0.2s ease;
+}
+
+.back-button:hover {
+    background: #eef2f7;
+    transform: translateX(-2px);
+}
+
+.back-button .material-symbols-outlined {
+    font-size: 24px;
+}
+
+
+/* ================================
+   VEHICLE INFORMATION
+================================ */
+.vehicle-information {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+
+/* ================================
+   VEHICLE MAIN CARD
+================================ */
+.vehicle-info {
+    grid-column: 1 / -1;
+
+    position: relative;
+
+    background: white;
+    border-radius: 18px;
+
+    padding: 24px;
+
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.08);
+}
+
+
+/* Truck icon */
+.vehicle-icon, .kilometers-icon, .faults-icon {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.vehicle-company .material-symbols-outlined {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 44px;
+    height: 44px;
+
+    background: #eef4ff;
+    color: #2563eb;
+
+    border-radius: 12px;
+    font-size: 25px;
+}
+
+.vehicle-company .form-icon {
+    margin: 0;
+    font-size: 14px;
+    color: #374151;
+}
+
+
+/* Vehicle name */
+.vehicle-name {
+    margin-bottom: 5px;
+
+    font-size: 22px;
+    font-weight: 700;
+
+    color: #111827;
+}
+
+
+/* Vehicle type */
+.vehicle-type {
+    margin-bottom: 18px;
+
+    font-size: 14px;
+    color: #6b7280;
+}
+
+
+/* ================================
+   STATUS + LICENSE
+================================ */
+.vehicle-status,
+.vehicle-license {
+    display: inline-block;
+
+    padding: 7px 12px;
+
+    border-radius: 8px;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+/* Status */
+.vehicle-status {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+
+/* License plate */
+.vehicle-license {
+    margin-left: 8px;
+
+    background: #f3f4f6;
+    color: #374151;
+
+    letter-spacing: 0.5px;
+}
+
+
+/* ================================
+   KILOMETERS CARD
+================================ */
+.vehicle-kilometers,
+.vehicle-faults {
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 20px;
+
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.08);
+}
+
+
+/* Icon */
+.vehicle-kilometers > .material-symbols-outlined,
+.vehicle-faults > .material-symbols-outlined {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 44px;
+    height: 44px;
+
+    margin-bottom: 14px;
+
+    border-radius: 12px;
+
+    font-size: 25px;
+}
+
+
+/* Kilometer icon */
+.vehicle-kilometers > .material-symbols-outlined {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+
+/* Fault icon */
+.vehicle-faults > .material-symbols-outlined {
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+
+/* ================================
+   CARD TEXT
+================================ */
+.kilometers-text,
+.faults-text {
+    margin-bottom: 5px;
+
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.kilometers-value,
+.faults-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+}
+
+
+/* Fault number */
+.faults-value {
+    color: #dc2626;
+}
+
+
+/* ================================
+   RESPONSIVE
+================================ */
+@media (max-width: 600px) {
+
+    .inspection-page {
+        padding: 18px 16px 30px;
+    }
+
+    .inspection-header h1 {
+        font-size: 21px;
+    }
+
+    .vehicle-information {
+        grid-template-columns: 1fr;
+    }
+
+    .vehicle-info {
+        grid-column: auto;
+    }
+
+    .vehicle-kilometers,
+    .vehicle-faults {
+        width: 100%;
+    }
+}
