@@ -50,7 +50,55 @@
                 </div>
                 <p class="faults-value">2</p>
             </div>
+            <div class="vehicle-in-use">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <div class="in-use-content">
+                    <p class="in-use-text">Käytössä</p>
+                    <p class="in-use-description">
+                        Nykyinen käyttäjä: <strong>Le Ngoc Tra My</strong><br>
+                        Käyttö aloitettu: <strong>15.10.2023</strong><br>
+                        Voit silti aloittaa oman tarkastuksesi - edellinen käyttäjä kirjataan poistuneeksi.
+                    </p>
+                    </div>
+            </div>
+            <button class="start-inspection-button" type="button">
+                <span class="material-symbols-outlined">assignment</span>
+                Aloita tarkastus</button>
         </section>
     </main>
+    <div class="faults-render">
+        <!---Faults will be rendered here--->
+        <div class="faults-icon">
+                    <span class="material-symbols-outlined">report_problem</span>
+                     <p class="faults-text">Havaitut viat</p>
+        </div>
+        <div class="fault-card">
+            <div class="status-labels">
+                <span class="status-label open">Open</span>
+                <span class="status-label medium">Medium</span>
+            </div>
+            <p>Viat ja vauriot - lisää kuva</p>
+            <p>Aug 31, 2026</p>
+        </div>
+        <div class="fault-card">
+            <div class="status-labels">
+                <span class="status-label open">Open</span>
+                <span class="status-label high">High</span>
+            </div>
+            <p>Viat ja vauriot - lisää kuva</p>
+            <p>Aug 31, 2026</p>
+        </div>
+    </div>
+    <div class="last-inspection">
+        <div class="last-inspection-icon">
+            <span class="material-symbols-outlined">history</span>
+            <p class="last-inspection-text">Viimeisin tarkastus</p>
+        </div>
+        <div class="last-inspection-content">
+            <p class="last-inspection-name">Le Ngoc Tra My</p>
+            <span class="status-label passed">Passed</span>
+            <p class="last-inspection-date">15.10.2023</p>
+        </div>
+    </div>
 </body>
 </html>

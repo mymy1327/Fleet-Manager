@@ -22,7 +22,7 @@ body {
     max-width: 700px;
     margin: 20px auto;
     padding: 24px 20px 40px;
-    background-color: #34aeda;
+    background-color: rgba(155, 204, 222, 0.354);
     border-radius: 20px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
@@ -103,7 +103,7 @@ body {
 
 
 /* Truck icon */
-.vehicle-icon, .kilometers-icon, .faults-icon {
+.vehicle-icon, .kilometers-icon, .faults-icon  {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -283,4 +283,252 @@ body {
     .vehicle-faults {
         width: 100%;
     }
+}
+
+/* ================================
+    VEHICLE IN USE NOTIFICATION
+================================ */
+.vehicle-in-use {
+    grid-column: 1 / -1;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 20px 24px 20px 70px;
+
+    background-color: rgba(34, 197, 94, 0.12);
+    border: 1px solid hsl(233, 71%, 45%);
+    border-radius: 12px;
+}
+
+/* Icon */
+.vehicle-in-use .material-symbols-outlined {
+    position: absolute;
+    left: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    font-size: 30px;
+    color: hsl(233, 71%, 45%);
+}
+
+/* Nội dung bên phải icon */
+.in-use-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.in-use-text {
+    margin: 0 0 6px;
+    font-size: 18px;
+    font-weight: 600;
+    color: hsl(233, 71%, 45%);
+}
+
+.in-use-description {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: hsl(233, 71%, 45%);
+}
+
+/* ================================
+    START INSPECTION BUTTON
+================================ */
+.start-inspection-button {
+    grid-column: 1 / -1;
+    display: block;
+    width: 100%;
+    padding: 14px 0;
+    margin:auto;
+
+    background-color: #2563eb;
+    color: white;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    border: none;
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+button:hover {
+    background-color: #0e1e5f;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* ================================
+    FAULTS RENDER CARDS
+================================ */
+.faults-render {
+     width: 100%;
+    max-width: 700px;
+    margin: 20px auto;
+    padding: 24px 20px 40px;
+    background-color: rgba(231, 231, 231, 0.354);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Header: icon + title */
+.faults-icon {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-bottom: 16px;
+}
+
+.faults-icon .material-symbols-outlined {
+    font-size: 28px;
+    color: #ef4444;
+}
+
+.faults-text {
+    margin: 0;
+
+    font-size: 18px;
+    font-weight: 600;
+
+    color: #b91c1c;
+}
+
+
+/* =========================
+   FAULT CARD
+========================= */
+
+.fault-card {
+    padding: 16px;
+    margin-bottom: 16px;
+
+    background-color: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(208, 106, 106, 0.25);
+    border-radius: 10px;
+
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+
+/* Status labels */
+.status-labels {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 12px;
+}
+
+.status-label {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 4px 10px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+/* Open */
+.status-label.open {
+    background-color: rgba(239, 68, 68, 0.12);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+
+/* Medium */
+.status-label.medium {
+    background-color: rgba(245, 158, 11, 0.14);
+    color: #d97706;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+/* High */
+.status-label.high {
+    background-color: rgba(239, 68, 68, 0.12);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+/* Passed */
+.status-label.passed {
+    background-color: rgba(34, 197, 94, 0.12);
+    color: #16a34a;
+    border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+
+/* Fault description */
+.fault-card p {
+    margin: 0;
+}
+
+.fault-card p:first-of-type {
+    margin-bottom: 6px;
+
+    font-size: 15px;
+    font-weight: 500;
+
+    color: #374151;
+}
+
+
+/* Date */
+.fault-card p:last-of-type {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+/* =========================
+    LAST INSPECTION 
+========================= */
+.last-inspection {
+     width: 100%;
+    max-width: 700px;
+    margin: 20px auto;
+    padding: 24px 20px 40px;
+    background-color: rgba(231, 231, 231, 0.354);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.last-inspection-icon {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-bottom: 16px;
+}
+
+.last-inspection-text {
+    margin: 0;
+
+    font-size: 18px;
+    font-weight: 600;
+
+    color: #000000;
+}
+
+.last-inspection-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+.last-inspection-name, .last-inspection-date {
+    margin: 0;
+    align-self: center;
+
+    font-size: 15px;
+    font-weight: 500;
+
+    color: #374151;
 }
