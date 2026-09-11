@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fleet Manager</title>
+    <link rel="stylesheet" href="../CSS/style.css">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="#home" aria-label="Fleet Manager etusivu">
+            <span class="brand-mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" class="svg-icon"><path d="M3 6h12a2 2 0 0 1 2 2v2h2.5a2 2 0 0 1 1.7 1l1.8 3.1V17h-2.2a2.5 2.5 0 0 1-4.6 0H8.1a2.5 2.5 0 0 1-4.6 0H1V8a2 2 0 0 1 2-2Zm1 2v7h.4a2.5 2.5 0 0 1 4.6 0H16v-5h-1V8H4Zm14 4v3h.1a2.5 2.5 0 0 1 4.6 0h.1v-.5L19.5 12H18ZM5.8 18a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2Zm12 0a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2Z"/></svg>
+            </span>
+            <strong>Fleet Manager</strong>
+        </a>
+        <nav class="main-nav" aria-label="Päänavigaatio">
+            <a href="#home" data-view="home"><span>⌗</span>Etusivu</a>
+            <a href="#fleet" data-view="fleet"><span class="nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" class="svg-icon"><path d="M3 6h12a2 2 0 0 1 2 2v2h2.5a2 2 0 0 1 1.7 1l1.8 3.1V17h-2.2a2.5 2.5 0 0 1-4.6 0H8.1a2.5 2.5 0 0 1-4.6 0H1V8a2 2 0 0 1 2-2Zm1 2v7h.4a2.5 2.5 0 0 1 4.6 0H16v-5h-1V8H4Zm14 4v3h.1a2.5 2.5 0 0 1 4.6 0h.1v-.5L19.5 12H18ZM5.8 18a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2Zm12 0a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2Z"/></svg>
+            </span>Kalusto</a>
+            <a href="#inspections" data-view="inspections"><span>▣</span>Tarkastukset</a>
+            <a href="#faults" data-view="faults"><span>△</span>Viat</a>
+            <a href="#reports" data-view="reports"><span>▥</span>Raportit</a>
+        </nav>
+        <button class="logout" type="button">↪&nbsp; Kirjaudu ulos</button>
+    </header>
+
+    <main id="app" class="page"></main>
+    <script src="../JS/app.js"></script>
+</body>
+</html>
