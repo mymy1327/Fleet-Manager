@@ -1,0 +1,53 @@
+{
+    "checklists": [
+        {
+            "id": 1,
+            "formTitle": "Ajoonlähtötarkastus",
+            "version": 1,
+            "questions": [
+                {
+                    "id": "1",
+                    "title": "Kilometrilukema",
+                    "type": "number",
+                    "required": true,
+                    "unit": "km"
+                },
+                {
+                    "id": "2",
+                    "title": "Moottoriöljyn taso",
+                    "type": "choice",
+                    "required": true,
+                    "options": [
+                        "Hyvä",
+                        "Lisää öljyä",
+                        "En tiedä"
+                    ],
+                    "photo": {
+                        "required": true,
+                        "cameraOnly": true,
+                        "description": "Ota kuva öljynmittatikusta."
+                    }
+                }
+            ]
+        },
+
+        {
+            "id": 2,
+            "formTitle": "Palautustarkastus",
+            "version": 1,
+            "questions": [
+                {
+                    "id": "1",
+                    "title": "Ajoneuvon yleinen kunto",
+                    "type": "choice",
+                    "required": true,
+                    "options": [
+                        "Kunnossa",
+                        "Vaurioita",
+                        "En tiedä"
+                    ]
+                }
+            ]
+        }
+    ]
+}
