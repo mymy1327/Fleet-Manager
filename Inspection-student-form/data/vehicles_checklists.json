@@ -1,0 +1,28 @@
+{
+  "vehiclesChecklists": [
+    {
+      "id_vehicles": 1,
+      "id_checklists": 1
+    },
+    {
+      "id_vehicles": 1,
+      "id_checklists": 2
+    },
+    {
+      "id_vehicles": 1,
+      "id_checklists": 3
+    },
+    {
+      "id_vehicles": 2,
+      "id_checklists": 1
+    },
+    {
+      "id_vehicles": 2,
+      "id_checklists": 4
+    },
+    {
+      "id_vehicles": 2,
+      "id_checklists": 5
+    }
+  ]
+}
