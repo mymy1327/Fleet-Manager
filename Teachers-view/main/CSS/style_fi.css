@@ -1,0 +1,414 @@
+:root {
+    --blue: #2868cb;
+    --blue-dark: #1554b5;
+    --ink: #162033;
+    --muted: #718097;
+    --line: #dfe5ed;
+    --surface: #fff;
+    --background: #f7f9fb;
+    --green: #0ba979;
+    --orange: #f2a51b;
+    --red: #ec6670;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    color: var(--ink);
+    background: var(--background);
+    font: 13px/1.4 Arial, Helvetica, sans-serif;
+}
+
+button,
+a {
+    font: inherit;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.topbar {
+    height: 45px;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 0 max(24px, calc((100% - 830px) / 2));
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.brand-mark {
+    display: grid;
+    place-items: center;
+    width: 25px;
+    height: 25px;
+    color: #fff;
+    background: var(--blue);
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+.svg-icon {
+    display: block;
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+.brand-mark .svg-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.nav-icon {
+    display: inline-flex;
+}
+
+.nav-icon .svg-icon {
+    width: 14px;
+    height: 14px;
+}
+
+.brand strong {
+    font-size: 14px;
+}
+
+.main-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0 auto;
+}
+
+.main-nav a {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 10px;
+    border-radius: 9px;
+    color: #6d7788;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.main-nav a span {
+    font-size: 14px;
+}
+
+.main-nav a.active {
+    color: #fff;
+    background: var(--blue);
+    box-shadow: 0 1px 3px #b9cbe8;
+}
+
+.logout {
+    padding: 0;
+    border: 0;
+    color: #687487;
+    background: transparent;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.language-switch {
+    padding: 0;
+    border: 0;
+    color: var(--blue);
+    background: transparent;
+    font-size: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.page {
+    width: min(830px, calc(100% - 32px));
+    margin: 22px auto;
+}
+
+.page-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 22px;
+}
+
+h1 {
+    margin: 0 0 2px;
+    font-size: 21px;
+    letter-spacing: -.4px;
+}
+
+.subtitle {
+    margin: 0;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.button {
+    padding: 7px 15px;
+    border: 0;
+    border-radius: 7px;
+    color: white;
+    background: var(--blue);
+    box-shadow: 0 2px 4px #cbd9ee;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.button:hover {
+    background: var(--blue-dark);
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 11px;
+    margin-bottom: 22px;
+}
+
+.card,
+.panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    box-shadow: 0 1px 1px #eef1f5;
+}
+
+.card {
+    position: relative;
+    min-height: 90px;
+    padding: 15px;
+}
+
+.card-icon {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    color: var(--blue);
+    background: #eaf2ff;
+}
+
+.card-icon.green {
+    color: var(--green);
+    background: #e8fbf4;
+}
+
+.card-icon.orange {
+    color: var(--orange);
+    background: #fff6e5;
+}
+
+.card-icon.red {
+    color: var(--red);
+    background: #fff0f1;
+}
+
+.card-value {
+    display: block;
+    margin-top: 25px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.card-label {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    color: var(--muted);
+    font-size: 10px;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.panel {
+    min-height: 122px;
+    padding: 16px;
+}
+
+.panel.large {
+    min-height: 122px;
+}
+
+.panel-title {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    font-size: 13px;
+}
+
+.panel-title .icon {
+    color: var(--blue);
+}
+
+.panel-action {
+    margin-left: auto;
+    color: var(--blue);
+    font-size: 10px;
+    font-weight: normal;
+}
+
+.empty {
+    display: grid;
+    place-items: center;
+    min-height: 76px;
+    color: var(--muted);
+    font-size: 10px;
+    text-align: center;
+}
+
+.empty-icon {
+    display: block;
+    margin-bottom: 7px;
+    color: #cbd1da;
+    font-size: 31px;
+}
+
+
+/* truck icon size in the  */
+
+.empty-icon .svg-icon {
+    width: 50px;
+    height: 50px;
+}
+
+.table-panel {
+    min-height: 142px;
+    margin-top: 16px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 11px;
+    color: var(--muted);
+    font-size: 9px;
+}
+
+.table th {
+    padding: 0 0 8px;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    font-weight: normal;
+}
+
+.table td {
+    padding-top: 22px;
+    text-align: center;
+}
+
+.table td[colspan] {
+    text-align: center;
+}
+
+.filters {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--muted);
+    font-size: 10px;
+}
+
+.pill {
+    padding: 6px 10px;
+    border-radius: 14px;
+    color: #667286;
+    background: #f1f3f6;
+}
+
+.pill.active {
+    color: white;
+    background: var(--blue);
+}
+
+.single-panel {
+    min-height: 168px;
+}
+
+.single-panel .empty {
+    min-height: 134px;
+}
+
+.select {
+    padding: 7px 10px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    color: #657187;
+    background: white;
+}
+
+@media (max-width: 760px) {
+    .topbar {
+        height: auto;
+        min-height: 55px;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px 16px;
+    }
+
+    .main-nav {
+        order: 3;
+        width: 100%;
+        justify-content: flex-start;
+        overflow-x: auto;
+    }
+
+    .logout {
+        margin-left: auto;
+    }
+
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 520px) {
+    .page {
+        width: calc(100% - 24px);
+        margin-top: 16px;
+    }
+
+    .page-heading {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .grid-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .cards {
+        gap: 8px;
+    }
+
+    .card {
+        padding: 11px;
+    }
+}
