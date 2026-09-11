@@ -1,3 +1,4 @@
+/* Color palette */
 :root {
     --blue: #2868cb;
     --blue-dark: #1554b5;
@@ -11,6 +12,7 @@
     --red: #ec6670;
 }
 
+/* Base styles */
 * {
     box-sizing: border-box;
 }
@@ -32,6 +34,7 @@ a {
     text-decoration: none;
 }
 
+/* Header and navigation */
 .topbar {
     height: 45px;
     display: flex;
@@ -138,6 +141,7 @@ a {
     cursor: pointer;
 }
 
+/* Page layout */
 .page {
     width: min(830px, calc(100% - 32px));
     margin: 22px auto;
@@ -177,6 +181,7 @@ h1 {
     background: var(--blue-dark);
 }
 
+/* Dashboard cards */
 .cards {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -241,6 +246,7 @@ h1 {
     font-size: 10px;
 }
 
+/* Panels and empty states */
 .grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -292,13 +298,12 @@ h1 {
 }
 
 
-/* truck icon size in the  */
-
 .empty-icon .svg-icon {
     width: 50px;
     height: 50px;
 }
 
+/* Tables, filters, and status pills */
 .table-panel {
     min-height: 142px;
     margin-top: 16px;
@@ -348,6 +353,7 @@ h1 {
     background: var(--blue);
 }
 
+/* Buttons and form controls */
 .single-panel {
     min-height: 168px;
 }
@@ -364,6 +370,7 @@ h1 {
     background: white;
 }
 
+/* Responsive layout */
 @media (max-width: 760px) {
     .topbar {
         height: auto;
