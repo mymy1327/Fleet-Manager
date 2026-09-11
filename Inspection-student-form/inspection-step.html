@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajoneuvon tarkastus</title>
+    <link rel="stylesheet" href="student-form.css">
+    <link rel="stylesheet" href="inspection-step.css">
+    <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    rel="stylesheet">
+</head>
+<body>
+    <main class="inspection-page">
+        <!---Header--->
+        <header class="inspection-header">
+            <button class="back-button" type="button">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+
+            <h1>Ajoneuvon tarkastus</h1>
+        </header>
+    <div class="inspection-container">
+
+    <!-- Progress -->
+    <div class="inspection-progress">
+
+        <div class="progress-info">
+            <span id="questionNumber">1 / 16</span>
+            <span id="progressPercent">6%</span>
+        </div>
+
+        <div class="progress-segments" id="progressSegments">
+            <!-- JS render progress bar base on questions's length -->
+        </div>
+
+    </div>
+
+
+    <!-- Question -->
+    <main class="inspection-question">
+
+        <div id="questionContainer">
+            <!-- JS render question -->
+        </div>
+
+    </main>
+
+
+    <!-- Navigation -->
+    <div class="inspection-navigation">
+
+        <button
+            id="previousButton"
+            class="inspection-back"
+            type="button">
+            Takaisin
+        </button>
+
+        <button
+            id="nextButton"
+            class="inspection-next"
+            type="button">
+            Seuraava
+        </button>
+
+    </div>
+
+</div>
+</body>
+</html>

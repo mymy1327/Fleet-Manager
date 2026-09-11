@@ -1,0 +1,188 @@
+{
+    "formTitle": "Ajoonlähtötarkastus",
+    "version": 1,
+
+    "questions": [
+        {
+            "id": "kilometrilukema",
+            "title": "Kilometrilukema",
+            "type": "number",
+            "required": true,
+            "unit": "km"
+        },
+
+        {
+            "id": "moottorioljy",
+            "title": "Moottoriöljyn taso",
+            "type": "choice",
+            "required": true,
+            "options": [
+                "Hyvä",
+                "Lisää öljyä",
+                "En tiedä"
+            ],
+            "photo": {
+                "required": true,
+                "cameraOnly": true,
+                "description": "Ota kuva öljynmittatikusta."
+            }
+        },
+
+        {
+            "id": "jaahdytysneste",
+            "title": "Jäähdytysnesteen taso",
+            "type": "choice",
+            "required": true,
+            "options": [
+                "Hyvä",
+                "Liian alhainen",
+                "En tiedä"
+            ]
+        },
+
+        {
+            "id": "renkaat",
+            "title": "Renkaiden kunto ja paine",
+            "type": "choice",
+            "required": true,
+            "options": [
+                "Hyvä",
+                "Huono",
+                "En tiedä"
+            ]
+        },
+
+        {
+            "id": "valot",
+            "title": "Valot (ajovalot, suuntavilkut, jarruvalot)",
+            "type": "choice",
+            "required": true,
+            "options": [
+                "Toimivat",
+                "Vika",
+                "En tiedä"
+            ]
+        },
+
+        {
+            "id": "peilit_ikkunat",
+            "title": "Peilit ja ikkunat",
+            "type": "choice",
+            "required": true,
+            "options": [
+                "Kunnossa",
+                "Vaurio",
+                "En tiedä"
+            ]
+        },
+
+        {
+            "id": "turvavyot",
+            "title": "Turvavyö ja turvavarusteet",
+            "type": "choice",
+            "required": true,
+            "options": [
+                "Kunnossa",
+                "Vika",
+                "En tiedä"
+            ]
+        },
+
+        {
+            "id": "aanimerkki",
+            "title": "Äänimerkki (torvi)",
+            "type": "choice",
+            "required": true,
+            "options": [
+                "Toimii",
+                "Ei toimi",
+                "En tiedä"
+            ]
+        },
+
+        {
+            "id": "jarrut",
+            "title": "Jarrut",
+            "type": "choice",
+            "required": true,
+            "options": [
+                "Kunnossa",
+                "Vika",
+                "En tiedä"
+            ]
+        },
+
+        {
+            "id": "hydrauliikka",
+            "title": "Hydrauliikka",
+            "type": "choice",
+            "required": true,
+            "options": [
+                "Kunnossa",
+                "Vika",
+                "En tiedä"
+            ]
+        },
+
+        {
+            "id": "vuodot",
+            "title": "Vuodot (öljy, jäähdytysneste, polttoaine)",
+            "type": "choice",
+            "required": true,
+            "options": [
+                "Ei vuotoja",
+                "Vuoto havaittu",
+                "En tiedä"
+            ]
+        },
+
+        {
+            "id": "varoitusvalot",
+            "title": "Kojelaudan varoitusvalot",
+            "type": "choice",
+            "required": true,
+            "options": [
+                "Ei varoituksia",
+                "Varoitusvalo palaa",
+                "En tiedä"
+            ]
+        },
+
+        {
+            "id": "yleinen_kunto",
+            "title": "Yleinen kunto ja korikunto",
+            "type": "choice",
+            "required": true,
+            "options": [
+                "Kunnossa",
+                "Vaurioita",
+                "En tiedä"
+            ]
+        },
+
+        {
+            "id": "viat_vauriot",
+            "title": "Viat ja vauriot",
+            "type": "photo",
+            "required": false,
+            "cameraOnly": true,
+            "description": "Ota kuva havaituista vioista tai vaurioista."
+        },
+
+        {
+            "id": "polttoaine",
+            "title": "Polttoaine",
+            "type": "percentage",
+            "required": true,
+            "previousValue": 81,
+            "unit": "%"
+        },
+
+        {
+            "id": "tankkaus",
+            "title": "Kävin tankkaamassa",
+            "type": "checkbox",
+            "required": false
+        }
+    ]
+}

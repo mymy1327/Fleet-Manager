@@ -27,9 +27,9 @@
                     <span class="material-symbols-outlined">local_shipping</span>
                      <p class="form-icon"><strong> Fleet Manager</strong></p>
                 </div>
-                <h2 class="vehicle-name">Toyota Corolla</h2>
-                <p class="vehicle-type">Vetoauto</p>
-                <p class="vehicle-status">Käytössä</p> <p class="vehicle-license">ABC-123</p>
+                <h2 class="vehicle-name"></h2>
+                <p class="vehicle-type"></p>
+                <p class="vehicle-status"></p> <p class="vehicle-license"></p>
                 <!---progress bar--->
             </div>
 
@@ -39,7 +39,7 @@
                     <span class="material-symbols-outlined">speed</span>
                     <p class="kilometers-text">Kilometrit</p>
                 </div>
-                  <p class="kilometers-value">120 000 km</p>
+                  <p class="kilometers-value"></p>
             </div>
 
             <!----Open faults-->
@@ -48,20 +48,16 @@
                     <span class="material-symbols-outlined">report_problem</span>
                      <p class="faults-text">Avoimet viat</p>
                 </div>
-                <p class="faults-value">2</p>
+                <p class="faults-value"></p>
             </div>
             <div class="vehicle-in-use">
                     <span class="material-symbols-outlined">check_circle</span>
                     <div class="in-use-content">
-                    <p class="in-use-text">Käytössä</p>
-                    <p class="in-use-description">
-                        Nykyinen käyttäjä: <strong>Le Ngoc Tra My</strong><br>
-                        Käyttö aloitettu: <strong>15.10.2023</strong><br>
-                        Voit silti aloittaa oman tarkastuksesi - edellinen käyttäjä kirjataan poistuneeksi.
-                    </p>
+                    <p class="in-use-text"></p>
+                    <p class="in-use-description"></p>
                     </div>
             </div>
-            <button class="start-inspection-button" type="button">
+            <button class="start-inspection-button" type="button" id="startInspection">
                 <span class="material-symbols-outlined">assignment</span>
                 Aloita tarkastus</button>
         </section>
@@ -72,22 +68,6 @@
                     <span class="material-symbols-outlined">report_problem</span>
                      <p class="faults-text">Havaitut viat</p>
         </div>
-        <div class="fault-card">
-            <div class="status-labels">
-                <span class="status-label open">Open</span>
-                <span class="status-label medium">Medium</span>
-            </div>
-            <p>Viat ja vauriot - lisää kuva</p>
-            <p>Aug 31, 2026</p>
-        </div>
-        <div class="fault-card">
-            <div class="status-labels">
-                <span class="status-label open">Open</span>
-                <span class="status-label high">High</span>
-            </div>
-            <p>Viat ja vauriot - lisää kuva</p>
-            <p>Aug 31, 2026</p>
-        </div>
     </div>
     <div class="last-inspection">
         <!---Last Inspection will be rendered here--->
@@ -96,23 +76,14 @@
             <p class="last-inspection-text">Viimeisin tarkastus</p>
         </div>
         <div class="last-inspection-content">
-            <p class="last-inspection-name">Le Ngoc Tra My</p>
-            <span class="last-inspection-status status-label passed">Passed</span>
-            <p class="last-inspection-date">15.10.2023</p>
+            <p class="last-inspection-name"></p>
+            <span class="last-inspection-status"></span>
+            <p class="last-inspection-date"></p>
         </div>
     </div>
     <div class="inspection-history">
         <!---Inspection History will be rendered here--->
-        <div class="inspection-history-icon">
-            <span class="material-symbols-outlined">work_history</span>
-            <p class="inspection-history-text">Tarkastushistoria</p>
-        </div>
-        <div class="inspection-history-content">
-            <p class="inspection-history-name">Le Ngoc Tra My</p>
-            <span class="inspection-history-status status-label failed">Failed</span>
-            <p class="inspection-history-kilometer">120 000 km</p>
-            <p class="inspection-history-date">Aug 31, 2026</p>
-        </div>
     </div>
 </body>
+<script src="student-form.js"></script>
 </html>

@@ -1,0 +1,178 @@
+.inspection-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+
+    background-color: #ffffff;
+    border-radius: 16px;
+
+    overflow: hidden;
+
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+
+/* =========================
+   PROGRESS
+========================= */
+
+.inspection-progress {
+    padding: 20px 24px;
+
+    background-color: #f8fafc;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 12px;
+
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+}
+
+
+/* Các đoạn progress */
+.progress-segments {
+    display: grid;
+    grid-template-columns: repeat(var(--total), 1fr);
+    gap: 5px;
+}
+
+.progress-segment {
+    height: 7px;
+
+    background-color: #e2e8f0;
+
+    border-radius: 10px;
+
+    transition: 0.3s ease;
+}
+
+.progress-segment.completed {
+    background-color: #2563eb;
+}
+
+.progress-segment.current {
+    background-color: #60a5fa;
+}
+
+
+/* =========================
+   QUESTION
+========================= */
+
+.inspection-question {
+    min-height: 400px;
+
+    padding: 40px 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#questionContainer {
+    width: 100%;
+    max-width: 600px;
+}
+
+.question-title {
+    margin: 0 0 30px;
+
+    text-align: center;
+
+    font-size: 25px;
+    font-weight: 700;
+
+    color: #1e293b;
+}
+
+
+/* =========================
+   OPTIONS
+========================= */
+
+.question-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.question-option {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    padding: 16px 18px;
+
+    box-sizing: border-box;
+
+    background-color: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.question-option:hover {
+    border-color: #2563eb;
+    background-color: rgba(37, 99, 235, 0.05);
+}
+
+.question-option.selected {
+    border-color: #2563eb;
+    background-color: rgba(37, 99, 235, 0.10);
+}
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+.inspection-navigation {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+
+    padding: 20px 24px;
+
+    border-top: 1px solid #e2e8f0;
+}
+
+.inspection-back,
+.inspection-next {
+    padding: 12px 24px;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.inspection-back {
+    background-color: #f1f5f9;
+    color: #475569;
+
+    border: 1px solid #cbd5e1;
+}
+
+.inspection-next {
+    margin-left: auto;
+
+    background-color: #2563eb;
+    color: white;
+
+    border: none;
+}
+
+.inspection-next:hover {
+    background-color: #1d4ed8;
+}

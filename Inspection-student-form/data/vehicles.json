@@ -1,0 +1,28 @@
+{
+  "vehicles": [
+    {
+      "id_vehicles": 1,
+      "name": "Toyota Corolla",
+      "type": "Vetoauto",
+      "license_plate": "ABC-123",
+      "state": "Käytössä",
+      "photo": null,
+      "kilometers": 120000,
+
+      "inspections": [
+        {
+          "name": "Le Ngoc Tra My",
+          "status": "passed",
+          "kilometers": 119500,
+          "date": "2026-08-20"
+        },
+        {
+          "name": "Le Ngoc Tra My",
+          "status": "failed",
+          "kilometers": 120000,
+          "date": "2026-08-31"
+        }
+      ]
+    }
+  ]
+}

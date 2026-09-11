@@ -1,0 +1,22 @@
+{
+  "faults": [
+    {
+      "id": 1,
+      "vehicleId": 1,
+      "status": "open",
+      "priority": "medium",
+      "title": "Viat ja vauriot - lisää kuva",
+      "description": "Ajoneuvon vasemmassa etukulmassa on vaurio.",
+      "date": "2026-08-31"
+    },
+    {
+      "id": 2,
+      "vehicleId": 1,
+      "status": "open",
+      "priority": "high",
+      "title": "Viat ja vauriot - lisää kuva",
+      "description": "Jarruissa havaittu ongelma.",
+      "date": "2026-08-31"
+    }
+  ]
+}
