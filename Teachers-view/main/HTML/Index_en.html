@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fleet Manager</title>
+    <link rel="stylesheet" href="../CSS/style_en.css">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="#home" aria-label="Fleet Manager home">
+            <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" class="svg-icon"><path d="M3 6h12a2 2 0 0 1 2 2v2h2.5a2 2 0 0 1 1.7 1l1.8 3.1V17h-2.2a2.5 2.5 0 0 1-4.6 0H8.1a2.5 2.5 0 0 1-4.6 0H1V8a2 2 0 0 1 2-2Zm1 2v7h.4a2.5 2.5 0 0 1 4.6 0H16v-5h-1V8H4Zm14 4v3h.1a2.5 2.5 0 0 1 4.6 0h.1v-.5L19.5 12H18ZM5.8 18a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2Zm12 0a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2Z"/></svg></span>
+            <strong>Fleet Manager</strong>
+        </a>
+        <nav class="main-nav" aria-label="Main navigation">
+            <a href="#home" data-view="home"><span>⌗</span>Home</a>
+            <a href="#fleet" data-view="fleet"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" class="svg-icon"><path d="M3 6h12a2 2 0 0 1 2 2v2h2.5a2 2 0 0 1 1.7 1l1.8 3.1V17h-2.2a2.5 2.5 0 0 1-4.6 0H8.1a2.5 2.5 0 0 1-4.6 0H1V8a2 2 0 0 1 2-2Zm1 2v7h.4a2.5 2.5 0 0 1 4.6 0H16v-5h-1V8H4Zm14 4v3h.1a2.5 2.5 0 0 1 4.6 0h.1v-.5L19.5 12H18ZM5.8 18a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2Zm12 0a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2Z"/></svg></span>Fleet</a>
+            <a href="#inspections" data-view="inspections"><span>🖹</span>Inspections</a>
+            <a href="#faults" data-view="faults"><span>△</span>Faults</a>
+            <a href="#reports" data-view="reports"><span>▥</span>Reports</a>
+        </nav>
+        <div class="header-actions">
+            <button class="language-switch" type="button" data-language-switch>FI</button>
+            <button class="logout" type="button">↪&nbsp; Logout</button>
+        </div>
+    </header>
+
+    <main id="app" class="page">
+        <section data-view-content="home">
+            <div class="page-heading"><div><h1>Home</h1><p class="subtitle">Overview of the fleet and recent events</p></div></div>
+            <div class="cards">
+                <article class="card"><span class="card-icon"><svg viewBox="0 0 24 24" class="svg-icon" aria-hidden="true"><path d="M3 6h12a2 2 0 0 1 2 2v2h2.5a2 2 0 0 1 1.7 1l1.8 3.1V17h-2.2a2.5 2.5 0 0 1-4.6 0H8.1a2.5 2.5 0 0 1-4.6 0H1V8a2 2 0 0 1 2-2Zm1 2v7h.4a2.5 2.5 0 0 1 4.6 0H16v-5h-1V8H4Zm14 4v3h.1a2.5 2.5 0 0 1 4.6 0h.1v-.5L19.5 12H18ZM5.8 18a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2Zm12 0a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2Z"/></svg></span><strong class="card-value">0</strong><span class="card-label">Total vehicles</span></article>
+                <article class="card"><span class="card-icon green">✓</span><strong class="card-value">0</strong><span class="card-label">Available</span></article>
+                <article class="card"><span class="card-icon">▣</span><strong class="card-value">0</strong><span class="card-label">Total inspections</span></article>
+                <article class="card"><span class="card-icon green">△</span><strong class="card-value">0</strong><span class="card-label">Open faults</span></article>
+            </div>
+            <div class="grid-2">
+                <section class="panel large"><h2 class="panel-title">Recent inspections<a class="panel-action" href="#inspections">View all</a></h2><div class="empty">No inspections yet</div></section>
+                <section class="panel large"><h2 class="panel-title">Open faults<a class="panel-action" href="#faults">View all</a></h2><div class="empty">No open faults - all good!</div></section>
+            </div>
+        </section>
+
+        <section data-view-content="fleet" hidden>
+            <div class="page-heading"><div><h1>Fleet</h1><p class="subtitle">Manage your fleet</p></div><button class="button" type="button">＋&nbsp; Add vehicle</button></div>
+            <section class="panel single-panel"><div class="empty"><span class="empty-icon" aria-hidden="true"><svg viewBox="0 0 24 24" class="svg-icon"><path d="M3 6h12a2 2 0 0 1 2 2v2h2.5a2 2 0 0 1 1.7 1l1.8 3.1V17h-2.2a2.5 2.5 0 0 1-4.6 0H8.1a2.5 2.5 0 0 1-4.6 0H1V8a2 2 0 0 1 2-2Zm1 2v7h.4a2.5 2.5 0 0 1 4.6 0H16v-5h-1V8H4Zm14 4v3h.1a2.5 2.5 0 0 1 4.6 0h.1v-.5L19.5 12H18ZM5.8 18a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2Zm12 0a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2Z"/></svg></span>No vehicles yet. Add the first one!</div></section>
+        </section>
+
+        <section data-view-content="inspections" hidden>
+            <div class="page-heading"><div><h1>Inspections</h1><p class="subtitle">All vehicle departure inspections</p></div><button class="button" type="button">＋&nbsp; New inspection</button></div>
+            <section class="panel single-panel"><div class="empty"><span class="empty-icon">🖹</span>No inspections yet</div></section>
+        </section>
+
+        <section data-view-content="faults" hidden>
+            <div class="page-heading"><div><h1>Fault reports</h1><p class="subtitle">Track and resolve fleet faults</p></div><div class="filters">⌕ <select class="select"><option>All</option></select></div></div>
+            <section class="panel single-panel"><div class="empty"><span class="empty-icon">🖹</span>No fault reports</div></section>
+        </section>
+
+        <section data-view-content="reports" hidden>
+            <div class="page-heading"><div><h1>Reports</h1><p class="subtitle">Fleet usage and inspection reports</p></div><div class="filters">Time period: <span class="pill">7 days</span><span class="pill active">30 days</span><span class="pill">90 days</span></div></div>
+            <div class="cards">
+                <article class="card"><span class="card-icon">▣</span><strong class="card-value">0</strong><span class="card-label">Inspections</span></article>
+                <article class="card"><span class="card-icon green">✓</span><strong class="card-value">0</strong><span class="card-label">Approved</span></article>
+                <article class="card"><span class="card-icon orange">△</span><strong class="card-value">0</strong><span class="card-label">Fault reports</span></article>
+                <article class="card"><span class="card-icon red">△</span><strong class="card-value">0</strong><span class="card-label">Open faults</span></article>
+            </div>
+            <div class="grid-2">
+                <section class="panel large"><h2 class="panel-title"><span class="icon">🖹</span>Inspections per vehicle</h2><div class="empty">No inspections for the selected time period</div></section>
+                <section class="panel large"><h2 class="panel-title"><span class="icon">⌁</span>Inspection results</h2><div class="empty">No inspections for the selected time period</div></section>
+                <section class="panel large"><h2 class="panel-title"><span class="icon">🖹</span>Faults per vehicle</h2><div class="empty">No faults for the selected time period</div></section>
+                <section class="panel large"><h2 class="panel-title"><span class="icon">♧</span>Most active students</h2><div class="empty">No inspections for the selected time period</div></section>
+            </div>
+            <section class="panel table-panel"><h2 class="panel-title"><span class="icon">🖹</span>Inspection history</h2><table class="table"><thead><tr><th>Date</th><th>Vehicle</th><th>Student</th><th>Odometer</th><th>Result</th></tr></thead><tbody><tr><td colspan="5">No inspections for the selected time period</td></tr></tbody></table></section>
+        </section>
+    </main>
+    <script src="../JS/app.js"></script>
+</body>
+</html>
