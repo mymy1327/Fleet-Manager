@@ -1,0 +1,72 @@
+<?php
+/** @var \mysqli $conn */
+require __DIR__ . "/../assets/config.php";
+switch ($_SERVER["REQUEST_METHOD"]) {
+    case "GET":
+        //Check if GET request is valid
+        if (!isset($_GET["function"])) {
+            http_response_code(400);
+            echo "Missing function parameter.";
+            die();
+        }
+
+        //Select function
+        switch ($_GET["function"]) {
+            case "getUsers":
+                //Gets users from DB
+                $stmt = $conn->
+                echo json_encode([["id" => 1, "name" => "abc", "role" => "admin", "email" => "abc@"]]);
+                die();
+            default:
+                //Unknown function
+                http_response_code(400);
+                echo "Unknown function.";
+                die();
+        }
+        die();
+    case "PATCH":
+        //Check if PATCH request is valid
+        $data = json_decode(file_get_contents("php://input"), true);
+        echo(json_encode($data));
+        if (!isset($data["function"])) {
+            http_response_code(400);
+            echo "Missing function parameter.";
+            die();
+        }
+        if (!isset($data["id"])) {
+            http_response_code(400);
+            echo "Missing id parameter.";
+            die();
+        }
+
+        //Select function
+        switch ($data["function"]) {
+            case "changePassword":
+                //Check if has all parameters for password change
+                if (!isset($data["password"])) {
+                    http_response_code(400);
+                    echo "Missing password parameter.";
+                    die();
+                }
+
+                //Change password
+                die();
+        }
+        die();
+    case "DELETE":
+        //Check if DELETE request is valid
+        if (!isset($_GET["function"])) {
+            http_response_code(400);
+            echo "Missing function parameter.";
+            die();
+        }
+
+        //Select function
+        switch ($_GET["function"]) {
+            case "deleteUser":
+                //Deletes user from DB
+                die();
+        }
+        die();
+}
+?>
