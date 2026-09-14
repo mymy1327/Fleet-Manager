@@ -5,18 +5,26 @@ let allQuestions = [];
 
 let currentQuestionIndex = 0;
 
+// Store answers for every question
 let answers = [];
+
 
 document.addEventListener("DOMContentLoaded", () => {
     initInspection();
 });
 
 
+// ==================================================
+// INIT
+// ==================================================
+
 async function initInspection() {
 
     try {
 
+        // ------------------------------------------
         // Get vehicle ID from URL
+        // ------------------------------------------
 
         const params =
             new URLSearchParams(window.location.search);
@@ -26,11 +34,17 @@ async function initInspection() {
 
 
         if (!vehicleId) {
-            throw new Error("Vehicle ID puuttuu.");
+
+            throw new Error(
+                "Vehicle ID puuttuu."
+            );
+
         }
 
 
+        // ------------------------------------------
         // Load JSON files
+        // ------------------------------------------
 
         const [
             vehiclesResponse,
@@ -48,23 +62,29 @@ async function initInspection() {
 
 
         if (!vehiclesResponse.ok) {
+
             throw new Error(
                 "vehicles.json lataaminen epäonnistui."
             );
+
         }
 
 
         if (!vehicleChecklistsResponse.ok) {
+
             throw new Error(
-                "vehicles-checklists.json lataaminen epäonnistui."
+                "vehicles_checklists.json lataaminen epäonnistui."
             );
+
         }
 
 
         if (!checklistsResponse.ok) {
+
             throw new Error(
                 "checklists.json lataaminen epäonnistui."
             );
+
         }
 
 
@@ -78,11 +98,14 @@ async function initInspection() {
             await checklistsResponse.json();
 
 
+        // ------------------------------------------
         // Find vehicle
+        // ------------------------------------------
 
         vehicle =
             vehiclesData.vehicles.find(
-                item => item.id_vehicles === vehicleId
+                item =>
+                    item.id_vehicles === vehicleId
             );
 
 
@@ -94,7 +117,16 @@ async function initInspection() {
 
         }
 
-        // Find checklists belonging to this vehicle
+
+        console.log(
+            "Vehicle:",
+            vehicle
+        );
+
+
+        // ------------------------------------------
+        // Find vehicle-checklist relations
+        // ------------------------------------------
 
         const vehicleChecklistRelations =
             vehiclesChecklistsData.vehiclesChecklists
@@ -115,17 +147,20 @@ async function initInspection() {
         }
 
 
+        // ------------------------------------------
         // Get checklist IDs
+        // ------------------------------------------
 
         const checklistIds =
             vehicleChecklistRelations.map(
-                item => item.id_checklists
+                item =>
+                    item.id_checklists
             );
 
 
-        // --------------------------------
+        // ------------------------------------------
         // Get actual checklists
-        // --------------------------------
+        // ------------------------------------------
 
         checklists =
             checklistsData.checklists
@@ -146,38 +181,51 @@ async function initInspection() {
         }
 
 
-        // --------------------------------
-        // Create one question list
-        // from all checklists
-        // --------------------------------
+        // ------------------------------------------
+        // Combine all questions
+        // ------------------------------------------
 
         allQuestions = [];
 
 
-        checklists.forEach(checklist => {
+        checklists.forEach(
+            checklist => {
 
-            checklist.questions.forEach(
-                question => {
+                if (
+                    !Array.isArray(
+                        checklist.questions
+                    )
+                ) {
 
-                    allQuestions.push({
-
-                        checklistId:
-                            checklist.id,
-
-                        formTitle:
-                            checklist.formTitle,
-
-                        version:
-                            checklist.version,
-
-                        question: question
-
-                    });
+                    return;
 
                 }
-            );
 
-        });
+
+                checklist.questions.forEach(
+                    question => {
+
+                        allQuestions.push({
+
+                            checklistId:
+                                checklist.id,
+
+                            formTitle:
+                                checklist.formTitle,
+
+                            version:
+                                checklist.version,
+
+                            question:
+                                question
+
+                        });
+
+                    }
+                );
+
+            }
+        );
 
 
         if (allQuestions.length === 0) {
@@ -189,32 +237,33 @@ async function initInspection() {
         }
 
 
-        // --------------------------------
+        // ------------------------------------------
         // Create answer array
-        // --------------------------------
+        // ------------------------------------------
 
         answers =
             allQuestions.map(() => null);
 
 
-        // --------------------------------
-        // Render first question
-        // --------------------------------
-
-        renderQuestion();
+        // ------------------------------------------
+        // Setup UI
+        // ------------------------------------------
 
         renderProgress();
 
+        renderQuestion();
+
         updateNavigationButtons();
-
-
-        // --------------------------------
-        // Setup buttons
-        // --------------------------------
 
         setupNavigation();
 
         setupBackButton();
+
+
+        console.log(
+            "Questions:",
+            allQuestions
+        );
 
 
     } catch (error) {
@@ -224,51 +273,74 @@ async function initInspection() {
             error
         );
 
-        showError(error.message);
+        showError(
+            error.message
+        );
 
     }
 }
 
 
-// ========================================
+// ==================================================
 // RENDER QUESTION
-// ========================================
+// ==================================================
 
 function renderQuestion() {
 
     const container =
-        document.querySelector("#questionContainer");
+        document.querySelector(
+            "#questionContainer"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
 
     container.innerHTML = "";
 
+
     const currentItem =
         allQuestions[currentQuestionIndex];
+
+
+    if (!currentItem) {
+        return;
+    }
+
 
     const question =
         currentItem.question;
 
 
-    // --------------------------------
-    // Question icon
-    // --------------------------------
+    // ------------------------------------------
+    // Question header
+    // ------------------------------------------
+
+    const questionHeader =
+        document.createElement("div");
+
+    questionHeader.classList.add(
+        "question-header"
+    );
+
+
+    // Icon
 
     const icon =
         document.createElement("span");
 
     icon.classList.add(
-        "material-symbols-outlined"
+        "material-symbols-outlined",
+        "question-icon"
     );
 
     icon.textContent =
         question.icon || "check_circle";
 
 
-    container.appendChild(icon);
-
-
-    // --------------------------------
-    // Question title
-    // --------------------------------
+    // Title
 
     const title =
         document.createElement("h2");
@@ -280,12 +352,47 @@ function renderQuestion() {
     title.textContent =
         question.title;
 
-    container.appendChild(title);
+
+    questionHeader.appendChild(
+        icon
+    );
+
+    questionHeader.appendChild(
+        title
+    );
 
 
-    // --------------------------------
+    container.appendChild(
+        questionHeader
+    );
+
+
+    // ------------------------------------------
+    // Required label
+    // ------------------------------------------
+
+    if (question.required) {
+
+        const required =
+            document.createElement("p");
+
+        required.classList.add(
+            "required-label"
+        );
+
+        required.textContent =
+            "Pakollinen";
+
+        container.appendChild(
+            required
+        );
+
+    }
+
+
+    // ------------------------------------------
     // Question content
-    // --------------------------------
+    // ------------------------------------------
 
     const content =
         document.createElement("div");
@@ -353,17 +460,30 @@ function renderQuestion() {
                 `Unknown question type: ${question.type}`
             );
 
+            content.innerHTML = `
+                <p>Tuntematon kysymystyyppi.</p>
+            `;
+
             break;
     }
 
 
-    container.appendChild(content);
+    container.appendChild(
+        content
+    );
+
+
+    // Update progress
+
+    renderProgress();
+
+    updateNavigationButtons();
 }
 
 
-// ========================================
+// ==================================================
 // NUMBER QUESTION
-// ========================================
+// ==================================================
 
 function renderNumberQuestion(
     container,
@@ -397,10 +517,13 @@ function renderNumberQuestion(
         answers[currentQuestionIndex];
 
 
-    if (previousAnswer !== null) {
+    if (
+        previousAnswer &&
+        previousAnswer.value !== undefined
+    ) {
 
         input.value =
-            previousAnswer;
+            previousAnswer.value;
 
     }
 
@@ -419,6 +542,7 @@ function renderNumberQuestion(
         unit.textContent =
             question.unit;
 
+
         wrapper.appendChild(
             input
         );
@@ -436,12 +560,18 @@ function renderNumberQuestion(
     }
 
 
+    // Save answer
+
     input.addEventListener(
         "input",
         () => {
 
-            answers[currentQuestionIndex] =
-                input.value;
+            answers[currentQuestionIndex] = {
+
+                value:
+                    input.value
+
+            };
 
         }
     );
@@ -453,9 +583,9 @@ function renderNumberQuestion(
 }
 
 
-// ========================================
+// ==================================================
 // CHOICE QUESTION
-// ========================================
+// ==================================================
 
 function renderChoiceQuestion(
     container,
@@ -470,13 +600,29 @@ function renderChoiceQuestion(
     );
 
 
+    if (!Array.isArray(question.options)) {
+
+        console.warn(
+            "Question has no options:",
+            question
+        );
+
+        return;
+    }
+
+
+    const previousAnswer =
+        answers[currentQuestionIndex];
+
+
     question.options.forEach(
         option => {
 
             const button =
                 document.createElement("button");
 
-            button.type = "button";
+            button.type =
+                "button";
 
             button.classList.add(
                 "question-option"
@@ -487,11 +633,11 @@ function renderChoiceQuestion(
                 option;
 
 
-            // Restore answer
+            // Restore previous answer
 
             if (
-                answers[currentQuestionIndex] ===
-                option
+                previousAnswer &&
+                previousAnswer.value === option
             ) {
 
                 button.classList.add(
@@ -507,9 +653,23 @@ function renderChoiceQuestion(
                 "click",
                 () => {
 
-                    answers[currentQuestionIndex] =
-                        option;
+                    // Keep existing photo
+                    const currentAnswer =
+                        answers[currentQuestionIndex];
 
+
+                    answers[currentQuestionIndex] = {
+
+                        value:
+                            option,
+
+                        photo:
+                            currentAnswer?.photo || null
+
+                    };
+
+
+                    // Remove selected state
 
                     optionsContainer
                         .querySelectorAll(
@@ -525,6 +685,8 @@ function renderChoiceQuestion(
                             }
                         );
 
+
+                    // Add selected state
 
                     button.classList.add(
                         "selected"
@@ -547,9 +709,9 @@ function renderChoiceQuestion(
     );
 
 
-    // --------------------------------
-    // Optional photo
-    // --------------------------------
+    // ------------------------------------------
+    // Photo
+    // ------------------------------------------
 
     if (question.photo) {
 
@@ -562,9 +724,9 @@ function renderChoiceQuestion(
 }
 
 
-// ========================================
+// ==================================================
 // PHOTO QUESTION
-// ========================================
+// ==================================================
 
 function renderPhotoQuestion(
     container,
@@ -578,9 +740,9 @@ function renderPhotoQuestion(
 }
 
 
-// ========================================
+// ==================================================
 // PHOTO INPUT
-// ========================================
+// ==================================================
 
 function renderPhotoInput(
     container,
@@ -595,7 +757,9 @@ function renderPhotoInput(
     );
 
 
+    // ------------------------------------------
     // Description
+    // ------------------------------------------
 
     if (photoSettings.description) {
 
@@ -609,6 +773,7 @@ function renderPhotoInput(
         description.textContent =
             photoSettings.description;
 
+
         wrapper.appendChild(
             description
         );
@@ -616,7 +781,48 @@ function renderPhotoInput(
     }
 
 
-    // Camera input
+    // ------------------------------------------
+    // Camera button
+    // ------------------------------------------
+
+    const label =
+        document.createElement("label");
+
+    label.classList.add(
+        "photo-camera-button"
+    );
+
+
+    const icon =
+        document.createElement("span");
+
+    icon.classList.add(
+        "material-symbols-outlined"
+    );
+
+    icon.textContent =
+        "photo_camera";
+
+
+    const text =
+        document.createElement("span");
+
+    text.textContent =
+        "Ota kuva";
+
+
+    label.appendChild(
+        icon
+    );
+
+    label.appendChild(
+        text
+    );
+
+
+    // ------------------------------------------
+    // Input
+    // ------------------------------------------
 
     const input =
         document.createElement("input");
@@ -625,28 +831,91 @@ function renderPhotoInput(
 
     input.accept = "image/*";
 
-
-    if (photoSettings.cameraOnly) {
-
-        input.capture = "environment";
-
-    }
-
-
     input.classList.add(
         "question-photo-input"
     );
 
 
+    if (
+        photoSettings.cameraOnly
+    ) {
+
+        input.setAttribute(
+            "capture",
+            "environment"
+        );
+
+    }
+
+
+    // ------------------------------------------
+    // Restore photo
+    // ------------------------------------------
+
+    const previousAnswer =
+        answers[currentQuestionIndex];
+
+
+    if (
+        previousAnswer &&
+        previousAnswer.photo
+    ) {
+
+        text.textContent =
+            "Kuva otettu";
+
+        label.classList.add(
+            "photo-selected"
+        );
+
+    }
+
+
+    // ------------------------------------------
+    // Change photo
+    // ------------------------------------------
+
     input.addEventListener(
         "change",
         () => {
 
-            if (input.files.length > 0) {
+            if (
+                input.files &&
+                input.files.length > 0
+            ) {
+
+                const file =
+                    input.files[0];
+
+
+                const currentAnswer =
+                    answers[currentQuestionIndex];
+
 
                 answers[currentQuestionIndex] = {
-                    photo: input.files[0]
+
+                    value:
+                        currentAnswer?.value || null,
+
+                    photo:
+                        file
+
                 };
+
+
+                text.textContent =
+                    "Kuva otettu";
+
+
+                label.classList.add(
+                    "photo-selected"
+                );
+
+
+                console.log(
+                    "Photo:",
+                    file
+                );
 
             }
 
@@ -654,9 +923,37 @@ function renderPhotoInput(
     );
 
 
-    wrapper.appendChild(
+    label.appendChild(
         input
     );
+
+
+    wrapper.appendChild(
+        label
+    );
+
+
+    // Required photo label
+
+    if (
+        photoSettings.required
+    ) {
+
+        const requiredText =
+            document.createElement("p");
+
+        requiredText.classList.add(
+            "photo-required"
+        );
+
+        requiredText.textContent =
+            "Vain kamerakuva";
+
+        wrapper.appendChild(
+            requiredText
+        );
+
+    }
 
 
     container.appendChild(
@@ -665,9 +962,9 @@ function renderPhotoInput(
 }
 
 
-// ========================================
+// ==================================================
 // PERCENTAGE QUESTION
-// ========================================
+// ==================================================
 
 function renderPercentageQuestion(
     container,
@@ -682,7 +979,9 @@ function renderPercentageQuestion(
     );
 
 
+    // ------------------------------------------
     // Previous value
+    // ------------------------------------------
 
     if (
         question.previousValue !== undefined
@@ -696,7 +995,7 @@ function renderPercentageQuestion(
         );
 
         previous.textContent =
-            `Edellinen arvo: ${question.previousValue}${question.unit || ""}`;
+            `Edellinen taso: ${question.previousValue}${question.unit || "%"}`;
 
 
         wrapper.appendChild(
@@ -706,29 +1005,53 @@ function renderPercentageQuestion(
     }
 
 
+    // ------------------------------------------
     // Slider
+    // ------------------------------------------
 
     const input =
         document.createElement("input");
 
-    input.type = "range";
+    input.type =
+        "range";
 
-    input.min = "0";
+    input.min =
+        "0";
 
-    input.max = "100";
-
-    input.value =
-        answers[currentQuestionIndex] ??
-        question.previousValue ??
-        0;
-
+    input.max =
+        "100";
 
     input.classList.add(
         "percentage-slider"
     );
 
 
+    // Restore value
+
+    const previousAnswer =
+        answers[currentQuestionIndex];
+
+
+    if (
+        previousAnswer &&
+        previousAnswer.value !== undefined
+    ) {
+
+        input.value =
+            previousAnswer.value;
+
+    } else {
+
+        input.value =
+            question.previousValue ??
+            0;
+
+    }
+
+
+    // ------------------------------------------
     // Value display
+    // ------------------------------------------
 
     const value =
         document.createElement("span");
@@ -739,19 +1062,27 @@ function renderPercentageQuestion(
 
 
     value.textContent =
-        `${input.value}${question.unit || ""}`;
+        `${input.value}${question.unit || "%"}`;
 
+
+    // ------------------------------------------
+    // Save
+    // ------------------------------------------
 
     input.addEventListener(
         "input",
         () => {
 
-            answers[currentQuestionIndex] =
-                Number(input.value);
+            answers[currentQuestionIndex] = {
+
+                value:
+                    Number(input.value)
+
+            };
 
 
             value.textContent =
-                `${input.value}${question.unit || ""}`;
+                `${input.value}${question.unit || "%"}`;
 
         }
     );
@@ -772,9 +1103,9 @@ function renderPercentageQuestion(
 }
 
 
-// ========================================
+// ==================================================
 // CHECKBOX QUESTION
-// ========================================
+// ==================================================
 
 function renderCheckboxQuestion(
     container,
@@ -792,21 +1123,28 @@ function renderCheckboxQuestion(
     const input =
         document.createElement("input");
 
-    input.type = "checkbox";
+    input.type =
+        "checkbox";
 
 
-    // Restore answer
+    // Restore
 
     input.checked =
-        answers[currentQuestionIndex] === true;
+        answers[currentQuestionIndex]?.value === true;
 
+
+    // Save
 
     input.addEventListener(
         "change",
         () => {
 
-            answers[currentQuestionIndex] =
-                input.checked;
+            answers[currentQuestionIndex] = {
+
+                value:
+                    input.checked
+
+            };
 
         }
     );
@@ -816,6 +1154,7 @@ function renderCheckboxQuestion(
         document.createElement("span");
 
     text.textContent =
+        question.label ||
         question.title;
 
 
@@ -834,9 +1173,9 @@ function renderCheckboxQuestion(
 }
 
 
-// ========================================
+// ==================================================
 // PROGRESS
-// ========================================
+// ==================================================
 
 function renderProgress() {
 
@@ -856,12 +1195,30 @@ function renderProgress() {
         );
 
 
+    if (!progressSegments) {
+        return;
+    }
+
+
+    const total =
+        allQuestions.length;
+
+
+    if (total === 0) {
+        return;
+    }
+
+
+    // ------------------------------------------
+    // Clear old segments
+    // ------------------------------------------
+
     progressSegments.innerHTML = "";
 
 
-    // --------------------------------
+    // ------------------------------------------
     // Create segments
-    // --------------------------------
+    // ------------------------------------------
 
     allQuestions.forEach(
         (_, index) => {
@@ -904,23 +1261,23 @@ function renderProgress() {
     );
 
 
-    // --------------------------------
+    // ------------------------------------------
     // Question number
-    // --------------------------------
+    // ------------------------------------------
 
     questionNumber.textContent =
-        `${currentQuestionIndex + 1} / ${allQuestions.length}`;
+        `${currentQuestionIndex + 1} / ${total}`;
 
 
-    // --------------------------------
+    // ------------------------------------------
     // Percentage
-    // --------------------------------
+    // ------------------------------------------
 
     const percent =
         Math.round(
             (
                 (currentQuestionIndex + 1) /
-                allQuestions.length
+                total
             ) * 100
         );
 
@@ -930,9 +1287,9 @@ function renderProgress() {
 }
 
 
-// ========================================
+// ==================================================
 // NAVIGATION
-// ========================================
+// ==================================================
 
 function setupNavigation() {
 
@@ -947,9 +1304,9 @@ function setupNavigation() {
         );
 
 
-    // --------------------------------
+    // ------------------------------------------
     // Previous
-    // --------------------------------
+    // ------------------------------------------
 
     previousButton.addEventListener(
         "click",
@@ -963,23 +1320,21 @@ function setupNavigation() {
 
                 renderQuestion();
 
-                renderProgress();
-
-                updateNavigationButtons();
-
             }
 
         }
     );
 
 
-    // --------------------------------
+    // ------------------------------------------
     // Next
-    // --------------------------------
+    // ------------------------------------------
 
     nextButton.addEventListener(
         "click",
         () => {
+
+            // Validate
 
             if (
                 !validateCurrentQuestion()
@@ -990,6 +1345,8 @@ function setupNavigation() {
             }
 
 
+            // Next question
+
             if (
                 currentQuestionIndex <
                 allQuestions.length - 1
@@ -999,11 +1356,9 @@ function setupNavigation() {
 
                 renderQuestion();
 
-                renderProgress();
-
-                updateNavigationButtons();
-
             }
+
+            // Last question
 
             else {
 
@@ -1016,9 +1371,9 @@ function setupNavigation() {
 }
 
 
-// ========================================
-// NAVIGATION BUTTON TEXT
-// ========================================
+// ==================================================
+// NAVIGATION BUTTONS
+// ==================================================
 
 function updateNavigationButtons() {
 
@@ -1033,13 +1388,22 @@ function updateNavigationButtons() {
         );
 
 
+    if (!previousButton || !nextButton) {
+        return;
+    }
+
+
+    // ------------------------------------------
     // Previous
+    // ------------------------------------------
 
     previousButton.disabled =
         currentQuestionIndex === 0;
 
 
-    // Next
+    // ------------------------------------------
+    // Next text
+    // ------------------------------------------
 
     if (
         currentQuestionIndex ===
@@ -1058,48 +1422,68 @@ function updateNavigationButtons() {
 }
 
 
-// ========================================
-// VALIDATE QUESTION
-// ========================================
+// ==================================================
+// VALIDATE CURRENT QUESTION
+// ==================================================
 
 function validateCurrentQuestion() {
 
     const currentItem =
         allQuestions[currentQuestionIndex];
 
+
+    if (!currentItem) {
+        return false;
+    }
+
+
     const question =
         currentItem.question;
+
 
     const answer =
         answers[currentQuestionIndex];
 
 
-    // --------------------------------
-    // Required
-    // --------------------------------
+    // ------------------------------------------
+    // Required question
+    // ------------------------------------------
 
-    if (
-        question.required &&
-        (
-            answer === null ||
-            answer === undefined ||
-            answer === "" ||
-            answer === false
-        )
-    ) {
+    if (question.required) {
 
-        alert(
-            "Täytä tämä kohta ennen jatkamista."
-        );
+        if (!answer) {
 
-        return false;
+            alert(
+                "Täytä tämä kohta ennen jatkamista."
+            );
+
+            return false;
+
+        }
+
+
+        // Required value
+
+        if (
+            answer.value === undefined ||
+            answer.value === null ||
+            answer.value === ""
+        ) {
+
+            alert(
+                "Täytä tämä kohta ennen jatkamista."
+            );
+
+            return false;
+
+        }
 
     }
 
 
-    // --------------------------------
+    // ------------------------------------------
     // Required photo
-    // --------------------------------
+    // ------------------------------------------
 
     if (
         question.photo &&
@@ -1122,9 +1506,9 @@ function validateCurrentQuestion() {
     }
 
 
-    // --------------------------------
+    // ------------------------------------------
     // Photo question
-    // --------------------------------
+    // ------------------------------------------
 
     if (
         question.type === "photo" &&
@@ -1151,40 +1535,27 @@ function validateCurrentQuestion() {
 }
 
 
-// ========================================
-// FINISH INSPECTION
-// ========================================
+// ==================================================
+// FINISH
+// ==================================================
 
 function finishInspection() {
 
     console.log(
-        "Inspection completed."
+        "Inspection completed"
     );
 
-
-    // --------------------------------
-    // Create result
-    // --------------------------------
 
     const inspectionResult = {
 
         vehicleId:
-            vehicle.id,
+            vehicle.id_vehicles,
 
-        vehicleName:
+        vehicle:
             vehicle.name,
 
         vehicleType:
             vehicle.type,
-
-        vehiclePlate:
-            vehicle.plate,
-
-        kilometers:
-            vehicle.kilometers,
-
-        date:
-            new Date().toISOString(),
 
         checklists:
             checklists.map(
@@ -1227,39 +1598,551 @@ function finishInspection() {
     };
 
 
-    // --------------------------------
-    // Show result
-    // --------------------------------
+    console.log(
+        "Inspection result:",
+        inspectionResult
+    );
+
+
+    showSummaryModal(
+        inspectionResult
+    );
+}
+
+//==================================================
+// SUMMARY MODAL
+//==================================================
+
+function showSummaryModal(
+    inspectionResult
+) {
+
+    // ------------------------------------------
+    // Overlay
+    // ------------------------------------------
+
+    const overlay =
+        document.createElement("div");
+
+    overlay.classList.add(
+        "summary-overlay"
+    );
+
+
+    // ------------------------------------------
+    // Modal
+    // ------------------------------------------
+
+    const modal =
+        document.createElement("div");
+
+    modal.classList.add(
+        "summary-modal"
+    );
+
+
+    // ------------------------------------------
+    // Header
+    // ------------------------------------------
+
+    const header =
+        document.createElement("div");
+
+    header.classList.add(
+        "summary-header"
+    );
+
+
+    const title =
+        document.createElement("h2");
+
+    title.textContent =
+        "Tarkastuksen yhteenveto";
+
+
+    const closeButton =
+        document.createElement("button");
+
+    closeButton.type =
+        "button";
+
+    closeButton.classList.add(
+        "summary-close"
+    );
+
+    closeButton.innerHTML =
+        `<span class="material-symbols-outlined">
+            close
+        </span>`;
+
+
+    closeButton.addEventListener(
+        "click",
+        () => {
+
+            overlay.remove();
+
+        }
+    );
+
+
+    header.appendChild(
+        title
+    );
+
+    header.appendChild(
+        closeButton
+    );
+
+
+    modal.appendChild(
+        header
+    );
+
+
+    // ------------------------------------------
+    // Vehicle information
+    // ------------------------------------------
+
+    const vehicleInfo =
+        document.createElement("div");
+
+    vehicleInfo.classList.add(
+        "summary-vehicle"
+    );
+
+
+    vehicleInfo.innerHTML = `
+        <div>
+            <span class="material-symbols-outlined">
+                local_shipping
+            </span>
+        </div>
+
+        <div>
+            <strong>${escapeHtml(
+                inspectionResult.vehicle
+            )}</strong>
+
+            <p>${escapeHtml(
+                inspectionResult.vehicleType
+            )}</p>
+        </div>
+    `;
+
+
+    modal.appendChild(
+        vehicleInfo
+    );
+
+
+    // ------------------------------------------
+    // Answers
+    // ------------------------------------------
+
+    const answersContainer =
+        document.createElement("div");
+
+    answersContainer.classList.add(
+        "summary-answers"
+    );
+
+
+    inspectionResult.answers.forEach(
+        (item, index) => {
+
+            const answerCard =
+                document.createElement("div");
+
+            answerCard.classList.add(
+                "summary-answer"
+            );
+
+
+            const questionNumber =
+                document.createElement("span");
+
+            questionNumber.classList.add(
+                "summary-question-number"
+            );
+
+            questionNumber.textContent =
+                index + 1;
+
+
+            const content =
+                document.createElement("div");
+
+            content.classList.add(
+                "summary-answer-content"
+            );
+
+
+            const question =
+                document.createElement("p");
+
+            question.classList.add(
+                "summary-question"
+            );
+
+            question.textContent =
+                item.question;
+
+
+            const answer =
+                document.createElement("p");
+
+            answer.classList.add(
+                "summary-value"
+            );
+
+            answer.innerHTML =
+                formatSummaryAnswer(
+                    item.answer
+                );
+
+            const photoImage =
+            answer.querySelector(
+                ".summary-photo-image"
+            );
+
+
+            if (photoImage) {
+
+            photoImage.addEventListener(
+                "click",
+            () => {
+
+            showImagePreview(
+                photoImage.src
+            );
+
+        }
+    );
+
+}
+
+
+            content.appendChild(
+                question
+            );
+
+            content.appendChild(
+                answer
+            );
+
+
+            answerCard.appendChild(
+                questionNumber
+            );
+
+            answerCard.appendChild(
+                content
+            );
+
+
+            answersContainer.appendChild(
+                answerCard
+            );
+
+        }
+    );
+
+
+    modal.appendChild(
+        answersContainer
+    );
+
+
+    // ------------------------------------------
+    // Confirmation
+    // ------------------------------------------
+
+    const confirmation =
+        document.createElement("label");
+
+    confirmation.classList.add(
+        "summary-confirmation"
+    );
+
+
+    const checkbox =
+        document.createElement("input");
+
+    checkbox.type =
+        "checkbox";
+
+
+    const confirmationText =
+        document.createElement("span");
+
+    confirmationText.textContent =
+        "Olen lukenut ja vahvistan, että vastaukseni ovat oikein.";
+
+
+    confirmation.appendChild(
+        checkbox
+    );
+
+    confirmation.appendChild(
+        confirmationText
+    );
+
+
+    modal.appendChild(
+        confirmation
+    );
+
+
+    // ------------------------------------------
+    // Final button
+    // ------------------------------------------
+
+    const submitButton =
+        document.createElement("button");
+
+    submitButton.type =
+        "button";
+
+    submitButton.classList.add(
+        "summary-submit"
+    );
+
+    submitButton.textContent =
+        "Vahvista tarkastus";
+
+
+    submitButton.disabled =
+        true;
+
+
+    // Enable only after checkbox
+
+    checkbox.addEventListener(
+        "change",
+        () => {
+
+            submitButton.disabled =
+                !checkbox.checked;
+
+        }
+    );
+
+
+    submitButton.addEventListener(
+        "click",
+        () => {
+
+            if (!checkbox.checked) {
+                return;
+            }
+
+
+            submitInspection(
+                inspectionResult
+            );
+
+        }
+    );
+
+
+    modal.appendChild(
+        submitButton
+    );
+
+
+    // ------------------------------------------
+    // Add to page
+    // ------------------------------------------
+
+    overlay.appendChild(
+        modal
+    );
+
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+        launchFireworks();
+    }, 250);
+}
+
+//===================================================
+// IMAGE REVIEW WHEN CLICK IN PHOTO
+//===================================================
+function showImagePreview(
+    imageUrl
+) {
+
+    const overlay =
+        document.createElement("div");
+
+    overlay.classList.add(
+        "image-preview-overlay"
+    );
+
+
+    const image =
+        document.createElement("img");
+
+    image.src =
+        imageUrl;
+
+    image.classList.add(
+        "image-preview"
+    );
+
+
+    overlay.appendChild(
+        image
+    );
+
+
+    overlay.addEventListener(
+        "click",
+        () => {
+
+            overlay.remove();
+
+        }
+    );
+
+
+    document.body.appendChild(
+        overlay
+    );
+}
+
+//===================================================
+// SUMMARY ANSWER FORMAT
+//===================================================
+function formatSummaryAnswer(answer) {
+
+    if (!answer) {
+
+        return `
+            <span class="summary-empty">
+                Ei vastausta
+            </span>
+        `;
+    }
+
+
+    // ==========================================
+    // PHOTO
+    // ==========================================
+
+    if (answer.photo) {
+
+        const photoName =
+            answer.photo.name ||
+            "Kuva";
+
+
+        // Create temporary URL for File
+        const imageUrl =
+            URL.createObjectURL(
+                answer.photo
+            );
+
+
+        let html = `
+            <div class="summary-photo-container">
+
+                <img
+                    src="${imageUrl}"
+                    class="summary-photo-image"
+                    alt="Tarkastuskuva"
+                >
+
+                <span class="summary-photo-name">
+                    ${escapeHtml(photoName)}
+                </span>
+
+            </div>
+        `;
+
+
+        // If question also has a normal value
+        if (
+            answer.value !== undefined &&
+            answer.value !== null &&
+            answer.value !== ""
+        ) {
+
+            html =
+                `<div class="summary-answer-value">
+                    ${escapeHtml(
+                        String(answer.value)
+                    )}
+                </div>` +
+                html;
+        }
+
+
+        return html;
+    }
+
+
+    // ==========================================
+    // NORMAL VALUE
+    // ==========================================
+
+    if (
+        answer.value !== undefined &&
+        answer.value !== null
+    ) {
+
+        return escapeHtml(
+            String(answer.value)
+        );
+    }
+
+
+    return `
+        <span class="summary-empty">
+            Ei vastausta
+        </span>
+    `;
+}
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+//===================================================
+// SUBMIT
+//===================================================
+function submitInspection(
+    inspectionResult
+) {
 
     console.log(
+        "Submitting inspection:",
         inspectionResult
     );
 
 
     alert(
-        "Tarkastus on valmis!"
+        "Tarkastus on vahvistettu!"
     );
 
-
-    /*
-        Later:
-
-        Send inspectionResult
-        to database.
-    */
 }
 
 
-// ========================================
+// ==================================================
 // BACK BUTTON
-// ========================================
+// ==================================================
 
 function setupBackButton() {
 
     const backButton =
-        document.querySelector(
-            ".back-button"
-        );
+        document.querySelector(".back-button");
 
 
     if (!backButton) {
@@ -1271,16 +2154,36 @@ function setupBackButton() {
         "click",
         () => {
 
-            window.history.back();
+            const params =
+                new URLSearchParams(
+                    window.location.search
+                );
+
+            const vehicleId =
+                params.get("id");
+
+
+            if (!vehicleId) {
+
+                console.error(
+                    "Vehicle ID puuttuu."
+                );
+
+                return;
+            }
+
+
+            window.location.href =
+                `inspection-step.html?id=${vehicleId}`;
 
         }
     );
 }
 
 
-// ========================================
+// ==================================================
 // ERROR
-// ========================================
+// ==================================================
 
 function showError(message) {
 
@@ -1290,17 +2193,20 @@ function showError(message) {
         );
 
 
+    if (!container) {
+        return;
+    }
+
+
     container.innerHTML = "";
 
 
     const error =
         document.createElement("div");
 
-
     error.classList.add(
         "inspection-error"
     );
-
 
     error.textContent =
         `Virhe: ${message}`;
@@ -1309,4 +2215,81 @@ function showError(message) {
     container.appendChild(
         error
     );
+}
+
+//==========================================
+// CONFETTI
+//==========================================
+function launchFireworks() {
+    const container = document.createElement("div");
+    container.classList.add("fireworks-container");
+
+    const bursts = 3;
+
+    for (let b = 0; b < bursts; b++) {
+        setTimeout(() => {
+            createFireworkBurst(container);
+        }, b * 450);
+    }
+
+    document.body.appendChild(container);
+
+    setTimeout(() => {
+        container.remove();
+    }, 3500);
+}
+
+
+function createFireworkBurst(container) {
+
+    const burst = document.createElement("div");
+    burst.classList.add("firework-burst");
+
+    
+    const centerX = 50 + (Math.random() * 10 - 5);
+    const centerY = 50 + (Math.random() * 10 - 5);
+
+    burst.style.left = `${centerX}%`;
+    burst.style.top = `${centerY}%`;
+
+    
+    const particleCount = 70;
+
+    for (let i = 0; i < particleCount; i++) {
+
+        const particle = document.createElement("span");
+        particle.classList.add("firework-particle");
+
+        const angle = (360 / particleCount) * i;
+
+        
+        const distance = 180 + Math.random() * 280;
+
+        particle.style.setProperty(
+            "--angle",
+            `${angle}deg`
+        );
+
+        particle.style.setProperty(
+            "--distance",
+            `${distance}px`
+        );
+
+       
+        const size = 7 + Math.random() * 7;
+
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+
+        particle.style.animationDelay =
+            `${Math.random() * 0.08}s`;
+
+        burst.appendChild(particle);
+    }
+
+    container.appendChild(burst);
+
+    setTimeout(() => {
+        burst.remove();
+    }, 2200);
 }
