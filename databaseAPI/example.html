@@ -1,12 +1,126 @@
-<div id="demo"></div>
-<button onclick="nah()">try</button>
+<div id="demo1"></div>
+<button onclick="getAllVehicles()">get all vehicles</button><br />
+<div id="demo2"></div>
+<button onclick="getVehicleDetails(1)">get vehicle details</button><br />
+<br />
+<div id="demo3"></div>
+<button onclick="getAllChecklistItems()">get all checklist items</button><br />
+<div id="demo4"></div>
+<button onclick="getChecklistItemDetails(2)">get checklist item details</button><br />
+<div id="demo6"></div>
+<input id="createChecklistName" placeholder="checklist item name" />
+<input id="createChecklistDescription" placeholder="checklist item description" />
+<button
+    onclick="
+        createChecklistItem(
+            document.getElementById('createChecklistName').value,
+            document.getElementById('createChecklistDescription').value,
+        )
+    "
+>
+    create checklist item</button
+><br />
+<div id="demo7"></div>
+<input id="rewriteChecklistId" placeholder="checklist item id" />
+<input id="rewriteChecklistName" placeholder="checklist item name" />
+<input id="rewriteChecklistDescription" placeholder="checklist item description" />
+<button
+    onclick="
+        rewriteChecklistItem(
+            document.getElementById('rewriteChecklistId').value,
+            document.getElementById('rewriteChecklistName').value,
+            document.getElementById('rewriteChecklistDescription').value,
+        )
+    "
+>
+    rewrite checklist item</button
+><br /><br />
+<br />
+<div id="demo5"></div>
+<button onclick="getVehicleChecklist(2)">get vehicle checklist</button><br />
+<!--
+
+<div id="demo7"></div>
+<button onclick="getAllChecklistItems()">get all checklist items</button><br />
+<div id="demo8"></div>
+<button onclick="getChecklistItemDetails(2)">get checklist item details</button><br />
+-->
 <script>
-let data = {vehicle: 2};
-function nah() {
-  const xhr = new XMLHttpRequest();
-  xhr.open("POST", "../databaseAPI/getVehicleChecklist.php", true);
-  xhr.setRequestHeader("Content-Type", "application/json");
-  xhr.onload = () => document.getElementById("demo").innerHTML = (xhr.responseText);
-  xhr.send(JSON.stringify(data));
-}
+    //let data = {vehicle: 2};
+    function getAllVehicles() {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "../databaseAPI/vehicles.php", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            document.getElementById("demo1").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send();
+    }
+
+    function getVehicleDetails(vehicleId) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "../databaseAPI/vehicles.php?id_vehicle=" + vehicleId, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            document.getElementById("demo2").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send();
+    }
+
+    function getAllChecklistItems() {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "../databaseAPI/checklists.php", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            document.getElementById("demo3").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send();
+    }
+
+    function getChecklistItemDetails(checklistId) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "../databaseAPI/checklists.php?id_checklist=" + checklistId, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            document.getElementById("demo4").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send();
+    }
+
+    function getVehicleChecklist(vehicleId) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "../databaseAPI/vehicleChecklists.php?id_vehicle=" + vehicleId, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            document.getElementById("demo5").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send();
+    }
+
+    function createChecklistItem(name, description) {
+        let data = {};
+        data.name = name;
+        data.description = description;
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "../databaseAPI/checklists.php", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            document.getElementById("demo6").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send(JSON.stringify(data));
+    }
+
+    function rewriteChecklistItem(checklistId, name, description) {
+        let data = {};
+        data.id_checklist = checklistId;
+        data.name = name;
+        data.description = description;
+        const xhr = new XMLHttpRequest();
+        xhr.open("PUT", "../databaseAPI/checklists.php", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            document.getElementById("demo6").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send(JSON.stringify(data));
+    }
 </script>
