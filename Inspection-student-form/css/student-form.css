@@ -313,7 +313,6 @@ body {
     color: hsl(233, 71%, 45%);
 }
 
-/* Nội dung bên phải icon */
 .in-use-content {
     display: flex;
     flex-direction: column;

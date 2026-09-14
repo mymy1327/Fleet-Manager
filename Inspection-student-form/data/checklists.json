@@ -19,7 +19,7 @@
                     "required": true,
                     "options": [
                         "Hyvä",
-                        "Lisää öljyä",
+                        "Huono",
                         "En tiedä"
                     ],
                     "photo": {
