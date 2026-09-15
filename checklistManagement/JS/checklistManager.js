@@ -51,13 +51,13 @@ async function main() {
       xhr.setRequestHeader("Content-Type", "application/json");
       xhr.onload = () => {
         //Handle request data
-        if (xhr.status == 200 || xhr.status == 201) {
+        if (xhr.status == 200 || xhr.status == 201 || xhr.status == 204) {
           window.location.reload();
         } else {
-          alert("Failed to delete: " + xhr.responceText);
+          alert("Failed to delete: " + xhr.status + ": " + xhr.responceText);
         }
       };
-      xhr.send(JSON.stringify({checklist: checklistItem.id_checklists}))
+      xhr.send(JSON.stringify({id_checklists: checklistItem.id_checklists}))
     })
     deleteButton.innerText = "Delete"
     deleteButton.classList.add("button")
