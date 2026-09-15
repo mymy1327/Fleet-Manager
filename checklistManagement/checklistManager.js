@@ -7,7 +7,7 @@ async function main() {
   }
 
   //Parse library
-  const library = JSON.parse(libraryResponce)
+  const library = JSON.parse(await libraryResponce.text())
   const checklistLibrary = document.getElementById("checklistLibrary")
   for (const checklistItem of library) {
     //Create row for each item
@@ -15,8 +15,47 @@ async function main() {
     checklistLibrary.appendChild(row)
 
     //Add name cell
-    
+    const name = document.createElement("td")
+    name.innerText = checklistItem.name;
+    row.appendChild(name)
+
+    //Add description cell
+    const description = document.createElement("td")
+    description.innerText = checklistItem.description;
+    row.appendChild(description)
+
+    //Add actions cell
+    const actions = document.createElement("td");
+    row.appendChild(actions)
+
+    //Edit button
+    const editButton = document.createElement("button")
+    editButton.addEventListener("click", () => {
+      window.location.href = "./checklistItem.html?id=" + checklistLibrary.id
+    })
+    editButton.innerText = "Edit";
+    actions.appendChild(editButton);
+
+    //Delete button
+    const deleteButton = document.createElement("button")
+    deleteButton.addEventListener("click", async () => {
+      const xhr = new XMLHttpRequest()
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.onload = (event) => {
+        //Handle request data
+        if (this.readyState == 4) {
+          if (this.status == 200) {
+            window.location.reload();
+          } else {
+            alert("Failed to delete: " + event.responceText);
+          }
+        }
+      }
+      xhr.open("DELETE", "./api.php")
+      xhr.send(JSON.stringify({id: checklistLibrary.id_checklists}))
+    })
+    deleteButton.innerText = "Delete"
+    actions.appendChild(deleteButton)
   }
 }
-
 main()

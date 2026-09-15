@@ -1,1 +1,1 @@
-{{"name": "x", "description": "y"}}
+[{"name": "x", "description": "y"}]
