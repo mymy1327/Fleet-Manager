@@ -1,6 +1,6 @@
 async function main() {
   //Load library from API
-  const libraryResponce = await fetch("./api.php")
+  const libraryResponce = await fetch("../databaseAPI/checklists.php")
   if (!libraryResponce.ok) {
     alert("Failed to load checklist library!")
     return
@@ -31,7 +31,7 @@ async function main() {
     //Edit button
     const editButton = document.createElement("button")
     editButton.addEventListener("click", () => {
-      window.location.href = "./checklistItem.html?id=" + checklistLibrary.id
+      window.location.href = "./checklistItem.php?checklist=" + checklistItem.id_checklists
     })
     editButton.innerText = "Edit";
     actions.appendChild(editButton);
@@ -52,7 +52,7 @@ async function main() {
         }
       }
       xhr.open("DELETE", "./api.php")
-      xhr.send(JSON.stringify({id: checklistLibrary.id_checklists}))
+      xhr.send(JSON.stringify({checklist: checklistItem.id_checklists}))
     })
     deleteButton.innerText = "Delete"
     actions.appendChild(deleteButton)

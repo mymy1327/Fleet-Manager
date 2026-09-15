@@ -13,4 +13,5 @@
     <input type="textarea" id="description" maxlength=512 name="description"><br>
     <button id="btnSubmit">Submit</button>
 </body>
+<script src="./checklistItem.js"></script>
 </html>

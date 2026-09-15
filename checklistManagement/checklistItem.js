@@ -1,12 +1,12 @@
 const params = new URLSearchParams(window.location.search);
 async function main() {
   //Check if need to load
-  if (!params.has("id")) {
+  if (!params.has("checklist")) {
     return
   }
 
   //Load item from API
-  const itemResponce = await fetch("./api.php?action=getChecklistItem&id=" = encodeURIComponent(params.get("id")))
+  const itemResponce = await fetch("../databaseAPI/checklists.php?checklist=" + encodeURIComponent(params.get("checklist")))
   if (!itemResponce.ok) {
     alert("Failed to load checklist item!")
     return
@@ -14,6 +14,7 @@ async function main() {
 
   //Parse item
   const item = JSON.parse(await itemResponce.text())
+  console.log(item)
   document.getElementById("name").value = item.name;
   document.getElementById("description").value = item.description;
 }
@@ -28,8 +29,8 @@ document.getElementById("btnSubmit").addEventListener("click", () => {
   const data = {};
   data.name = document.getElementById("name").value;
   data.description = document.getElementById("description").value;
-  if (params.has("id")) {
-    data.id = params.get("id")
+  if (params.has("checklist")) {
+    data.checklist = params.get("checklist")
   }
 
   //Send request
@@ -46,7 +47,7 @@ document.getElementById("btnSubmit").addEventListener("click", () => {
       }
     }
   }
-  xhr.open(params.has("id") ? "PATCH" : "POST", "./api.php",true)
+  xhr.open(params.has("checklist") ? "PATCH" : "POST", "./api.php",true)
   xhr.send(JSON.stringify(data))
 })
 
