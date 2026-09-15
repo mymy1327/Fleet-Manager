@@ -2,14 +2,14 @@
 :root {
     --blue: #2868cb;
     --blue-dark: #1554b5;
-    --ink: #162033;
-    --muted: #718097;
+    --text: #162033;
     --line: #dfe5ed;
     --surface: #fff;
     --background: #f7f9fb;
     --green: #0ba979;
     --orange: #f2a51b;
     --red: #ec6670;
+    --lessImportantText: #718097;
 }
 
 /* Base styles */
@@ -19,7 +19,7 @@
 
 body {
     margin: 0;
-    color: var(--ink);
+    color: var(--text);
     background: var(--background);
     font: 13px/1.4 Arial, Helvetica, sans-serif;
 }
@@ -162,7 +162,7 @@ h1 {
 
 .subtitle {
     margin: 0;
-    color: var(--muted);
+    color: var(--lessImportantText);
     font-size: 11px;
 }
 
@@ -242,7 +242,7 @@ h1 {
     position: absolute;
     top: 15px;
     left: 15px;
-    color: var(--muted);
+    color: var(--lessImportantText);
     font-size: 10px;
 }
 
@@ -285,7 +285,7 @@ h1 {
     display: grid;
     place-items: center;
     min-height: 76px;
-    color: var(--muted);
+    color: var(--lessImportantText);
     font-size: 10px;
     text-align: center;
 }
@@ -313,7 +313,7 @@ h1 {
     width: 100%;
     border-collapse: collapse;
     margin-top: 11px;
-    color: var(--muted);
+    color: var(--lessImportantText);
     font-size: 9px;
 }
 
@@ -337,7 +337,7 @@ h1 {
     display: flex;
     align-items: center;
     gap: 7px;
-    color: var(--muted);
+    color: var(--lessImportantText);
     font-size: 10px;
 }
 
