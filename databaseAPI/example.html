@@ -34,10 +34,30 @@
     "
 >
     rewrite checklist item</button
-><br /><br />
+><br />
+<div id="demo8"></div>
+<input id="rewriteCellChecklistId" placeholder="checklist item id" />
+<input id="rewriteCellChecklistColumn" placeholder="checklist item column name (name, description)" style="width: 300px"/>
+<input id="rewriteCellChecklistName" placeholder="checklist item name" />
+<input id="rewriteCellChecklistDescription" placeholder="checklist item description" />
+<button
+    onclick="
+        rewriteChecklistItemCell(
+            document.getElementById('rewriteCellChecklistId').value,
+            document.getElementById('rewriteCellChecklistColumn').value,
+            document.getElementById('rewriteCellChecklistName').value,
+            document.getElementById('rewriteCellChecklistDescription').value,
+        )
+    "
+>
+    rewrite checklist item cell</button
+><br />
+<div id="demo9"></div>
+<input id="deleteChecklistItemId" placeholder="checklist id"/>
+<button onclick="deleteChecklistItem(document.getElementById('deleteChecklistItemId').value)">delete checklist item</button><br />
 <br />
 <div id="demo5"></div>
-<button onclick="getVehicleChecklist(2)">get vehicle checklist</button><br />
+<button onclick="getVehicleChecklist(1)">get vehicle checklist</button><br />
 <!--
 
 <div id="demo7"></div>
@@ -59,7 +79,7 @@
 
     function getVehicleDetails(vehicleId) {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", "../databaseAPI/vehicles.php?id_vehicle=" + vehicleId, true);
+        xhr.open("GET", "../databaseAPI/vehicles.php?id_vehicles=" + vehicleId, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             document.getElementById("demo2").innerHTML = xhr.status + "<br>" + xhr.responseText;
@@ -79,7 +99,7 @@
 
     function getChecklistItemDetails(checklistId) {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", "../databaseAPI/checklists.php?id_checklist=" + checklistId, true);
+        xhr.open("GET", "../databaseAPI/checklists.php?id_checklists=" + checklistId, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             document.getElementById("demo4").innerHTML = xhr.status + "<br>" + xhr.responseText;
@@ -89,7 +109,7 @@
 
     function getVehicleChecklist(vehicleId) {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", "../databaseAPI/vehicleChecklists.php?id_vehicle=" + vehicleId, true);
+        xhr.open("GET", "../databaseAPI/vehicleChecklists.php?id_vehicles=" + vehicleId, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             document.getElementById("demo5").innerHTML = xhr.status + "<br>" + xhr.responseText;
@@ -112,15 +132,43 @@
 
     function rewriteChecklistItem(checklistId, name, description) {
         let data = {};
-        data.id_checklist = checklistId;
+        data.id_checklists = checklistId;
         data.name = name;
         data.description = description;
         const xhr = new XMLHttpRequest();
         xhr.open("PUT", "../databaseAPI/checklists.php", true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
-            document.getElementById("demo6").innerHTML = xhr.status + "<br>" + xhr.responseText;
+            document.getElementById("demo7").innerHTML = xhr.status + "<br>" + xhr.responseText;
         };
         xhr.send(JSON.stringify(data));
     }
+
+    function rewriteChecklistItemCell(checklistId, column, name, description) {
+        let data = {};
+        data.column = column;
+        data.id_checklists = checklistId;
+        data.name = name;
+        data.description = description;
+        const xhr = new XMLHttpRequest();
+        xhr.open("PATCH", "../databaseAPI/checklists.php", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            document.getElementById("demo8").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send(JSON.stringify(data));
+    }
+
+    function deleteChecklistItem(checklistId) {
+        let data = {};
+        data.id_checklists = checklistId;
+        const xhr = new XMLHttpRequest();
+        xhr.open("DELETE", "../databaseAPI/checklists.php", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            document.getElementById("demo9").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send(JSON.stringify(data));
+    }
+    
 </script>
