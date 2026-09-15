@@ -6,7 +6,7 @@ async function main() {
   }
 
   //Load item from API
-  const itemResponce = await fetch("../databaseAPI/checklists.php?checklist=" + encodeURIComponent(params.get("checklist")))
+  const itemResponce = await fetch("../../databaseAPI/checklists.php?id_checklist=" + encodeURIComponent(params.get("checklist")))
   if (!itemResponce.ok) {
     alert("Failed to load checklist item!")
     return
@@ -14,7 +14,6 @@ async function main() {
 
   //Parse item
   const item = JSON.parse(await itemResponce.text())
-  console.log(item)
   document.getElementById("name").value = item.name;
   document.getElementById("description").value = item.description;
 }
@@ -30,24 +29,21 @@ document.getElementById("btnSubmit").addEventListener("click", () => {
   data.name = document.getElementById("name").value;
   data.description = document.getElementById("description").value;
   if (params.has("checklist")) {
-    data.checklist = params.get("checklist")
+    data.id_checklists = params.get("checklist")
   }
 
   //Send request
-  const xhr = new XMLHttpRequest()
+  const xhr = new XMLHttpRequest();
+  xhr.open((params.has("checklist") ? "PATCH" : "POST"), "../../databaseAPI/checklists.php", true); //add path to requested file
   xhr.setRequestHeader("Content-Type", "application/json");
-  xhr.onload = (event) => {
+  xhr.onload = () => {
     //Handle request data
-    if (this.readyState == 4) {
-      if (this.status == 200) {
-        alert("Data saved!");
-        window.location.href = "./checklistManager.html";
-      } else {
-        alert("Failed to save data: " + event.responceText);
-      }
+    if (xhr.status == 200 || xhr.status == 201) {
+      window.location.href = "./checklistManager.html";
+    } else {
+      alert("Failed to save data: " + xhr.responceText);
     }
-  }
-  xhr.open(params.has("checklist") ? "PATCH" : "POST", "./api.php",true)
+  };
   xhr.send(JSON.stringify(data))
 })
 

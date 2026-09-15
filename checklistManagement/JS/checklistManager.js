@@ -1,6 +1,6 @@
 async function main() {
   //Load library from API
-  const libraryResponce = await fetch("../databaseAPI/checklists.php")
+  const libraryResponce = await fetch("../../databaseAPI/checklists.php")
   if (!libraryResponce.ok) {
     alert("Failed to load checklist library!")
     return
@@ -31,30 +31,36 @@ async function main() {
     //Edit button
     const editButton = document.createElement("button")
     editButton.addEventListener("click", () => {
-      window.location.href = "./checklistItem.php?checklist=" + checklistItem.id_checklists
+      window.location.href = "../PHP/checklistItem.php?checklist=" + checklistItem.id_checklists
     })
     editButton.innerText = "Edit";
+    editButton.classList.add("button")
     actions.appendChild(editButton);
 
     //Delete button
+      console.log(checklistItem)
     const deleteButton = document.createElement("button")
     deleteButton.addEventListener("click", async () => {
-      const xhr = new XMLHttpRequest()
-      xhr.setRequestHeader("Content-Type", "application/json");
-      xhr.onload = (event) => {
-        //Handle request data
-        if (this.readyState == 4) {
-          if (this.status == 200) {
-            window.location.reload();
-          } else {
-            alert("Failed to delete: " + event.responceText);
-          }
-        }
+      if (!confirm("Are you sure you want to delete this checklist item?")) {
+        return
       }
-      xhr.open("DELETE", "./api.php")
+
+      //Send request
+      const xhr = new XMLHttpRequest();
+      xhr.open("DELETE", "../../databaseAPI/checklists.php", true); //add path to requested file
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.onload = () => {
+        //Handle request data
+        if (xhr.status == 200 || xhr.status == 201) {
+          window.location.reload();
+        } else {
+          alert("Failed to delete: " + xhr.responceText);
+        }
+      };
       xhr.send(JSON.stringify({checklist: checklistItem.id_checklists}))
     })
     deleteButton.innerText = "Delete"
+    deleteButton.classList.add("button")
     actions.appendChild(deleteButton)
   }
 }
