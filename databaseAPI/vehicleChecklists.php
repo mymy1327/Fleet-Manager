@@ -1,13 +1,4 @@
 <?php
-/**
- * GET - returns all checklist items for vehicles
- * @param int $_GET["vehicle"] vehicle id
- * @return json list of checklist items
- *
- *
- * @var mysqli $conn
- */
-
 session_start();
 require "../assets/config.php";
 
