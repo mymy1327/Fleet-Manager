@@ -220,30 +220,31 @@ async function loadInspections(vehicleId) {
 async function renderOpenFaults(vehicleId) {
     console.log("Loading Faults for vehicle", vehicleId);
 
-    try {
+    const xhr = new XMLHttpRequest();
 
-        const url =
-            `./API/vehicleProblems.php?vehicle=${vehicleId}`;
+    xhr.open(
+        "GET",
+        "/api/vehicleProblems.php?vehicle=" + encodeURIComponent(vehicleId),
+        true
+    );
 
-        console.log("Fault API URL:", url);
+    xhr.setRequestHeader("Content-Type", "application/json");
 
-        const response = await fetch(url);
+    xhr.onload = () => {
 
-console.log("HTTP status:", response.status);
-console.log("HTTP OK:", response.ok);
+        console.log("Fault API status:", xhr.status);
+        console.log("Fault API response:", xhr.responseText);
 
-const text = await response.text();
+        if (xhr.status >= 200 && xhr.status < 300) {
 
-console.log("RAW API RESPONSE:");
-console.log(text);
+            try {
+        const data = JSON.prase(xhr.responseText);
 
-const data = JSON.parse(text);
-
-console.log("Parsed data:", data);
+        console.log("Parsed data:", data);
 
         console.log("All Faults:", data);
 
-        faults = Array.isArray(data) ? data : [];
+        faults = Array.isArray(data) ? data : data.faults || data.data || [];
 
         const openFaults = faults.filter(
             fault => fault.state === "open"
