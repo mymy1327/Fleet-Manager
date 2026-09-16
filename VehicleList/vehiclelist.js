@@ -24,11 +24,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 // set id
                 newDiv.id = newId;
                 
-                //set the placeholder image
-                let picture = document.createElement("div")
-                picture.textContent = "heloeheohloerlherholershol"
-                picture.classList.add("panel")
+                //set the imagebox
+                let picturebox = document.createElement("div")
+                picturebox.textContent = "heloeheohloerlherholershol"
+                picturebox.classList.add("panel")
                 
+
+                //set the image
+                let picture = document.createElement("img")
+                picturebox.src = \api/files/${x}\;
                 //set the div for everything else
                 let containing = document.createElement("div")
                 containing.classList.add("panel")
