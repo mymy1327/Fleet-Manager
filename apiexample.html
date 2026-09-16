@@ -83,6 +83,10 @@
 >
     create new user</button
 ><br />
+<br />
+<div id="demo11"></div>
+<input id="filterInspections" placeholder="filter by vehicle id" />
+<button onclick="getAllInspections(document.getElementById('filterInspections').value)">get all inspections</button><br />
 <!--
 
 <div id="demo7"></div>
@@ -98,6 +102,16 @@
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             document.getElementById("demo1").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send();
+    }
+
+    function getAllInspections(vehicleId = null) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "/api/inspections?id_vehicles=" + vehicleId, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            document.getElementById("demo11").innerHTML = xhr.status + "<br>" + xhr.responseText;
         };
         xhr.send();
     }
