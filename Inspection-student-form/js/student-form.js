@@ -22,7 +22,7 @@ async function loadVehicle() {
     try {
 
         const response = await fetch(
-            `../databaseAPI/vehicles.php`
+            `../Vehiclelist/vehicles.php`
         );
 
         if (!response.ok) {
@@ -223,19 +223,23 @@ async function renderOpenFaults(vehicleId) {
     try {
 
         const url =
-            `../databaseAPI/vehicleProblems.php?vehicle=${vehicleId}`;
+            `./API/vehicleProblems.php?vehicle=${vehicleId}`;
 
         console.log("Fault API URL:", url);
 
         const response = await fetch(url);
 
-        if (!response.ok) {
-            throw new Error(
-                `HTTP error: ${response.status}`
-            );
-        }
+console.log("HTTP status:", response.status);
+console.log("HTTP OK:", response.ok);
 
-        const data = await response.json();
+const text = await response.text();
+
+console.log("RAW API RESPONSE:");
+console.log(text);
+
+const data = JSON.parse(text);
+
+console.log("Parsed data:", data);
 
         console.log("All Faults:", data);
 

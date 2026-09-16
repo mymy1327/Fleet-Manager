@@ -12,7 +12,7 @@
  */
 
 session_start();
-require "../assets/config.php";
+require "../../assets/config.php";
 
 switch($_SERVER["REQUEST_METHOD"]) {
     case "GET";
@@ -36,7 +36,7 @@ switch($_SERVER["REQUEST_METHOD"]) {
                 ON i.id_inspections = p.id_inspections
             LEFT JOIN `checklists` c
                 ON p.id_checklists = c.id_checklists
-            WHERE i.vehicle = ?
+            WHERE i.id_vehicles = ?
             ORDER BY p.id_problems DESC"
         );
 

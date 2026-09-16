@@ -1,32 +1,28 @@
+// Global inspection data
 let vehicle = null;
-
 let checklists = [];
 let allQuestions = [];
-
 let currentQuestionIndex = 0;
-
-// Store answers for every question
 let answers = [];
 
-
+// Initialize the inspection page
 document.addEventListener("DOMContentLoaded", () => {
     initInspection();
 });
-// INIT
 
+// Initialize inspection data and UI
 async function initInspection() {
-    const params = new URLSearchParams(window.location.search);
-    const vehicleId = params.get("id");
-
-    if (!vehicleId) {
-        console.error("Vehicle ID puuttuu.");
-        return;
-    }
-
     try {
-        // GET VEHICLE INFO
+        const params = new URLSearchParams(window.location.search);
+        const vehicleId = params.get("id");
+
+        if (!vehicleId) {
+            throw new Error("Vehicle ID is missing from URL.");
+        }
+
+        // Load vehicle information
         const vehicleResponse = await fetch(
-            `databaseAPI/vehicles.php?vehicle=${vehicleId}`
+            `../../VehicleList/vehicles.php?vehicle=${vehicleId}`
         );
 
         if (!vehicleResponse.ok) {
@@ -35,14 +31,23 @@ async function initInspection() {
             );
         }
 
-        vehicle = await vehicleResponse.json();
+        const vehicleData = await vehicleResponse.json();
+        // Support both object and array responses
+        if (Array.isArray(vehicleData)) {
+            vehicle = vehicleData[0];
+        } else {
+            vehicle = vehicleData;
+        }
 
-        console.log("Vehicle from database:", vehicle);
+        if (!vehicle) {
+            throw new Error("Vehicle data was not found.");
+        }
 
+        console.log("Vehicle:", vehicle);
 
-        // GET CHECKLIST OF VEHICLE
+        // Load checklists assigned to this vehicle
         const checklistResponse = await fetch(
-            `databaseAPI/vehicleChecklists.php?vehicle=${vehicleId}`
+            `../../VehicleList/vehicleChecklists.php?vehicle=${vehicleId}`
         );
 
         if (!checklistResponse.ok) {
@@ -51,405 +56,387 @@ async function initInspection() {
             );
         }
 
-        const vehicleChecklists = await checklistResponse.json();
+        const checklistData = await checklistResponse.json();
 
-        console.log(
-            "Vehicle checklists from database:",
-            vehicleChecklists
-        );
+        console.log("Vehicle checklists:", checklistData);
 
-        // GET CHECKLIST QUESTIONS
-        checklists = [];
-
-        for (const checklist of vehicleChecklists) {
-
-            const response = await fetch(
-                `databaseAPI/checklists.php?id_checklist=${checklist.id_checklists}`
-            );
-
-            if (!response.ok) {
-                throw new Error(
-                    `Checklist API error: ${response.status}`
-                );
-            }
-
-            const checklistData = await response.json();
-
-            checklists.push(checklistData);
+        if (!Array.isArray(checklistData)) {
+            throw new Error("Checklist API did not return an array.");
         }
 
-        console.log(
-            "Full checklists from database:",
-            checklists
-        );
+        checklists = checklistData;
 
-        // CREATE CHECKLIST
-        allQuestions = [];
-
-        checklists.forEach(checklist => {
-
-            allQuestions.push({
+        // Convert every checklist item into an inspection question
+        allQuestions = checklists.map(checklist => {
+            return {
                 checklistId: checklist.id_checklists,
                 formTitle: checklist.name,
                 version: 1,
-                question: {
-                    id: checklist.id_checklists,
-                    title: checklist.name,
-                    type: "choice",
-                    required: true,
-                    options: []
-                }
-            });
+                question: createQuestionFromChecklist(checklist)
+            };
         });
 
+        console.log("Generated questions:", allQuestions);
 
-        // CREATE ANSWER OPTIONS
+        if (allQuestions.length === 0) {
+            showErrorMessage(
+                "Ajoneuvolle ei ole määritetty tarkastuskohtia."
+            );
+            return;
+        }
+
+        // Create empty answers
         answers = allQuestions.map(() => null);
 
         currentQuestionIndex = 0;
 
-        // Render UI
+        renderVehicleInformation();
         renderProgress();
         renderQuestion();
         updateNavigationButtons();
-
         setupNavigation();
         setupBackButton();
 
     } catch (error) {
+        console.error("Inspection initialization failed:", error);
 
-        console.error(
-            "Inspection initialization failed:",
-            error
+        showErrorMessage(
+            "Tarkastuksen tietojen lataaminen epäonnistui."
         );
-
-        const container =
-            document.querySelector("#questionContainer");
-
-        if (container) {
-            container.innerHTML = `
-                <div class="error-message">
-                    <span class="material-symbols-outlined">
-                        error
-                    </span>
-
-                    <h2>Virhe</h2>
-
-                    <p>
-                        Tarkastuksen tietoja ei voitu ladata.
-                    </p>
-                </div>
-            `;
-        }
     }
 }
 
+// Create a question automatically from a checklist item
+function createQuestionFromChecklist(checklist) {
+    const name = String(checklist.name || "").toLowerCase();
 
-// RENDER QUESTION
+    // Default question
+    const question = {
+        id: checklist.id_checklists,
+        title: checklist.name,
+        description: checklist.description || "",
+        type: "choice",
+        required: true,
+        options: [
+            "Hyvä",
+            "Ei kunnossa",
+            "En tiedä"
+        ],
+        allowFault: true,
+        photo: null,
+        icon: "check_circle"
+    };
 
-function renderQuestion() {
+    // Engine oil
+    if (
+        name.includes("moottoriöljy") ||
+        name.includes("öljy")
+    ) {
+        question.options = [
+            "Hyvä",
+            "Lisää öljyä",
+            "En tiedä"
+        ];
 
-    const container =
-        document.querySelector(
-            "#questionContainer"
-        );
+        question.photo = {
+            required: true,
+            cameraOnly: true,
+            description: "Ota kuva öljynmittatikusta"
+        };
 
-
-    if (!container) {
-        return;
+        question.icon = "oil_barrel";
     }
 
+    // Coolant
+    else if (
+        name.includes("jäähdytysneste") ||
+        name.includes("coolant")
+    ) {
+        question.options = [
+            "Hyvä",
+            "Liian alhainen",
+            "En tiedä"
+        ];
+
+        question.icon = "water_drop";
+    }
+
+    // Tires
+    else if (
+        name.includes("rengas") ||
+        name.includes("renkaat") ||
+        name.includes("rengastus")
+    ) {
+        question.options = [
+            "Hyvä",
+            "Kulunut",
+            "Liian alhainen paine",
+            "Vaurioitunut",
+            "En tiedä"
+        ];
+
+        question.icon = "tire_repair";
+    }
+
+    // Lights
+    else if (
+        name.includes("valo") ||
+        name.includes("valot")
+    ) {
+        question.options = [
+            "Kaikki valot toimivat",
+            "Jokin valo ei toimi",
+            "En tiedä"
+        ];
+
+        question.icon = "lightbulb";
+    }
+
+    // Brakes
+    else if (
+        name.includes("jarru") ||
+        name.includes("jarrut")
+    ) {
+        question.options = [
+            "Hyvä",
+            "Ei kunnossa",
+            "En tiedä"
+        ];
+
+        question.icon = "car_crash";
+    }
+
+    // Fuel
+    else if (
+        name.includes("polttoaine") ||
+        name.includes("fuel")
+    ) {
+        question.type = "percentage";
+        question.allowFault = true;
+        question.icon = "local_gas_station";
+    }
+
+    // Mileage
+    else if (
+        name.includes("kilometri") ||
+        name.includes("kilometrilukema") ||
+        name.includes("odometer")
+    ) {
+        question.type = "number";
+        question.unit = "km";
+        question.allowFault = false;
+        question.icon = "speed";
+    }
+
+    // Default icon
+    return question;
+}
+
+// Render vehicle information
+function renderVehicleInformation() {
+    const vehicleName = document.querySelector(".vehicle-name");
+    const vehiclePlate = document.querySelector(".vehicle-license");
+    const vehicleKilometers = document.querySelector(".vehicle-kilometer");
+
+    if (vehicleName) {
+        vehicleName.textContent = vehicle.name || "-";
+    }
+
+    if (vehiclePlate) {
+        vehiclePlate.textContent =
+            vehicle.license_plate ||
+            vehicle.plate ||
+            "-";
+    }
+
+    if (vehicleKilometers) {
+        vehicleKilometers.textContent =
+            vehicle.kilometers != null
+                ? `${vehicle.kilometers} km`
+                : "-";
+    }
+}
+
+// Render the current question
+function renderQuestion() {
+    const container =
+        document.getElementById("question-container");
+
+    if (!container) {
+        console.error(
+            "Question container was not found."
+        );
+        return;
+    }
 
     container.innerHTML = "";
 
+    const item = allQuestions[currentQuestionIndex];
 
-    const currentItem =
-        allQuestions[currentQuestionIndex];
-
-
-    if (!currentItem) {
+    if (!item || !item.question) {
+        console.error("Question data is missing.");
         return;
     }
 
-
-    const question =
-        currentItem.question;
-
+    const question = item.question;
+    const currentAnswer = answers[currentQuestionIndex];
 
     // Question header
+    const header = document.createElement("div");
+    header.classList.add("question-header");
 
-
-    const questionHeader =
-        document.createElement("div");
-
-    questionHeader.classList.add(
-        "question-header"
-    );
-
-
-    // Icon
-
-    const icon =
-        document.createElement("span");
-
+    // Question icon
+    const icon = document.createElement("span");
     icon.classList.add(
         "material-symbols-outlined",
         "question-icon"
     );
-
     icon.textContent =
         question.icon || "check_circle";
 
+    header.appendChild(icon);
 
-    // Title
+    // Question title
+    const title = document.createElement("h2");
+    title.textContent = question.title;
 
-    const title =
-        document.createElement("h2");
+    header.appendChild(title);
 
-    title.classList.add(
-        "question-title"
-    );
+    container.appendChild(header);
 
-    title.textContent =
-        question.title;
+    // Description
+    if (question.description) {
+        const description = document.createElement("p");
+        description.classList.add("question-description");
+        description.textContent = question.description;
 
-
-    questionHeader.appendChild(
-        icon
-    );
-
-    questionHeader.appendChild(
-        title
-    );
-
-
-    container.appendChild(
-        questionHeader
-    );
+        container.appendChild(description);
+    }
 
     // Required label
     if (question.required) {
+        const required = document.createElement("span");
+        required.classList.add("required-label");
+        required.textContent = "Pakollinen";
 
-        const required =
-            document.createElement("p");
-
-        required.classList.add(
-            "required-label"
-        );
-
-        required.textContent =
-            "Pakollinen";
-
-        container.appendChild(
-            required
-        );
-
+        container.appendChild(required);
     }
 
-
-    // Question content
-    const content =
-        document.createElement("div");
-
-    content.classList.add(
-        "question-content"
-    );
-
-
+    // Render question type
     switch (question.type) {
-
         case "number":
-
             renderNumberQuestion(
-                content,
-                question
+                container,
+                question,
+                currentAnswer
             );
-
             break;
-
 
         case "choice":
-
             renderChoiceQuestion(
-                content,
-                question
+                container,
+                question,
+                currentAnswer
             );
-
             break;
-
 
         case "photo":
-
             renderPhotoQuestion(
-                content,
-                question
+                container,
+                question,
+                currentAnswer
             );
-
             break;
-
 
         case "percentage":
-
             renderPercentageQuestion(
-                content,
-                question
+                container,
+                question,
+                currentAnswer
             );
-
             break;
-
 
         case "checkbox":
-
             renderCheckboxQuestion(
-                content,
-                question
+                container,
+                question,
+                currentAnswer
             );
-
             break;
-
 
         default:
-
             console.warn(
-                `Unknown question type: ${question.type}`
+                "Unknown question type:",
+                question.type
             );
 
-            content.innerHTML = `
-                <p>Tuntematon kysymystyyppi.</p>
-            `;
-
-            break;
+            renderChoiceQuestion(
+                container,
+                question,
+                currentAnswer
+            );
     }
-
-
-    container.appendChild(
-        content
-    );
-
-
-    // Update progress
-
-    renderProgress();
-
-    updateNavigationButtons();
 }
 
-// NUMBER QUESTION
-
+// Render a number question
 function renderNumberQuestion(
     container,
-    question
+    question,
+    currentAnswer
 ) {
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("number-question");
 
-    const wrapper =
-        document.createElement("div");
-
-    wrapper.classList.add(
-        "number-input-wrapper"
-    );
-
-
-    const input =
-        document.createElement("input");
+    const input = document.createElement("input");
 
     input.type = "number";
+    input.inputMode = "numeric";
+    input.classList.add("question-number-input");
 
-    input.classList.add(
-        "question-number-input"
-    );
-
-    input.placeholder =
-        "Syötä kilometrilukema";
-
-
-    // Restore answer
-
-    const previousAnswer =
-        answers[currentQuestionIndex];
-
-
-    if (
-        previousAnswer &&
-        previousAnswer.value !== undefined
-    ) {
-
-        input.value =
-            previousAnswer.value;
-
-    }
-
-
-    // Unit
+    input.value = currentAnswer?.value ?? "";
 
     if (question.unit) {
-
-        const unit =
-            document.createElement("span");
-
-        unit.classList.add(
-            "question-unit"
-        );
-
-        unit.textContent =
-            question.unit;
-
-
-        wrapper.appendChild(
-            input
-        );
-
-        wrapper.appendChild(
-            unit
-        );
-
-    } else {
-
-        wrapper.appendChild(
-            input
-        );
-
+        input.placeholder = question.unit;
     }
 
+    input.addEventListener("input", () => {
+        saveCurrentAnswer({
+            value: input.value,
+            unit: question.unit || null
+        });
+    });
 
-    // Save answer
+    wrapper.appendChild(input);
 
-    input.addEventListener(
-        "input",
-        () => {
+    if (question.unit) {
+        const unit = document.createElement("span");
+        unit.classList.add("input-unit");
+        unit.textContent = question.unit;
 
-            answers[currentQuestionIndex] = {
+        wrapper.appendChild(unit);
+    }
 
-                value:
-                    input.value
+    container.appendChild(wrapper);
 
-            };
-
-        }
-    );
-
-
-    container.appendChild(
-        wrapper
-    );
+    // Number questions can also report faults
+    if (question.allowFault) {
+        renderFaultSection(
+            container,
+            question
+        );
+    }
 }
 
-// CHOICE QUESTION
-
+// Render choice question
 function renderChoiceQuestion(
     container,
-    question
+    question,
+    currentAnswer
 ) {
-
-    const optionsContainer =
-        document.createElement("div");
-
-    optionsContainer.classList.add(
-        "question-options"
-    );
-
+    const optionsContainer = document.createElement("div");
+    optionsContainer.classList.add("question-options");
 
     if (!Array.isArray(question.options)) {
-
         console.warn(
             "Question has no options:",
             question
@@ -458,1506 +445,1271 @@ function renderChoiceQuestion(
         return;
     }
 
+    question.options.forEach(optionText => {
+        const button = document.createElement("button");
 
-    const previousAnswer =
-        answers[currentQuestionIndex];
+        button.type = "button";
+        button.classList.add("question-option");
+        button.textContent = optionText;
 
+        if (
+            currentAnswer &&
+            currentAnswer.value === optionText
+        ) {
+            button.classList.add("selected");
+        }
 
-    question.options.forEach(
-        option => {
+        button.addEventListener("click", () => {
+            const previousAnswer =
+                answers[currentQuestionIndex] || {};
 
-            const button =
-                document.createElement("button");
+            saveCurrentAnswer({
+                ...previousAnswer,
+                value: optionText
+            });
 
-            button.type =
-                "button";
-
-            button.classList.add(
-                "question-option"
-            );
-
-
-            button.textContent =
-                option;
-
-
-            // Restore previous answer
-
-            if (
-                previousAnswer &&
-                previousAnswer.value === option
-            ) {
-
-                button.classList.add(
-                    "selected"
-                );
-
-            }
-
-
-            // Select option
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    // Keep existing photo
-                    const currentAnswer =
-                        answers[currentQuestionIndex];
-
-
-                    answers[currentQuestionIndex] = {
-
-                        value:
-                            option,
-
-                        photo:
-                            currentAnswer?.photo || null
-
-                    };
-
-
-                    // Remove selected state
-
-                    optionsContainer
-                        .querySelectorAll(
-                            ".question-option"
-                        )
-                        .forEach(
-                            item => {
-
-                                item.classList.remove(
-                                    "selected"
-                                );
-
-                            }
-                        );
-
-
-                    // Add selected state
-
-                    button.classList.add(
+            optionsContainer
+                .querySelectorAll(
+                    ".question-option"
+                )
+                .forEach(optionButton => {
+                    optionButton.classList.remove(
                         "selected"
                     );
+                });
 
-                }
-            );
+            button.classList.add("selected");
+        });
 
+        optionsContainer.appendChild(button);
+    });
 
-            optionsContainer.appendChild(
-                button
-            );
+    container.appendChild(optionsContainer);
 
-        }
-    );
-
-
-    container.appendChild(
-        optionsContainer
-    );
-
-    // Photo
-
+    // Render required photo
     if (question.photo) {
-
         renderPhotoInput(
             container,
             question.photo
         );
+    }
 
+    // Render fault section
+    if (question.allowFault) {
+        renderFaultSection(
+            container,
+            question
+        );
     }
 }
 
-// PHOTO QUESTION
-
+// Render photo question
 function renderPhotoQuestion(
     container,
-    question
+    question,
+    currentAnswer
 ) {
-
     renderPhotoInput(
         container,
-        question
+        question.photo || {
+            required: question.required,
+            cameraOnly: false
+        }
     );
 }
 
-
-// PHOTO INPUT
+// Render photo input
 function renderPhotoInput(
     container,
     photoSettings
 ) {
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("photo-input-wrapper");
 
-    const wrapper =
-        document.createElement("div");
+    const label = document.createElement("label");
+    label.classList.add("photo-input-label");
 
-    wrapper.classList.add(
-        "photo-input-wrapper"
-    );
-
-
-    // Description
-
-    if (photoSettings.description) {
-
-        const description =
-            document.createElement("p");
-
-        description.classList.add(
-            "photo-description"
-        );
-
-        description.textContent =
-            photoSettings.description;
-
-
-        wrapper.appendChild(
-            description
-        );
-
-    }
-
-
-    // Camera button
-
-    const label =
-        document.createElement("label");
-
-    label.classList.add(
-        "photo-camera-button"
-    );
-
-
-    const icon =
-        document.createElement("span");
-
+    const icon = document.createElement("span");
     icon.classList.add(
         "material-symbols-outlined"
     );
+    icon.textContent = "photo_camera";
 
-    icon.textContent =
-        "photo_camera";
-
-
-    const text =
-        document.createElement("span");
-
+    const text = document.createElement("span");
     text.textContent =
+        photoSettings.description ||
         "Ota kuva";
 
+    label.appendChild(icon);
+    label.appendChild(text);
 
-    label.appendChild(
-        icon
-    );
-
-    label.appendChild(
-        text
-    );
-
-
-    // Input
-
-    const input =
-        document.createElement("input");
+    const input = document.createElement("input");
 
     input.type = "file";
-
     input.accept = "image/*";
 
-    input.classList.add(
-        "question-photo-input"
-    );
-
-
-    if (
-        photoSettings.cameraOnly
-    ) {
-
+    // Request camera instead of gallery
+    if (photoSettings.cameraOnly) {
         input.setAttribute(
             "capture",
             "environment"
         );
-
     }
 
+    input.classList.add("photo-input");
 
-    // Restore photo
+    const photoStatus = document.createElement("p");
+    photoStatus.classList.add(
+        "photo-status"
+    );
 
-    const previousAnswer =
+    const currentAnswer =
         answers[currentQuestionIndex];
 
-
-    if (
-        previousAnswer &&
-        previousAnswer.photo
-    ) {
-
-        text.textContent =
+    if (currentAnswer?.photo) {
+        photoStatus.textContent =
             "Kuva otettu";
-
-        label.classList.add(
+        photoStatus.classList.add(
             "photo-selected"
         );
-
     }
 
-
-    // Change photo
-
-    input.addEventListener(
-        "change",
-        () => {
-
-            if (
-                input.files &&
-                input.files.length > 0
-            ) {
-
-                const file =
-                    input.files[0];
-
-
-                const currentAnswer =
-                    answers[currentQuestionIndex];
-
-
-                answers[currentQuestionIndex] = {
-
-                    value:
-                        currentAnswer?.value || null,
-
-                    photo:
-                        file
-
-                };
-
-
-                text.textContent =
-                    "Kuva otettu";
-
-
-                label.classList.add(
-                    "photo-selected"
-                );
-
-
-                console.log(
-                    "Photo:",
-                    file
-                );
-
-            }
-
-        }
-    );
-
-
-    label.appendChild(
-        input
-    );
-
-
-    wrapper.appendChild(
-        label
-    );
-
-
-    // Required photo label
-
-    if (
-        photoSettings.required
-    ) {
-
+    if (photoSettings.required) {
         const requiredText =
-            document.createElement("p");
+            document.createElement("small");
+
+        requiredText.textContent =
+            photoSettings.cameraOnly
+                ? "Vain kamerakuva"
+                : "Pakollinen kuva";
 
         requiredText.classList.add(
             "photo-required"
         );
 
-        requiredText.textContent =
-            "Vain kamerakuva";
-
-        wrapper.appendChild(
-            requiredText
-        );
-
+        wrapper.appendChild(requiredText);
     }
 
+    input.addEventListener("change", () => {
+        if (
+            input.files &&
+            input.files.length > 0
+        ) {
+            const current =
+                answers[currentQuestionIndex] ||
+                {};
 
-    container.appendChild(
-        wrapper
-    );
+            saveCurrentAnswer({
+                ...current,
+                photo: input.files[0]
+            });
+
+            photoStatus.textContent =
+                "Kuva otettu";
+
+            photoStatus.classList.add(
+                "photo-selected"
+            );
+        }
+    });
+
+    wrapper.appendChild(label);
+    wrapper.appendChild(input);
+    wrapper.appendChild(photoStatus);
+
+    container.appendChild(wrapper);
 }
 
-
-// PERCENTAGE QUESTION
-
-function renderPercentageQuestion(
+// Render fault section
+function renderFaultSection(
     container,
     question
 ) {
+    const currentAnswer =
+        answers[currentQuestionIndex];
 
+    const faultWrapper =
+        document.createElement("div");
+
+    faultWrapper.classList.add(
+        "fault-section"
+    );
+
+    // Fault checkbox
+    const faultLabel =
+        document.createElement("label");
+
+    faultLabel.classList.add(
+        "fault-toggle"
+    );
+
+    const checkbox =
+        document.createElement("input");
+
+    checkbox.type = "checkbox";
+
+    checkbox.checked =
+        currentAnswer?.fault?.enabled === true;
+
+    const checkboxText =
+        document.createElement("span");
+
+    checkboxText.textContent =
+        "Tässä kohdassa on vika";
+
+    faultLabel.appendChild(checkbox);
+    faultLabel.appendChild(checkboxText);
+
+    faultWrapper.appendChild(faultLabel);
+
+    // Fault details
+    const details =
+        document.createElement("div");
+
+    details.classList.add(
+        "fault-details"
+    );
+
+    details.style.display =
+        checkbox.checked
+            ? "block"
+            : "none";
+
+    // Fault description
+    const descriptionLabel =
+        document.createElement("label");
+
+    descriptionLabel.textContent =
+        "Vian kuvaus";
+
+    const description =
+        document.createElement("textarea");
+
+    description.classList.add(
+        "fault-description"
+    );
+
+    description.placeholder =
+        "Kuvaile vika...";
+
+    description.value =
+        currentAnswer?.fault?.description ||
+        "";
+
+    descriptionLabel.appendChild(
+        description
+    );
+
+    details.appendChild(
+        descriptionLabel
+    );
+
+    // Fault priority
+    const priorityLabel =
+        document.createElement("label");
+
+    priorityLabel.textContent =
+        "Prioriteetti";
+
+    const priority =
+        document.createElement("select");
+
+    priority.classList.add(
+        "fault-priority"
+    );
+
+    const priorities = [
+        {
+            value: "low",
+            text: "Matala"
+        },
+        {
+            value: "medium",
+            text: "Keskitaso"
+        },
+        {
+            value: "high",
+            text: "Korkea"
+        },
+        {
+            value: "critical",
+            text: "Kriittinen"
+        }
+    ];
+
+    priorities.forEach(priorityItem => {
+        const option =
+            document.createElement("option");
+
+        option.value =
+            priorityItem.value;
+
+        option.textContent =
+            priorityItem.text;
+
+        priority.appendChild(option);
+    });
+
+    priority.value =
+        currentAnswer?.fault?.priority ||
+        "medium";
+
+    priorityLabel.appendChild(
+        priority
+    );
+
+    details.appendChild(
+        priorityLabel
+    );
+
+    // Fault photo
+    const photoTitle =
+        document.createElement("p");
+
+    photoTitle.textContent =
+        "Kuva viasta";
+
+    details.appendChild(
+        photoTitle
+    );
+
+    const photoInput =
+        document.createElement("input");
+
+    photoInput.type = "file";
+    photoInput.accept = "image/*";
+    photoInput.setAttribute(
+        "capture",
+        "environment"
+    );
+
+    photoInput.classList.add(
+        "fault-photo-input"
+    );
+
+    details.appendChild(
+        photoInput
+    );
+
+    // Previous fault photo
+    if (currentAnswer?.fault?.photo) {
+        const photoStatus =
+            document.createElement("p");
+
+        photoStatus.textContent =
+            "Kuva otettu";
+
+        photoStatus.classList.add(
+            "photo-selected"
+        );
+
+        details.appendChild(
+            photoStatus
+        );
+    }
+
+    // Save fault information
+    function saveFault() {
+        const current =
+            answers[currentQuestionIndex] ||
+            {};
+
+        saveCurrentAnswer({
+            ...current,
+            fault: {
+                enabled: checkbox.checked,
+                description:
+                    description.value,
+                priority:
+                    priority.value,
+                photo:
+                    current.fault?.photo ||
+                    null
+            }
+        });
+    }
+
+    // Show or hide fault details
+    checkbox.addEventListener(
+        "change",
+        () => {
+            details.style.display =
+                checkbox.checked
+                    ? "block"
+                    : "none";
+
+            saveFault();
+        }
+    );
+
+    // Save description
+    description.addEventListener(
+        "input",
+        saveFault
+    );
+
+    // Save priority
+    priority.addEventListener(
+        "change",
+        saveFault
+    );
+
+    // Save fault photo
+    photoInput.addEventListener(
+        "change",
+        () => {
+            if (
+                photoInput.files &&
+                photoInput.files.length > 0
+            ) {
+                const current =
+                    answers[
+                        currentQuestionIndex
+                    ] || {};
+
+                saveCurrentAnswer({
+                    ...current,
+                    fault: {
+                        ...current.fault,
+                        enabled: true,
+                        description:
+                            description.value,
+                        priority:
+                            priority.value,
+                        photo:
+                            photoInput.files[0]
+                    }
+                });
+            }
+        }
+    );
+
+    faultWrapper.appendChild(
+        details
+    );
+
+    container.appendChild(
+        faultWrapper
+    );
+}
+
+// Render percentage question
+function renderPercentageQuestion(
+    container,
+    question,
+    currentAnswer
+) {
     const wrapper =
         document.createElement("div");
 
     wrapper.classList.add(
-        "percentage-input-wrapper"
+        "percentage-question"
     );
 
-    // Previous value
-    if (
-        question.previousValue !== undefined
-    ) {
+    const valueDisplay =
+        document.createElement("div");
 
-        const previous =
-            document.createElement("p");
-
-        previous.classList.add(
-            "previous-value"
-        );
-
-        previous.textContent =
-            `Edellinen taso: ${question.previousValue}${question.unit || "%"}`;
-
-
-        wrapper.appendChild(
-            previous
-        );
-
-    }
-
-
-    // Slider
-
-    const input =
-        document.createElement("input");
-
-    input.type =
-        "range";
-
-    input.min =
-        "0";
-
-    input.max =
-        "100";
-
-    input.classList.add(
-        "percentage-slider"
-    );
-
-
-    // Restore value
-
-    const previousAnswer =
-        answers[currentQuestionIndex];
-
-
-    if (
-        previousAnswer &&
-        previousAnswer.value !== undefined
-    ) {
-
-        input.value =
-            previousAnswer.value;
-
-    } else {
-
-        input.value =
-            question.previousValue ??
-            0;
-
-    }
-
-
-
-    // Value display
-
-    const value =
-        document.createElement("span");
-
-    value.classList.add(
+    valueDisplay.classList.add(
         "percentage-value"
     );
 
+    const value =
+        currentAnswer?.value ?? 50;
 
-    value.textContent =
-        `${input.value}${question.unit || "%"}`;
+    valueDisplay.textContent =
+        `${value}%`;
 
+    const slider =
+        document.createElement("input");
 
-    // Save
+    slider.type = "range";
+    slider.min = "0";
+    slider.max = "100";
+    slider.step = "1";
 
-    input.addEventListener(
+    slider.value = value;
+
+    slider.classList.add(
+        "percentage-slider"
+    );
+
+    slider.addEventListener(
         "input",
         () => {
+            valueDisplay.textContent =
+                `${slider.value}%`;
 
-            answers[currentQuestionIndex] = {
-
+            saveCurrentAnswer({
                 value:
-                    Number(input.value)
-
-            };
-
-
-            value.textContent =
-                `${input.value}${question.unit || "%"}`;
-
+                    Number(slider.value)
+            });
         }
     );
 
-
     wrapper.appendChild(
-        input
+        valueDisplay
     );
 
     wrapper.appendChild(
-        value
+        slider
     );
-
 
     container.appendChild(
         wrapper
     );
+
+    // Fuel percentage can also report faults
+    if (question.allowFault) {
+        renderFaultSection(
+            container,
+            question
+        );
+    }
 }
 
-
-
-// CHECKBOX QUESTION
-
+// Render checkbox question
 function renderCheckboxQuestion(
     container,
-    question
+    question,
+    currentAnswer
 ) {
-
-    const label =
+    const wrapper =
         document.createElement("label");
 
-    label.classList.add(
-        "question-checkbox"
+    wrapper.classList.add(
+        "checkbox-question"
     );
 
-
-    const input =
+    const checkbox =
         document.createElement("input");
 
-    input.type =
-        "checkbox";
+    checkbox.type = "checkbox";
 
+    checkbox.checked =
+        currentAnswer?.value === true;
 
-    // Restore
-
-    input.checked =
-        answers[currentQuestionIndex]?.value === true;
-
-
-    // Save
-
-    input.addEventListener(
+    checkbox.addEventListener(
         "change",
         () => {
-
-            answers[currentQuestionIndex] = {
-
-                value:
-                    input.checked
-
-            };
-
+            saveCurrentAnswer({
+                value: checkbox.checked
+            });
         }
     );
-
 
     const text =
         document.createElement("span");
 
     text.textContent =
-        question.label ||
         question.title;
 
-
-    label.appendChild(
-        input
+    wrapper.appendChild(
+        checkbox
     );
 
-    label.appendChild(
+    wrapper.appendChild(
         text
     );
 
-
     container.appendChild(
-        label
+        wrapper
     );
 }
 
+// Save the current answer
+function saveCurrentAnswer(answer) {
+    answers[currentQuestionIndex] = answer;
+}
 
-// PROGRESS
+// Validate the current question
+function validateCurrentQuestion() {
+    const item =
+        allQuestions[currentQuestionIndex];
 
+    if (!item || !item.question) {
+        return false;
+    }
+
+    const question =
+        item.question;
+
+    const answer =
+        answers[currentQuestionIndex];
+
+    // Check required answer
+    if (question.required) {
+        if (
+            !answer ||
+            answer.value === undefined ||
+            answer.value === null ||
+            answer.value === ""
+        ) {
+            alert(
+                "Valitse vastaus ennen jatkamista."
+            );
+
+            return false;
+        }
+    }
+
+    // Check required photo
+    if (question.photo?.required) {
+        if (
+            !answer ||
+            !answer.photo
+        ) {
+            alert(
+                "Ota vaadittu kuva ennen jatkamista."
+            );
+
+            return false;
+        }
+    }
+
+    // Check fault information
+    if (answer?.fault?.enabled) {
+        if (
+            !answer.fault.description ||
+            answer.fault.description.trim() === ""
+        ) {
+            alert(
+                "Kuvaile vika ennen jatkamista."
+            );
+
+            return false;
+        }
+
+        if (!answer.fault.priority) {
+            alert(
+                "Valitse vian prioriteetti."
+            );
+
+            return false;
+        }
+
+        if (!answer.fault.photo) {
+            alert(
+                "Ota kuva viasta ennen jatkamista."
+            );
+
+            return false;
+        }
+    }
+
+    return true;
+}
+
+// Render progress bar
 function renderProgress() {
-
-    const progressSegments =
+    const progressContainer =
         document.querySelector(
-            "#progressSegments"
+            ".inspection-progress"
         );
 
-    const questionNumber =
-        document.querySelector(
-            "#questionNumber"
-        );
-
-    const progressPercent =
-        document.querySelector(
-            "#progressPercent"
-        );
-
-
-    if (!progressSegments) {
+    if (!progressContainer) {
         return;
     }
 
+    progressContainer.innerHTML = "";
 
     const total =
         allQuestions.length;
-
 
     if (total === 0) {
         return;
     }
 
+    const progressPercentage =
+        Math.round(
+            ((currentQuestionIndex + 1) /
+                total) *
+                100
+        );
 
+    // Progress segments
+    const segments =
+        document.createElement("div");
 
-    // Clear old segments
-
-    progressSegments.innerHTML = "";
-
-
-
-    // Create segments
-
-    allQuestions.forEach(
-        (_, index) => {
-
-            const segment =
-                document.createElement("div");
-
-
-            segment.classList.add(
-                "progress-segment"
-            );
-
-
-            if (
-                index < currentQuestionIndex
-            ) {
-
-                segment.classList.add(
-                    "completed"
-                );
-
-            }
-
-            else if (
-                index === currentQuestionIndex
-            ) {
-
-                segment.classList.add(
-                    "current"
-                );
-
-            }
-
-
-            progressSegments.appendChild(
-                segment
-            );
-
-        }
+    segments.classList.add(
+        "progress-segments"
     );
 
+    for (let i = 0; i < total; i++) {
+        const segment =
+            document.createElement("div");
 
+        segment.classList.add(
+            "progress-segment"
+        );
 
-    // Question number
+        if (i <= currentQuestionIndex) {
+            segment.classList.add(
+                "active"
+            );
+        }
 
-    questionNumber.textContent =
+        segments.appendChild(
+            segment
+        );
+    }
+
+    // Progress information
+    const info =
+        document.createElement("div");
+
+    info.classList.add(
+        "progress-info"
+    );
+
+    const questionCount =
+        document.createElement("span");
+
+    questionCount.textContent =
         `${currentQuestionIndex + 1} / ${total}`;
 
+    const percentage =
+        document.createElement("span");
 
+    percentage.textContent =
+        `${progressPercentage}%`;
 
-    // Percentage
-
-    const percent =
-        Math.round(
-            (
-                (currentQuestionIndex + 1) /
-                total
-            ) * 100
-        );
-
-
-    progressPercent.textContent =
-        `${percent}%`;
-}
-
-
-// NAVIGATION
-
-function setupNavigation() {
-
-    const previousButton =
-        document.querySelector(
-            "#previousButton"
-        );
-
-    const nextButton =
-        document.querySelector(
-            "#nextButton"
-        );
-
-
-
-    // Previous
-
-    previousButton.addEventListener(
-        "click",
-        () => {
-
-            if (
-                currentQuestionIndex > 0
-            ) {
-
-                currentQuestionIndex--;
-
-                renderQuestion();
-
-            }
-
-        }
+    info.appendChild(
+        questionCount
     );
 
+    info.appendChild(
+        percentage
+    );
 
-    // Next
+    progressContainer.appendChild(
+        info
+    );
 
-    nextButton.addEventListener(
-        "click",
-        () => {
-
-            // Validate
-
-            if (
-                !validateCurrentQuestion()
-            ) {
-
-                return;
-
-            }
-
-
-            // Next question
-
-            if (
-                currentQuestionIndex <
-                allQuestions.length - 1
-            ) {
-
-                currentQuestionIndex++;
-
-                renderQuestion();
-
-            }
-
-            // Last question
-
-            else {
-
-                finishInspection();
-
-            }
-
-        }
+    progressContainer.appendChild(
+        segments
     );
 }
 
-
-
-// NAVIGATION BUTTONS
-
+// Update navigation buttons
 function updateNavigationButtons() {
-
     const previousButton =
-        document.querySelector(
-            "#previousButton"
+        document.getElementById(
+            "previousButton"
         );
 
     const nextButton =
-        document.querySelector(
-            "#nextButton"
+        document.getElementById(
+            "nextButton"
         );
 
+    if (previousButton) {
+        previousButton.disabled =
+            currentQuestionIndex === 0;
+    }
 
-    if (!previousButton || !nextButton) {
+    if (nextButton) {
+        if (
+            currentQuestionIndex ===
+            allQuestions.length - 1
+        ) {
+            nextButton.textContent =
+                "Valmis";
+        } else {
+            nextButton.textContent =
+                "Seuraava";
+        }
+    }
+}
+
+// Setup navigation
+function setupNavigation() {
+    const previousButton =
+        document.getElementById(
+            "previous-question"
+        );
+
+    const nextButton =
+        document.getElementById(
+            "next-question"
+        );
+
+    if (previousButton) {
+        previousButton.onclick =
+            previousQuestion;
+    }
+
+    if (nextButton) {
+        nextButton.onclick =
+            nextQuestion;
+    }
+}
+
+// Go to previous question
+function previousQuestion() {
+    if (currentQuestionIndex <= 0) {
         return;
     }
 
+    currentQuestionIndex--;
 
+    renderProgress();
+    renderQuestion();
+    updateNavigationButtons();
+}
 
-    // Previous
-
-    previousButton.disabled =
-        currentQuestionIndex === 0;
-
-
-    // Next text
+// Go to next question
+function nextQuestion() {
+    if (!validateCurrentQuestion()) {
+        return;
+    }
 
     if (
-        currentQuestionIndex ===
+        currentQuestionIndex <
         allQuestions.length - 1
     ) {
+        currentQuestionIndex++;
 
-        nextButton.textContent =
-            "Valmis";
+        renderProgress();
+        renderQuestion();
+        updateNavigationButtons();
 
-    } else {
-
-        nextButton.textContent =
-            "Seuraava";
-
+        return;
     }
+
+    // Last question
+    finishInspection();
 }
 
-
-
-// VALIDATE CURRENT QUESTION
-
-function validateCurrentQuestion() {
-
-    const currentItem =
-        allQuestions[currentQuestionIndex];
-
-
-    if (!currentItem) {
-        return false;
-    }
-
-
-    const question =
-        currentItem.question;
-
-
-    const answer =
-        answers[currentQuestionIndex];
-
-
-    // Required question
-
-    if (question.required) {
-
-        if (!answer) {
-
-            alert(
-                "Täytä tämä kohta ennen jatkamista."
-            );
-
-            return false;
-
-        }
-
-
-        // Required value
-
-        if (
-            answer.value === undefined ||
-            answer.value === null ||
-            answer.value === ""
-        ) {
-
-            alert(
-                "Täytä tämä kohta ennen jatkamista."
-            );
-
-            return false;
-
-        }
-
-    }
-
-
-    // Required photo
-
-    if (
-        question.photo &&
-        question.photo.required
-    ) {
-
-        if (
-            !answer ||
-            !answer.photo
-        ) {
-
-            alert(
-                "Ota tarvittava kuva ennen jatkamista."
-            );
-
-            return false;
-
-        }
-
-    }
-
-    // Photo question
-
-
-    if (
-        question.type === "photo" &&
-        question.required
-    ) {
-
-        if (
-            !answer ||
-            !answer.photo
-        ) {
-
-            alert(
-                "Ota kuva ennen jatkamista."
-            );
-
-            return false;
-
-        }
-
-    }
-
-
-    return true;
-}
-
-
-// FINISH
-
+// Finish inspection
 function finishInspection() {
-
-    console.log(
-        "Inspection completed"
-    );
-
+    if (!validateCurrentQuestion()) {
+        return;
+    }
 
     const inspectionResult = {
+        vehicleId: vehicle.id_vehicles,
+        vehicle: vehicle.name,
+        vehicleType: vehicle.type,
 
-        vehicleId:
-            vehicle.id_vehicles,
+        checklists: checklists.map(
+            checklist => ({
+                checklistId:
+                    checklist.id_checklists,
+                formTitle:
+                    checklist.name,
+                description:
+                    checklist.description ||
+                    "",
+                version: 1
+            })
+        ),
 
-        vehicle:
-            vehicle.name,
+        answers: allQuestions.map(
+            (item, index) => ({
+                checklistId:
+                    item.checklistId,
 
-        vehicleType:
-            vehicle.type,
+                questionId:
+                    item.question.id,
 
-        checklists:
-            checklists.map(
-                checklist => ({
+                question:
+                    item.question.title,
 
-                    checklistId:
-                        checklist.id,
+                type:
+                    item.question.type,
 
-                    formTitle:
-                        checklist.formTitle,
-
-                    version:
-                        checklist.version
-
-                })
-            ),
-
-        answers:
-            allQuestions.map(
-                (item, index) => ({
-
-                    checklistId:
-                        item.checklistId,
-
-                    questionId:
-                        item.question.id,
-
-                    question:
-                        item.question.title,
-
-                    type:
-                        item.question.type,
-
-                    answer:
-                        answers[index]
-
-                })
-            )
-
+                answer:
+                    answers[index]
+            })
+        )
     };
-
 
     console.log(
         "Inspection result:",
         inspectionResult
     );
 
-
     showSummaryModal(
         inspectionResult
     );
 }
 
-// SUMMARY MODAL
-
+// Show summary modal
 function showSummaryModal(
     inspectionResult
 ) {
-
-    // Overlay
-
-    const overlay =
-        document.createElement("div");
-
-    overlay.classList.add(
-        "summary-overlay"
-    );
-
-
-    // Modal
-
     const modal =
-        document.createElement("div");
+        document.getElementById(
+            "summary-modal"
+        );
 
-    modal.classList.add(
-        "summary-modal"
-    );
+    if (!modal) {
+        console.error(
+            "Summary modal was not found."
+        );
 
-    // Header
+        return;
+    }
 
-    const header =
-        document.createElement("div");
+    const vehicleElement =
+        modal.querySelector(
+            ".summary-vehicle"
+        );
 
-    header.classList.add(
-        "summary-header"
-    );
-
-
-    const title =
-        document.createElement("h2");
-
-    title.textContent =
-        "Tarkastuksen yhteenveto";
-
-
-    const closeButton =
-        document.createElement("button");
-
-    closeButton.type =
-        "button";
-
-    closeButton.classList.add(
-        "summary-close"
-    );
-
-    closeButton.innerHTML =
-        `<span class="material-symbols-outlined">
-            close
-        </span>`;
-
-
-    closeButton.addEventListener(
-        "click",
-        () => {
-
-            overlay.remove();
-
-        }
-    );
-
-
-    header.appendChild(
-        title
-    );
-
-    header.appendChild(
-        closeButton
-    );
-
-
-    modal.appendChild(
-        header
-    );
-
-
-    // Vehicle information
-
-    const vehicleInfo =
-        document.createElement("div");
-
-    vehicleInfo.classList.add(
-        "summary-vehicle"
-    );
-
-
-    vehicleInfo.innerHTML = `
-        <div>
-            <span class="material-symbols-outlined">
-                local_shipping
-            </span>
-        </div>
-
-        <div>
-            <strong>${escapeHtml(
-                inspectionResult.vehicle
-            )}</strong>
-
-            <p>${escapeHtml(
-                inspectionResult.vehicleType
-            )}</p>
-        </div>
-    `;
-
-
-    modal.appendChild(
-        vehicleInfo
-    );
-
-
-    // Answers
+    if (vehicleElement) {
+        vehicleElement.textContent =
+            `${inspectionResult.vehicle} ${
+                vehicle.license_plate ||
+                vehicle.plate ||
+                ""
+            }`;
+    }
 
     const answersContainer =
-        document.createElement("div");
+        modal.querySelector(
+            ".summary-answers"
+        );
 
-    answersContainer.classList.add(
-        "summary-answers"
-    );
+    if (answersContainer) {
+        answersContainer.innerHTML = "";
 
+        inspectionResult.answers.forEach(
+            (item, index) => {
+                const card =
+                    document.createElement(
+                        "div"
+                    );
 
-    inspectionResult.answers.forEach(
-        (item, index) => {
-
-            const answerCard =
-                document.createElement("div");
-
-            answerCard.classList.add(
-                "summary-answer"
-            );
-
-
-            const questionNumber =
-                document.createElement("span");
-
-            questionNumber.classList.add(
-                "summary-question-number"
-            );
-
-            questionNumber.textContent =
-                index + 1;
-
-
-            const content =
-                document.createElement("div");
-
-            content.classList.add(
-                "summary-answer-content"
-            );
-
-
-            const question =
-                document.createElement("p");
-
-            question.classList.add(
-                "summary-question"
-            );
-
-            question.textContent =
-                item.question;
-
-
-            const answer =
-                document.createElement("p");
-
-            answer.classList.add(
-                "summary-value"
-            );
-
-            answer.innerHTML =
-                formatSummaryAnswer(
-                    item.answer
+                card.classList.add(
+                    "summary-answer"
                 );
 
-            const photoImage =
-            answer.querySelector(
-                ".summary-photo-image"
-            );
+                const title =
+                    document.createElement(
+                        "h3"
+                    );
 
+                title.textContent =
+                    `${index + 1}. ${
+                        item.question
+                    }`;
 
-            if (photoImage) {
+                card.appendChild(title);
 
-            photoImage.addEventListener(
-                "click",
-            () => {
+                const answerText =
+                    document.createElement(
+                        "p"
+                    );
 
-            showImagePreview(
-                photoImage.src
-            );
+                answerText.innerHTML =
+                    formatSummaryAnswer(
+                        item.answer
+                    );
 
-        }
-    );
+                card.appendChild(
+                    answerText
+                );
 
-}
+                // Show normal photo
+                if (
+                    item.answer?.photo
+                ) {
+                    appendSummaryPhoto(
+                        card,
+                        item.answer.photo
+                    );
+                }
 
+                // Show fault information
+                if (
+                    item.answer?.fault
+                        ?.enabled
+                ) {
+                    const fault =
+                        item.answer.fault;
 
-            content.appendChild(
-                question
-            );
+                    const faultBox =
+                        document.createElement(
+                            "div"
+                        );
 
-            content.appendChild(
-                answer
-            );
+                    faultBox.classList.add(
+                        "summary-fault"
+                    );
 
+                    const faultTitle =
+                        document.createElement(
+                            "strong"
+                        );
 
-            answerCard.appendChild(
-                questionNumber
-            );
+                    faultTitle.textContent =
+                        "Vika";
 
-            answerCard.appendChild(
-                content
-            );
+                    faultBox.appendChild(
+                        faultTitle
+                    );
 
+                    const faultDescription =
+                        document.createElement(
+                            "p"
+                        );
 
-            answersContainer.appendChild(
-                answerCard
-            );
+                    faultDescription.textContent =
+                        `Kuvaus: ${
+                            fault.description
+                        }`;
 
-        }
-    );
+                    faultBox.appendChild(
+                        faultDescription
+                    );
 
+                    const faultPriority =
+                        document.createElement(
+                            "p"
+                        );
 
-    modal.appendChild(
-        answersContainer
-    );
+                    faultPriority.textContent =
+                        `Prioriteetti: ${
+                            getPriorityLabel(
+                                fault.priority
+                            )
+                        }`;
 
+                    faultBox.appendChild(
+                        faultPriority
+                    );
 
-    // Confirmation
+                    card.appendChild(
+                        faultBox
+                    );
 
+                    if (fault.photo) {
+                        appendSummaryPhoto(
+                            card,
+                            fault.photo,
+                            "Kuva viasta"
+                        );
+                    }
+                }
+
+                answersContainer.appendChild(
+                    card
+                );
+            }
+        );
+    }
+
+    // Reset confirmation
     const confirmation =
-        document.createElement("label");
-
-    confirmation.classList.add(
-        "summary-confirmation"
-    );
-
-
-    const checkbox =
-        document.createElement("input");
-
-    checkbox.type =
-        "checkbox";
-
-
-    const confirmationText =
-        document.createElement("span");
-
-    confirmationText.textContent =
-        "Olen lukenut ja vahvistan, että vastaukseni ovat oikein.";
-
-
-    confirmation.appendChild(
-        checkbox
-    );
-
-    confirmation.appendChild(
-        confirmationText
-    );
-
-
-    modal.appendChild(
-        confirmation
-    );
-
-    // Final button
+        modal.querySelector(
+            "#summary-confirmation"
+        );
 
     const submitButton =
-        document.createElement("button");
+        modal.querySelector(
+            "#summary-submit"
+        );
 
-    submitButton.type =
-        "button";
+    if (confirmation) {
+        confirmation.checked = false;
 
-    submitButton.classList.add(
-        "summary-submit"
-    );
+        confirmation.onchange = () => {
+            if (submitButton) {
+                submitButton.disabled =
+                    !confirmation.checked;
+            }
+        };
+    }
 
-    submitButton.textContent =
-        "Vahvista tarkastus";
+    if (submitButton) {
+        submitButton.disabled = true;
 
-
-    submitButton.disabled =
-        true;
-
-
-    // Enable only after checkbox
-
-    checkbox.addEventListener(
-        "change",
-        () => {
-
-            submitButton.disabled =
-                !checkbox.checked;
-
-        }
-    );
-
-
-    submitButton.addEventListener(
-        "click",
-        () => {
-
-            if (!checkbox.checked) {
+        submitButton.onclick = () => {
+            if (!confirmation?.checked) {
                 return;
             }
-
 
             submitInspection(
                 inspectionResult
             );
+        };
+    }
 
-        }
-    );
-
-
-    modal.appendChild(
-        submitButton
-    );
-
-
-    // Add to page
-
-    overlay.appendChild(
-        modal
-    );
-
-    document.body.appendChild(overlay);
-
-    setTimeout(() => {
-        launchFireworks();
-    }, 250);
+    // Show modal
+    modal.classList.add("show");
 }
 
-// IMAGE REVIEW WHEN CLICK IN PHOTO
-function showImagePreview(
-    imageUrl
+// Format summary answer
+function formatSummaryAnswer(
+    answer
 ) {
+    if (!answer) {
+        return "Ei vastausta";
+    }
 
-    const overlay =
-        document.createElement("div");
+    if (
+        answer.value !== undefined &&
+        answer.value !== null &&
+        answer.value !== ""
+    ) {
+        if (answer.unit) {
+            return `${answer.value} ${answer.unit}`;
+        }
 
-    overlay.classList.add(
-        "image-preview-overlay"
+        return String(answer.value);
+    }
+
+    return "Ei vastausta";
+}
+
+// Add photo to summary
+function appendSummaryPhoto(
+    container,
+    file,
+    title = "Kuva"
+) {
+    if (!(file instanceof File)) {
+        return;
+    }
+
+    const wrapper =
+        document.createElement(
+            "div"
+        );
+
+    wrapper.classList.add(
+        "summary-photo"
     );
 
+    const label =
+        document.createElement("p");
+
+    label.textContent = title;
 
     const image =
         document.createElement("img");
 
-    image.src =
-        imageUrl;
+    image.alt = title;
 
     image.classList.add(
-        "image-preview"
+        "summary-photo-image"
     );
 
+    const objectUrl =
+        URL.createObjectURL(file);
 
-    overlay.appendChild(
-        image
-    );
+    image.src = objectUrl;
 
-
-    overlay.addEventListener(
+    image.addEventListener(
         "click",
         () => {
-
-            overlay.remove();
-
-        }
-    );
-
-
-    document.body.appendChild(
-        overlay
-    );
-}
-
-// SUMMARY ANSWER FORMAT
-function formatSummaryAnswer(answer) {
-
-    if (!answer) {
-
-        return `
-            <span class="summary-empty">
-                Ei vastausta
-            </span>
-        `;
-    }
-
-
-    // PHOTO
-
-    if (answer.photo) {
-
-        const photoName =
-            answer.photo.name ||
-            "Kuva";
-
-
-        // Create temporary URL for File
-        const imageUrl =
-            URL.createObjectURL(
-                answer.photo
+            window.open(
+                objectUrl,
+                "_blank"
             );
-
-
-        let html = `
-            <div class="summary-photo-container">
-
-                <img
-                    src="${imageUrl}"
-                    class="summary-photo-image"
-                    alt="Tarkastuskuva"
-                >
-
-                <span class="summary-photo-name">
-                    ${escapeHtml(photoName)}
-                </span>
-
-            </div>
-        `;
-
-
-        // If question also has a normal value
-        if (
-            answer.value !== undefined &&
-            answer.value !== null &&
-            answer.value !== ""
-        ) {
-
-            html =
-                `<div class="summary-answer-value">
-                    ${escapeHtml(
-                        String(answer.value)
-                    )}
-                </div>` +
-                html;
         }
+    );
 
+    wrapper.appendChild(label);
+    wrapper.appendChild(image);
 
-        return html;
-    }
-
-    // NORMAL VALUE
-
-    if (
-        answer.value !== undefined &&
-        answer.value !== null
-    ) {
-
-        return escapeHtml(
-            String(answer.value)
-        );
-    }
-
-
-    return `
-        <span class="summary-empty">
-            Ei vastausta
-        </span>
-    `;
+    container.appendChild(wrapper);
 }
 
-function escapeHtml(value) {
+// Get Finnish priority label
+function getPriorityLabel(
+    priority
+) {
+    const labels = {
+        low: "Matala",
+        medium: "Keskitaso",
+        high: "Korkea",
+        critical: "Kriittinen"
+    };
 
-    return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+    return (
+        labels[priority] ||
+        priority ||
+        "Ei määritetty"
+    );
 }
 
-// SUBMIT
-function submitInspection(
+// Submit inspection
+async function submitInspection(
     inspectionResult
 ) {
-
     console.log(
         "Submitting inspection:",
         inspectionResult
     );
 
+    // This will later send the inspection
+    // data and photos to the PHP API.
 
     alert(
         "Tarkastus on vahvistettu!"
     );
 
+    closeSummaryModal();
 }
 
+// Close summary modal
+function closeSummaryModal() {
+    const modal =
+        document.getElementById(
+            "summary-modal"
+        );
 
-// BACK BUTTON
+    if (modal) {
+        modal.classList.remove(
+            "show"
+        );
+    }
+}
 
+// Setup back button
 function setupBackButton() {
-
     const backButton =
-        document.querySelector(".back-button");
-
+        document.getElementById(
+            "back-button"
+        );
 
     if (!backButton) {
         return;
     }
 
-
-    backButton.addEventListener(
-        "click",
-        () => {
-
-            const params =
-                new URLSearchParams(
-                    window.location.search
-                );
-
-            const vehicleId =
-                params.get("id");
-
-
-            if (!vehicleId) {
-
-                console.error(
-                    "Vehicle ID puuttuu."
-                );
-
-                return;
-            }
-
-
-            window.location.href =
-                `inspection-step.html?id=${vehicleId}`;
-
-        }
-    );
-}
-
-
-// ERROR
-
-function showError(message) {
-
-    const container =
-        document.querySelector(
-            "#questionContainer"
+    const params =
+        new URLSearchParams(
+            window.location.search
         );
 
+    const vehicleId =
+        params.get("id");
+
+    backButton.onclick = () => {
+        if (vehicleId) {
+            window.location.href =
+                `inspection-step.html?id=${vehicleId}`;
+        } else {
+            window.history.back();
+        }
+    };
+}
+
+// Show error message
+function showErrorMessage(
+    message
+) {
+    const container =
+        document.getElementById(
+            "question-container"
+        );
 
     if (!container) {
         return;
     }
 
-
     container.innerHTML = "";
-
 
     const error =
         document.createElement("div");
@@ -1966,85 +1718,29 @@ function showError(message) {
         "inspection-error"
     );
 
-    error.textContent =
-        `Virhe: ${message}`;
-
+    error.textContent = message;
 
     container.appendChild(
         error
     );
 }
-// CONFETTI
-function launchFireworks() {
-    const container = document.createElement("div");
-    container.classList.add("fireworks-container");
 
-    const bursts = 3;
+// Fireworks effect
+function showFireworks() {
+    const container =
+        document.createElement(
+            "div"
+        );
 
-    for (let b = 0; b < bursts; b++) {
-        setTimeout(() => {
-            createFireworkBurst(container);
-        }, b * 450);
-    }
+    container.classList.add(
+        "fireworks"
+    );
 
-    document.body.appendChild(container);
+    document.body.appendChild(
+        container
+    );
 
     setTimeout(() => {
         container.remove();
-    }, 3500);
-}
-
-
-function createFireworkBurst(container) {
-
-    const burst = document.createElement("div");
-    burst.classList.add("firework-burst");
-
-    
-    const centerX = 50 + (Math.random() * 10 - 5);
-    const centerY = 50 + (Math.random() * 10 - 5);
-
-    burst.style.left = `${centerX}%`;
-    burst.style.top = `${centerY}%`;
-
-    
-    const particleCount = 70;
-
-    for (let i = 0; i < particleCount; i++) {
-
-        const particle = document.createElement("span");
-        particle.classList.add("firework-particle");
-
-        const angle = (360 / particleCount) * i;
-
-        
-        const distance = 180 + Math.random() * 280;
-
-        particle.style.setProperty(
-            "--angle",
-            `${angle}deg`
-        );
-
-        particle.style.setProperty(
-            "--distance",
-            `${distance}px`
-        );
-
-       
-        const size = 7 + Math.random() * 7;
-
-        particle.style.width = `${size}px`;
-        particle.style.height = `${size}px`;
-
-        particle.style.animationDelay =
-            `${Math.random() * 0.08}s`;
-
-        burst.appendChild(particle);
-    }
-
-    container.appendChild(burst);
-
-    setTimeout(() => {
-        burst.remove();
-    }, 2200);
+    }, 3000);
 }
