@@ -26,11 +26,14 @@ function getVehicleDetails(vehicleId) {
                 // set id
                 newArticle.id = newId;
                 
-                
+                //set the imagebox
+                let picturebox = document.createElement("div")
+                picturebox.textContent = "heloeheohloerlherholershol"
+                picturebox.classList.add("panel")
 
                 //set the image
                 let picture = document.createElement("img")
-                picture.src = `/api/files/${(int(x)+1)}`; 
+                picture.src = `/api/files/${(Number(number)+1)}`; 
                 //set the div for everything else
                 let vehicledetails = document.createElement("div")
                 vehicledetails.classList.add("vehicle-details")
