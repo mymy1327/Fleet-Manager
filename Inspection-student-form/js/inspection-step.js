@@ -12,278 +12,140 @@ let answers = [];
 document.addEventListener("DOMContentLoaded", () => {
     initInspection();
 });
-
-
-// ==================================================
 // INIT
-// ==================================================
 
 async function initInspection() {
+    const params = new URLSearchParams(window.location.search);
+    const vehicleId = params.get("id");
+
+    if (!vehicleId) {
+        console.error("Vehicle ID puuttuu.");
+        return;
+    }
 
     try {
+        // GET VEHICLE INFO
+        const vehicleResponse = await fetch(
+            `databaseAPI/vehicles.php?vehicle=${vehicleId}`
+        );
 
-        // ------------------------------------------
-        // Get vehicle ID from URL
-        // ------------------------------------------
-
-        const params =
-            new URLSearchParams(window.location.search);
-
-        const vehicleId =
-            Number(params.get("id"));
-
-
-        if (!vehicleId) {
-
+        if (!vehicleResponse.ok) {
             throw new Error(
-                "Vehicle ID puuttuu."
+                `Vehicle API error: ${vehicleResponse.status}`
             );
-
         }
 
+        vehicle = await vehicleResponse.json();
 
-        // ------------------------------------------
-        // Load JSON files
-        // ------------------------------------------
-
-        const [
-            vehiclesResponse,
-            vehicleChecklistsResponse,
-            checklistsResponse
-        ] = await Promise.all([
-
-            fetch("data/vehicles.json"),
-
-            fetch("data/vehicles_checklists.json"),
-
-            fetch("data/checklists.json")
-
-        ]);
+        console.log("Vehicle from database:", vehicle);
 
 
-        if (!vehiclesResponse.ok) {
+        // GET CHECKLIST OF VEHICLE
+        const checklistResponse = await fetch(
+            `databaseAPI/vehicleChecklists.php?vehicle=${vehicleId}`
+        );
 
+        if (!checklistResponse.ok) {
             throw new Error(
-                "vehicles.json lataaminen epäonnistui."
+                `Vehicle checklist API error: ${checklistResponse.status}`
             );
-
         }
 
-
-        if (!vehicleChecklistsResponse.ok) {
-
-            throw new Error(
-                "vehicles_checklists.json lataaminen epäonnistui."
-            );
-
-        }
-
-
-        if (!checklistsResponse.ok) {
-
-            throw new Error(
-                "checklists.json lataaminen epäonnistui."
-            );
-
-        }
-
-
-        const vehiclesData =
-            await vehiclesResponse.json();
-
-        const vehiclesChecklistsData =
-            await vehicleChecklistsResponse.json();
-
-        const checklistsData =
-            await checklistsResponse.json();
-
-
-        // ------------------------------------------
-        // Find vehicle
-        // ------------------------------------------
-
-        vehicle =
-            vehiclesData.vehicles.find(
-                item =>
-                    item.id_vehicles === vehicleId
-            );
-
-
-        if (!vehicle) {
-
-            throw new Error(
-                `Ajoneuvoa ID:llä ${vehicleId} ei löydy.`
-            );
-
-        }
-
+        const vehicleChecklists = await checklistResponse.json();
 
         console.log(
-            "Vehicle:",
-            vehicle
+            "Vehicle checklists from database:",
+            vehicleChecklists
         );
 
+        // GET CHECKLIST QUESTIONS
+        checklists = [];
 
-        // ------------------------------------------
-        // Find vehicle-checklist relations
-        // ------------------------------------------
+        for (const checklist of vehicleChecklists) {
 
-        const vehicleChecklistRelations =
-            vehiclesChecklistsData.vehiclesChecklists
-                .filter(
-                    item =>
-                        item.id_vehicles === vehicleId
-                );
-
-
-        if (
-            vehicleChecklistRelations.length === 0
-        ) {
-
-            throw new Error(
-                "Ajoneuvolle ei löytynyt tarkastuslistoja."
+            const response = await fetch(
+                `databaseAPI/checklists.php?id_checklist=${checklist.id_checklists}`
             );
 
+            if (!response.ok) {
+                throw new Error(
+                    `Checklist API error: ${response.status}`
+                );
+            }
+
+            const checklistData = await response.json();
+
+            checklists.push(checklistData);
         }
 
+        console.log(
+            "Full checklists from database:",
+            checklists
+        );
 
-        // ------------------------------------------
-        // Get checklist IDs
-        // ------------------------------------------
-
-        const checklistIds =
-            vehicleChecklistRelations.map(
-                item =>
-                    item.id_checklists
-            );
-
-
-        // ------------------------------------------
-        // Get actual checklists
-        // ------------------------------------------
-
-        checklists =
-            checklistsData.checklists
-                .filter(
-                    checklist =>
-                        checklistIds.includes(
-                            checklist.id
-                        )
-                );
-
-
-        if (checklists.length === 0) {
-
-            throw new Error(
-                "Tarkastuslistoja ei löytynyt."
-            );
-
-        }
-
-
-        // ------------------------------------------
-        // Combine all questions
-        // ------------------------------------------
-
+        // CREATE CHECKLIST
         allQuestions = [];
 
+        checklists.forEach(checklist => {
 
-        checklists.forEach(
-            checklist => {
-
-                if (
-                    !Array.isArray(
-                        checklist.questions
-                    )
-                ) {
-
-                    return;
-
+            allQuestions.push({
+                checklistId: checklist.id_checklists,
+                formTitle: checklist.name,
+                version: 1,
+                question: {
+                    id: checklist.id_checklists,
+                    title: checklist.name,
+                    type: "choice",
+                    required: true,
+                    options: []
                 }
+            });
+        });
 
 
-                checklist.questions.forEach(
-                    question => {
+        // CREATE ANSWER OPTIONS
+        answers = allQuestions.map(() => null);
 
-                        allQuestions.push({
+        currentQuestionIndex = 0;
 
-                            checklistId:
-                                checklist.id,
-
-                            formTitle:
-                                checklist.formTitle,
-
-                            version:
-                                checklist.version,
-
-                            question:
-                                question
-
-                        });
-
-                    }
-                );
-
-            }
-        );
-
-
-        if (allQuestions.length === 0) {
-
-            throw new Error(
-                "Tarkastuslistoissa ei ole kysymyksiä."
-            );
-
-        }
-
-
-        // ------------------------------------------
-        // Create answer array
-        // ------------------------------------------
-
-        answers =
-            allQuestions.map(() => null);
-
-
-        // ------------------------------------------
-        // Setup UI
-        // ------------------------------------------
-
+        // Render UI
         renderProgress();
-
         renderQuestion();
-
         updateNavigationButtons();
 
         setupNavigation();
-
         setupBackButton();
-
-
-        console.log(
-            "Questions:",
-            allQuestions
-        );
-
 
     } catch (error) {
 
         console.error(
-            "Inspection error:",
+            "Inspection initialization failed:",
             error
         );
 
-        showError(
-            error.message
-        );
+        const container =
+            document.querySelector("#questionContainer");
 
+        if (container) {
+            container.innerHTML = `
+                <div class="error-message">
+                    <span class="material-symbols-outlined">
+                        error
+                    </span>
+
+                    <h2>Virhe</h2>
+
+                    <p>
+                        Tarkastuksen tietoja ei voitu ladata.
+                    </p>
+                </div>
+            `;
+        }
     }
 }
 
 
-// ==================================================
 // RENDER QUESTION
-// ==================================================
 
 function renderQuestion() {
 
@@ -314,9 +176,8 @@ function renderQuestion() {
         currentItem.question;
 
 
-    // ------------------------------------------
     // Question header
-    // ------------------------------------------
+
 
     const questionHeader =
         document.createElement("div");
@@ -366,11 +227,7 @@ function renderQuestion() {
         questionHeader
     );
 
-
-    // ------------------------------------------
     // Required label
-    // ------------------------------------------
-
     if (question.required) {
 
         const required =
@@ -390,10 +247,7 @@ function renderQuestion() {
     }
 
 
-    // ------------------------------------------
     // Question content
-    // ------------------------------------------
-
     const content =
         document.createElement("div");
 
@@ -480,10 +334,7 @@ function renderQuestion() {
     updateNavigationButtons();
 }
 
-
-// ==================================================
 // NUMBER QUESTION
-// ==================================================
 
 function renderNumberQuestion(
     container,
@@ -582,10 +433,7 @@ function renderNumberQuestion(
     );
 }
 
-
-// ==================================================
 // CHOICE QUESTION
-// ==================================================
 
 function renderChoiceQuestion(
     container,
@@ -708,10 +556,7 @@ function renderChoiceQuestion(
         optionsContainer
     );
 
-
-    // ------------------------------------------
     // Photo
-    // ------------------------------------------
 
     if (question.photo) {
 
@@ -723,10 +568,7 @@ function renderChoiceQuestion(
     }
 }
 
-
-// ==================================================
 // PHOTO QUESTION
-// ==================================================
 
 function renderPhotoQuestion(
     container,
@@ -740,10 +582,7 @@ function renderPhotoQuestion(
 }
 
 
-// ==================================================
 // PHOTO INPUT
-// ==================================================
-
 function renderPhotoInput(
     container,
     photoSettings
@@ -757,9 +596,7 @@ function renderPhotoInput(
     );
 
 
-    // ------------------------------------------
     // Description
-    // ------------------------------------------
 
     if (photoSettings.description) {
 
@@ -781,9 +618,7 @@ function renderPhotoInput(
     }
 
 
-    // ------------------------------------------
     // Camera button
-    // ------------------------------------------
 
     const label =
         document.createElement("label");
@@ -820,9 +655,7 @@ function renderPhotoInput(
     );
 
 
-    // ------------------------------------------
     // Input
-    // ------------------------------------------
 
     const input =
         document.createElement("input");
@@ -848,9 +681,7 @@ function renderPhotoInput(
     }
 
 
-    // ------------------------------------------
     // Restore photo
-    // ------------------------------------------
 
     const previousAnswer =
         answers[currentQuestionIndex];
@@ -871,9 +702,7 @@ function renderPhotoInput(
     }
 
 
-    // ------------------------------------------
     // Change photo
-    // ------------------------------------------
 
     input.addEventListener(
         "change",
@@ -962,9 +791,7 @@ function renderPhotoInput(
 }
 
 
-// ==================================================
 // PERCENTAGE QUESTION
-// ==================================================
 
 function renderPercentageQuestion(
     container,
@@ -978,11 +805,7 @@ function renderPercentageQuestion(
         "percentage-input-wrapper"
     );
 
-
-    // ------------------------------------------
     // Previous value
-    // ------------------------------------------
-
     if (
         question.previousValue !== undefined
     ) {
@@ -1005,9 +828,7 @@ function renderPercentageQuestion(
     }
 
 
-    // ------------------------------------------
     // Slider
-    // ------------------------------------------
 
     const input =
         document.createElement("input");
@@ -1049,9 +870,8 @@ function renderPercentageQuestion(
     }
 
 
-    // ------------------------------------------
+
     // Value display
-    // ------------------------------------------
 
     const value =
         document.createElement("span");
@@ -1065,9 +885,7 @@ function renderPercentageQuestion(
         `${input.value}${question.unit || "%"}`;
 
 
-    // ------------------------------------------
     // Save
-    // ------------------------------------------
 
     input.addEventListener(
         "input",
@@ -1103,9 +921,8 @@ function renderPercentageQuestion(
 }
 
 
-// ==================================================
+
 // CHECKBOX QUESTION
-// ==================================================
 
 function renderCheckboxQuestion(
     container,
@@ -1173,9 +990,7 @@ function renderCheckboxQuestion(
 }
 
 
-// ==================================================
 // PROGRESS
-// ==================================================
 
 function renderProgress() {
 
@@ -1209,16 +1024,14 @@ function renderProgress() {
     }
 
 
-    // ------------------------------------------
+
     // Clear old segments
-    // ------------------------------------------
 
     progressSegments.innerHTML = "";
 
 
-    // ------------------------------------------
+
     // Create segments
-    // ------------------------------------------
 
     allQuestions.forEach(
         (_, index) => {
@@ -1261,17 +1074,15 @@ function renderProgress() {
     );
 
 
-    // ------------------------------------------
+
     // Question number
-    // ------------------------------------------
 
     questionNumber.textContent =
         `${currentQuestionIndex + 1} / ${total}`;
 
 
-    // ------------------------------------------
+
     // Percentage
-    // ------------------------------------------
 
     const percent =
         Math.round(
@@ -1287,9 +1098,7 @@ function renderProgress() {
 }
 
 
-// ==================================================
 // NAVIGATION
-// ==================================================
 
 function setupNavigation() {
 
@@ -1304,9 +1113,8 @@ function setupNavigation() {
         );
 
 
-    // ------------------------------------------
+
     // Previous
-    // ------------------------------------------
 
     previousButton.addEventListener(
         "click",
@@ -1326,9 +1134,7 @@ function setupNavigation() {
     );
 
 
-    // ------------------------------------------
     // Next
-    // ------------------------------------------
 
     nextButton.addEventListener(
         "click",
@@ -1371,9 +1177,8 @@ function setupNavigation() {
 }
 
 
-// ==================================================
+
 // NAVIGATION BUTTONS
-// ==================================================
 
 function updateNavigationButtons() {
 
@@ -1393,17 +1198,14 @@ function updateNavigationButtons() {
     }
 
 
-    // ------------------------------------------
+
     // Previous
-    // ------------------------------------------
 
     previousButton.disabled =
         currentQuestionIndex === 0;
 
 
-    // ------------------------------------------
     // Next text
-    // ------------------------------------------
 
     if (
         currentQuestionIndex ===
@@ -1422,9 +1224,8 @@ function updateNavigationButtons() {
 }
 
 
-// ==================================================
+
 // VALIDATE CURRENT QUESTION
-// ==================================================
 
 function validateCurrentQuestion() {
 
@@ -1445,9 +1246,7 @@ function validateCurrentQuestion() {
         answers[currentQuestionIndex];
 
 
-    // ------------------------------------------
     // Required question
-    // ------------------------------------------
 
     if (question.required) {
 
@@ -1481,9 +1280,7 @@ function validateCurrentQuestion() {
     }
 
 
-    // ------------------------------------------
     // Required photo
-    // ------------------------------------------
 
     if (
         question.photo &&
@@ -1505,10 +1302,8 @@ function validateCurrentQuestion() {
 
     }
 
-
-    // ------------------------------------------
     // Photo question
-    // ------------------------------------------
+
 
     if (
         question.type === "photo" &&
@@ -1535,9 +1330,7 @@ function validateCurrentQuestion() {
 }
 
 
-// ==================================================
 // FINISH
-// ==================================================
 
 function finishInspection() {
 
@@ -1609,17 +1402,13 @@ function finishInspection() {
     );
 }
 
-//==================================================
 // SUMMARY MODAL
-//==================================================
 
 function showSummaryModal(
     inspectionResult
 ) {
 
-    // ------------------------------------------
     // Overlay
-    // ------------------------------------------
 
     const overlay =
         document.createElement("div");
@@ -1629,9 +1418,7 @@ function showSummaryModal(
     );
 
 
-    // ------------------------------------------
     // Modal
-    // ------------------------------------------
 
     const modal =
         document.createElement("div");
@@ -1640,10 +1427,7 @@ function showSummaryModal(
         "summary-modal"
     );
 
-
-    // ------------------------------------------
     // Header
-    // ------------------------------------------
 
     const header =
         document.createElement("div");
@@ -1700,9 +1484,7 @@ function showSummaryModal(
     );
 
 
-    // ------------------------------------------
     // Vehicle information
-    // ------------------------------------------
 
     const vehicleInfo =
         document.createElement("div");
@@ -1736,9 +1518,7 @@ function showSummaryModal(
     );
 
 
-    // ------------------------------------------
     // Answers
-    // ------------------------------------------
 
     const answersContainer =
         document.createElement("div");
@@ -1854,9 +1634,7 @@ function showSummaryModal(
     );
 
 
-    // ------------------------------------------
     // Confirmation
-    // ------------------------------------------
 
     const confirmation =
         document.createElement("label");
@@ -1893,10 +1671,7 @@ function showSummaryModal(
         confirmation
     );
 
-
-    // ------------------------------------------
     // Final button
-    // ------------------------------------------
 
     const submitButton =
         document.createElement("button");
@@ -1951,9 +1726,7 @@ function showSummaryModal(
     );
 
 
-    // ------------------------------------------
     // Add to page
-    // ------------------------------------------
 
     overlay.appendChild(
         modal
@@ -1966,9 +1739,7 @@ function showSummaryModal(
     }, 250);
 }
 
-//===================================================
 // IMAGE REVIEW WHEN CLICK IN PHOTO
-//===================================================
 function showImagePreview(
     imageUrl
 ) {
@@ -2012,9 +1783,7 @@ function showImagePreview(
     );
 }
 
-//===================================================
 // SUMMARY ANSWER FORMAT
-//===================================================
 function formatSummaryAnswer(answer) {
 
     if (!answer) {
@@ -2027,9 +1796,7 @@ function formatSummaryAnswer(answer) {
     }
 
 
-    // ==========================================
     // PHOTO
-    // ==========================================
 
     if (answer.photo) {
 
@@ -2082,10 +1849,7 @@ function formatSummaryAnswer(answer) {
         return html;
     }
 
-
-    // ==========================================
     // NORMAL VALUE
-    // ==========================================
 
     if (
         answer.value !== undefined &&
@@ -2115,9 +1879,7 @@ function escapeHtml(value) {
         .replace(/'/g, "&#039;");
 }
 
-//===================================================
 // SUBMIT
-//===================================================
 function submitInspection(
     inspectionResult
 ) {
@@ -2135,9 +1897,7 @@ function submitInspection(
 }
 
 
-// ==================================================
 // BACK BUTTON
-// ==================================================
 
 function setupBackButton() {
 
@@ -2181,9 +1941,7 @@ function setupBackButton() {
 }
 
 
-// ==================================================
 // ERROR
-// ==================================================
 
 function showError(message) {
 
@@ -2216,10 +1974,7 @@ function showError(message) {
         error
     );
 }
-
-//==========================================
 // CONFETTI
-//==========================================
 function launchFireworks() {
     const container = document.createElement("div");
     container.classList.add("fireworks-container");
