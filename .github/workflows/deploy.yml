@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-      - staging
-      - dev
 
 jobs:
   sync-folder:
@@ -23,20 +21,31 @@ jobs:
           $DeployDir = "C:\apps\$Branch"
           $RepoUrl = "git@github.com:${{ github.repository }}.git"
 
-          # 1. Setup temporary SSH key file
-          $TempSshKey = [System.IO.Path]::GetTempFileName()
-          Set-Content -Path $TempSshKey -Value $env:SSH_KEY -Encoding ASCII
-
-          # 2. Configure Git to use the ephemeral key without prompting for host verification
-          $env:GIT_SSH_COMMAND = "ssh -i `"$TempSshKey`" -o StrictHostKeyChecking=no -o UserKnownHostsFile=NUL"
-
+          # 1. Create temp file path
+          $TempSshKey = Join-Path $env:TEMP "deploy_key_$([Guid]::NewGuid().ToString('N'))"
+          
           try {
-              # 3. Create target directory if missing
+              # 2. Write key with LF line endings
+              [System.IO.File]::WriteAllText($TempSshKey, ($env:SSH_KEY -replace "`r`n", "`n") + "`n")
+
+              # 3. Restrict Windows ACL permissions so SSH doesn't ignore the key
+              $Acl = Get-Acl $TempSshKey
+              $Acl.SetAccessRuleProtection($true, $false)
+              $User = [System.Security.Principal.NTAccount]$env:USERNAME
+              $AccessRule = New-Object System.Security.Principal.FileSystemAccessRule($User, "FullControl", "Allow")
+              $Acl.AddAccessRule($AccessRule)
+              Set-Acl -Path $TempSshKey -AclObject $Acl
+
+              # 4. Set GIT_SSH_COMMAND using forward slashes for cross-platform OpenSSH compatibility
+              $KeyPathFormatted = $TempSshKey -replace '\\', '/'
+              $env:GIT_SSH_COMMAND = "ssh -i `"$KeyPathFormatted`" -o StrictHostKeyChecking=no -o UserKnownHostsFile=NUL"
+
+              # 5. Create directory if missing
               if (-not (Test-Path $DeployDir)) {
                   New-Item -ItemType Directory -Path $DeployDir -Force
               }
 
-              # 4. Clone or update repository
+              # 6. Clone or Update
               if (-not (Test-Path "$DeployDir\.git")) {
                   git clone -b $Branch $RepoUrl $DeployDir
               } else {
@@ -46,7 +55,7 @@ jobs:
               }
           }
           finally {
-              # 5. Clean up private key from disk
+              # 7. Cleanup key
               if (Test-Path $TempSshKey) {
                   Remove-Item -Path $TempSshKey -Force
               }
