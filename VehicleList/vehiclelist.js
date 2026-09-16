@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 let newId = /item-${i+1}/;
                 //create div
                 let newDiv = document.createElement("div")
-                newDiv.classList.add("card");
+                newDiv.classList.add("card-garage");
                 // set id
                 newDiv.id = newId;
                 
