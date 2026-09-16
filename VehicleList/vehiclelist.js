@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function getAllVehicles() {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", "../databaseAPI/vehicles.php", true);
+        xhr.open("GET", "../api/vehicles", true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             console.log(xhr.status)
