@@ -3,26 +3,39 @@ header("Content-Type: application/json");
 session_start();
 require "../assets/config.php";
 
-$listOfTables = ["checklists", "vehicles", "files", "users"];
+$listOfTables = ["checklists", "vehicles", "files", "users", "inspections"];
 
-$uri = array_slice(explode("/", $_SERVER["REQUEST_URI"]), 2);
+$path = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+$uri = array_slice(explode("/", $path), 2);
 //logToConsole($uri[0]);
-//logToConsole($_GET["v"]);
+//logToConsole($_GET["id_vehicles"]);
 $data = json_decode(file_get_contents("php://input"), true);
 
 /**
  * returns all entries in table
  * @param mysqli $conn connection to database
  * @param string $table db table name
+ * @param string $filter filtering parameters
  * @return json|array[false, int, string|null] list of entries | false on failure
  */
-function getFullTable($conn, $table)
+function getFullTable($conn, $table, $filterColumn, $filter)
 {
-    $result = $conn->query("SELECT * FROM `$table`");
-    if (!$result) {
-        return [false, 404];
+    //logToConsole($filter);
+    if (isset($filterColumn)) {
+        $stmt = $conn->prepare("SELECT * FROM `$table` WHERE `$filterColumn` = ?");
+        $stmt->bind_param("s", $filter);
+        if (!$stmt->execute()) {
+            return [false, 404];
+        }
+        $return = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    } else {
+        $result = $conn->query("SELECT * FROM `$table`");
+        if (!$result) {
+            return [false, 404];
+        }
+        $return = $result->fetch_all(MYSQLI_ASSOC);
     }
-    $return = $result->fetch_all(MYSQLI_ASSOC);
+
     //logToConsole($return[2]["name"], );
     return json_encode($return, JSON_NUMERIC_CHECK);
 }
@@ -278,7 +291,13 @@ if (!in_array($uri[0], $listOfTables)) {
 switch ($_SERVER["REQUEST_METHOD"]) {
     case "GET":
         if (!isset($uri[1])) {
-            $return = getFullTable($conn, $uri[0]);
+            $filterColumn = null;
+            $filter = null;
+            if (isset($_GET["id_vehicles"]) && !is_null($_GET["id_vehicles"]) && $_GET["id_vehicles"] != "") {
+                $filterColumn = "id_vehicles";
+                $filter = $_GET["id_vehicles"];
+            }
+            $return = getFullTable($conn, $uri[0], $filterColumn, $filter);
             if (gettype($return) == "array" && !$return[0]) {
                 heaDie($return[1]);
             }
@@ -304,13 +323,12 @@ switch ($_SERVER["REQUEST_METHOD"]) {
                 $return = createNewUser($conn, $data["username"], $data["email"], $data["password"]);
                 break;
         }
-        logToConsole($return[0]);
+        //logToConsole($return[0]);
         if (gettype($return) == "array" && !$return[0]) {
             heaDie($return[1]);
         }
         heaDie(201, $return);
 
-        
     case "PUT":
         if (isset($data["id_checklists"], $data["name"], $data["description"])) {
             $return = rewriteChecklistItem($conn, $data["id_checklists"], $data["name"], $data["description"]);
