@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 //set the placeholder image
                 let picture = document.createElement("div")
-                picture.textContent = "heloeheohloerlherholerhol"
+                picture.textContent = "heloeheohloerlherholershol"
                 picture.classList.add("panel")
                 
                 //set the div for everything else
