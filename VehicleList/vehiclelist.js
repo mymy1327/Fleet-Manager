@@ -30,8 +30,7 @@ function getVehicleDetails(vehicleId) {
 
                 //set the image
                 let picture = document.createElement("img")
-                picture.src = `http://${ip}/api/files/${(parseInt(intelligeble[x].id_files))}`;
-                picture.classList.add("Vehicle-image")
+                picturebox.src = 'api/files/${x + 1}'; 
                 //set the div for everything else
                 let vehicledetails = document.createElement("div")
                 vehicledetails.classList.add("vehicle-details")
