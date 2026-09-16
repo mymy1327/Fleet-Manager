@@ -62,14 +62,27 @@
     delete checklist item</button
 ><br />
 <br /><br />
-<img src="/api/files/1">
-
-
-    
-<!--<div id="demo5"></div>
-<input id="fileId" placeholder="file id" />
-<button onclick="getFile(document.getElementById('fileId').value)">get file details</button><br />
-<br />-->
+<img src="/api/files/1" />
+<br /><br />
+<div id="demo5"></div>
+<input type="file" id="fileId" placeholder="file id" />
+<button onclick="createFile(document.getElementById('fileId'))">create file</button><br />
+<br />
+<div id="demo10"></div>
+<input id="createUsername" placeholder="username" />
+<input id="createEmail" type="email" placeholder="email" />
+<input id="createPassword" placeholder="password" />
+<button
+    onclick="
+        createUser(
+            document.getElementById('createUsername').value,
+            document.getElementById('createEmail').value,
+            document.getElementById('createPassword').value,
+        )
+    "
+>
+    create new user</button
+><br />
 <!--
 
 <div id="demo7"></div>
@@ -99,16 +112,6 @@
         xhr.send();
     }
 
-    function getFile(fileId) {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", "/api/files/" + fileId, true);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.onload = () => {
-            document.getElementById("demo5").src = xhr.responseText;
-        };
-        xhr.send();
-    }
-
     function getAllChecklistItems() {
         const xhr = new XMLHttpRequest();
         xhr.open("GET", "/api/checklists", true);
@@ -129,15 +132,43 @@
         xhr.send();
     }
 
+    function createFile(fileElement) {
+        const formData = new FormData();
+        formData.append("file", fileElement.files[0]);
+        console.log(fileElement.files[0]);
+
+        console.log(formData);
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/api/files", true);
+        xhr.onload = () => {
+            document.getElementById("demo5").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send(formData);
+    }
+
     function createChecklistItem(name, description) {
         let data = {};
         data.name = name;
         data.description = description;
         const xhr = new XMLHttpRequest();
-        xhr.open("POST", "../databaseAPI/checklists.php", true);
+        xhr.open("POST", "/api/checklists", true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             document.getElementById("demo6").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send(JSON.stringify(data));
+    }
+
+    function createUser(username, email, password) {
+        let data = {};
+        data.username = username;
+        data.email = email;
+        data.password = password;
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/api/users", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            document.getElementById("demo10").innerHTML = xhr.status + "<br>" + xhr.responseText;
         };
         xhr.send(JSON.stringify(data));
     }
