@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             console.log(xhr.status)
+            console.log(1)
             console.log(xhr.responseText)
             intelligeble = JSON.parse(xhr.responseText)
             console.log(intelligeble)
