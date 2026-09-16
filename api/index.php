@@ -3,10 +3,11 @@ header("Content-Type: application/json");
 session_start();
 require "../assets/config.php";
 
-$listOfTables = ["checklists", "vehicles", "files"];
+$listOfTables = ["checklists", "vehicles", "files", "users"];
 
 $uri = array_slice(explode("/", $_SERVER["REQUEST_URI"]), 2);
 //logToConsole($uri[0]);
+//logToConsole($_GET["v"]);
 $data = json_decode(file_get_contents("php://input"), true);
 
 /**
@@ -49,6 +50,7 @@ function getEntryDetails($conn, $table, $id)
         header("Content-Type: " . $return["type"]);
         header("Content-Length: " . strlen($return["data"]));
         echo $return["data"];
+        die();
     }
     return json_encode($return);
 }
@@ -89,6 +91,97 @@ function createNewChecklistItem($conn, $name, $description)
     $result["name"] = $name;
     $result["description"] = $description;
     return json_encode($result, JSON_NUMERIC_CHECK);
+}
+
+/**
+ * create new file
+ * @param mysqli $conn connection to database
+ * @param file $file file object
+ * @return json|array[false, int, string|null] new id | false on failure
+ */
+function createNewFile($conn, $file)
+{
+    $tempPath = $file["tmp_name"];
+    $fileName = $file["name"];
+    $fileType = $file["type"];
+    //logToConsole($tempPath . " " . $fileName);
+
+    $fileContent = file_get_contents($tempPath);
+
+    unlink($tempPath);
+
+    $stmt = $conn->prepare("INSERT INTO `files` (`name`, `type`, `data`) VALUES (?, ?, ?)");
+
+    $stmt->bind_param("sss", $fileName, $fileType, $fileContent);
+
+    if ($stmt->execute()) {
+        return json_encode(["new_id" => $conn->insert_id]);
+    } else {
+        return [false, 400];
+    }
+}
+
+/**
+ * create new vehicle
+ * @param mysqli $conn connection to database
+ * @param string $name name of vehicle
+ * @param string $type type of vehicle
+ * @param string $licensePlate license plate of vehicle
+ * @param string $code vehicle code
+ * @param string $lastMaintenance date of last maintenance on vehicle in format YYYY-MM-DD
+ * @param string|null $blob picture of vehicle in blob string
+ * @param string|null $state state of vehicle (available, in_use, disabled)
+ * @return json|array[false, int, string|null] details about new vehicle | false on failure
+ */
+function createNewVehicle(
+    $conn,
+    $name,
+    $type,
+    $licensePlate,
+    $code,
+    $lastMaintenance,
+    $blob = null,
+    $state = "available",
+) {
+    $stmt = $conn->prepare(
+        "INSERT INTO `vehicles`(`name`, `type`, `license_plate`, `code`, `last_maintenance`, `id_files`, `state`) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    );
+    $stmt->bind_param("sssssss", $name, $type, $licensePlate, $code, $lastMaintenance, $blob, $state);
+    if (!$stmt->execute()) {
+        return [false, 400];
+    }
+    $result = [
+        "new_id" => $conn->insert_id,
+        "name" => $name,
+        "type" => $type,
+        "license_plate" => $licensePlate,
+        "code" => $code,
+        "last_maintenance" => $lastMaintenance,
+    ];
+    return json_encode($result, JSON_NUMERIC_CHECK);
+}
+
+/**
+ * create new user
+ * @param mysqli $conn connection to database
+ * @param string $username user name
+ * @param string $email email of user
+ * @param string $password password of user
+ * @return json|array[false, int, string|null] detail about new user | false on failure
+ */
+function createNewUser($conn, $username, $email, $password)
+{
+    $stmt = $conn->prepare("INSERT INTO `users`(`username`, `email`, `password`) VALUES (?,?,?)");
+    $stmt->bind_param("sss", $username, $email, $password);
+
+    if (!$stmt->execute()) {
+        return [false, 400];
+    }
+
+    return json_encode(
+        ["new_id" => $conn->insert_id, "username" => $username, "email" => $email, "password" => $password],
+        JSON_NUMERIC_CHECK,
+    );
 }
 
 /**
@@ -198,16 +291,26 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             heaDie(200, $return);
         }
     case "POST":
-        if (isset($data["name"])) {
-            //echo $data["name"], $data["description"];
-            $return = createNewChecklistItem($conn, $data["name"], $data["description"]);
-            if (gettype($return) == "array" && !$return[0]) {
-                heaDie($return[1]);
-            }
-            heaDie(201, $return);
-        } else {
-            heaDie(400);
+        switch (array_search($uri[0], $listOfTables)) {
+            case 0:
+                $return = createNewChecklistItem($conn, $data["name"], $data["description"]);
+                break;
+            case 1:
+                break;
+            case 2:
+                $return = createNewFile($conn, $_FILES["file"]);
+                break;
+            case 3:
+                $return = createNewUser($conn, $data["username"], $data["email"], $data["password"]);
+                break;
         }
+        logToConsole($return[0]);
+        if (gettype($return) == "array" && !$return[0]) {
+            heaDie($return[1]);
+        }
+        heaDie(201, $return);
+
+        
     case "PUT":
         if (isset($data["id_checklists"], $data["name"], $data["description"])) {
             $return = rewriteChecklistItem($conn, $data["id_checklists"], $data["name"], $data["description"]);

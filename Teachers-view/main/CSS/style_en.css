@@ -181,7 +181,7 @@ h1 {
     background: var(--blue-dark);
 }
 
-/* teacher-main-page cards */
+
 .cards {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -189,6 +189,7 @@ h1 {
     margin-bottom: 22px;
 }
 
+/* teacher-main-page cards */
 .card,
 .panel {
     background: var(--surface);
@@ -197,7 +198,7 @@ h1 {
     box-shadow: 0 1px 1px #eef1f5;
 }
 
-.card {
+.card-teacher-main-page {
     position: relative;
     min-height: 90px;
     padding: 15px;
