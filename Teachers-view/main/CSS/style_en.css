@@ -181,7 +181,7 @@ h1 {
     background: var(--blue-dark);
 }
 
-/* Dashboard cards */
+/* teacher-main-page cards */
 .cards {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
