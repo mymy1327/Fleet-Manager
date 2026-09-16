@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 //set the image
                 let picture = document.createElement("img")
-                picture.src = `/api/files/${(Number(number)+1)}`; 
+                picture.src = `/api/files/${(parseInt(x)+1)}`; 
                 //set the div for everything else
                 let containing = document.createElement("div")
                 containing.classList.add("panel")
