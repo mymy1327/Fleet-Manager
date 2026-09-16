@@ -1,9 +1,11 @@
-name: Sync Branch Folders on Windows
+name: Sync Branch Folders on Windows via Ephemeral SSH Key
 
 on:
   push:
     branches:
       - main
+      - staging
+      - dev
 
 jobs:
   sync-folder:
@@ -14,21 +16,38 @@ jobs:
 
     steps:
       - name: Sync Code to Branch Folder
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
         run: |
           $Branch = "${{ github.ref_name }}"
           $DeployDir = "C:\apps\$Branch"
-          $RepoUrl = "https://github.com/${{ github.repository }}.git"
+          $RepoUrl = "git@github.com:${{ github.repository }}.git"
 
-          # Create directory if missing
-          if (-not (Test-Path $DeployDir)) {
-              New-Item -ItemType Directory -Path $DeployDir -Force
+          # 1. Setup temporary SSH key file
+          $TempSshKey = [System.IO.Path]::GetTempFileName()
+          Set-Content -Path $TempSshKey -Value $env:SSH_KEY -Encoding ASCII
+
+          # 2. Configure Git to use the ephemeral key without prompting for host verification
+          $env:GIT_SSH_COMMAND = "ssh -i `"$TempSshKey`" -o StrictHostKeyChecking=no -o UserKnownHostsFile=NUL"
+
+          try {
+              # 3. Create target directory if missing
+              if (-not (Test-Path $DeployDir)) {
+                  New-Item -ItemType Directory -Path $DeployDir -Force
+              }
+
+              # 4. Clone or update repository
+              if (-not (Test-Path "$DeployDir\.git")) {
+                  git clone -b $Branch $RepoUrl $DeployDir
+              } else {
+                  Set-Location $DeployDir
+                  git fetch origin $Branch
+                  git reset --hard "origin/$Branch"
+              }
           }
-
-          # Clone if first time, otherwise fetch and reset
-          if (-not (Test-Path "$DeployDir\.git")) {
-              git clone -b $Branch $RepoUrl $DeployDir
-          } else {
-              Set-Location $DeployDir
-              git fetch origin $Branch
-              git reset --hard "origin/$Branch"
+          finally {
+              # 5. Clean up private key from disk
+              if (Test-Path $TempSshKey) {
+                  Remove-Item -Path $TempSshKey -Force
+              }
           }
