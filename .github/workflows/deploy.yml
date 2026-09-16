@@ -33,27 +33,58 @@ jobs:
               # 3. Restrict Windows permissions via icacls (removes inherited ACLs, grants current user full control)
               icacls.exe $TempSshKey /inheritance:r /grant:r "$($env:USERNAME):F" | Out-Null
 
-              # 4. Configure GIT_SSH_COMMAND with forward slashes for OpenSSH compatibility
-              $KeyPathFormatted = $TempSshKey -replace '\\', '/'
-              $env:GIT_SSH_COMMAND = "ssh -i `"$KeyPathFormatted`" -o StrictHostKeyChecking=no -o UserKnownHostsFile=NUL"
+              # 4. Set GIT_SSH_COMMAND with proper key path and verbose mode
+              $env:GIT_SSH_COMMAND = "ssh -i `"$TempSshKey`" -o StrictHostKeyChecking=no -o UserKnownHostsFile=NUL -v"
 
-              # 5. Create target directory if missing
-              if (-not (Test-Path $DeployDir)) {
-                  New-Item -ItemType Directory -Path $DeployDir -Force
+              # 5. Test SSH connection before cloning
+              Write-Host "Testing SSH connection to GitHub..."
+              $sshTest = & ssh -i "$TempSshKey" -o StrictHostKeyChecking=no -o UserKnownHostsFile=NUL -T git@github.com 2>&1
+              if ($LASTEXITCODE -eq 1) {
+                  Write-Host "SSH key authentication successful"
+              } elseif ($LASTEXITCODE -ne 0) {
+                  Write-Error "SSH connection test failed: $sshTest"
+                  exit 1
               }
 
-              # 6. Clone on first push, fetch & hard reset on subsequent pushes
+              # 6. Create target directory if missing
+              if (-not (Test-Path $DeployDir)) {
+                  New-Item -ItemType Directory -Path $DeployDir -Force | Out-Null
+                  Write-Host "Created directory: $DeployDir"
+              }
+
+              # 7. Clone on first push, fetch & hard reset on subsequent pushes
               if (-not (Test-Path "$DeployDir\.git")) {
+                  Write-Host "Cloning repository branch '$Branch' into $DeployDir..."
                   git clone -b $Branch $RepoUrl $DeployDir
+                  if ($LASTEXITCODE -ne 0) {
+                      Write-Error "Failed to clone repository"
+                      exit 1
+                  }
               } else {
+                  Write-Host "Repository already exists, updating branch '$Branch'..."
                   Set-Location $DeployDir
                   git fetch origin $Branch
+                  if ($LASTEXITCODE -ne 0) {
+                      Write-Error "Failed to fetch from origin"
+                      exit 1
+                  }
                   git reset --hard "origin/$Branch"
+                  if ($LASTEXITCODE -ne 0) {
+                      Write-Error "Failed to reset to origin/$Branch"
+                      exit 1
+                  }
               }
+              
+              Write-Host "Successfully synced branch '$Branch' to $DeployDir"
+          }
+          catch {
+              Write-Error "An error occurred: $_"
+              exit 1
           }
           finally {
-              # 7. Remove private key from server disk
+              # 8. Remove private key from server disk
               if (Test-Path $TempSshKey) {
                   Remove-Item -Path $TempSshKey -Force
+                  Write-Host "Cleaned up temporary SSH key"
               }
           }
