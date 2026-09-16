@@ -12,7 +12,6 @@ jobs:
     runs-on: self-hosted
     defaults:
       run:
-        # Fixes ExecutionPolicy (PSSecurityException)
         shell: powershell -ExecutionPolicy Bypass -File {0}
 
     steps:
@@ -24,26 +23,26 @@ jobs:
           $DeployDir = "C:\apps\$Branch"
           $RepoUrl = "git@github.com:${{ github.repository }}.git"
 
-          # 1. Create a temporary SSH key file path
+          # 1. Create unique temp key file path
           $TempSshKey = Join-Path $env:TEMP "deploy_key_$([Guid]::NewGuid().ToString('N'))"
 
           try {
               # 2. Write private key with Unix line endings (LF)
               [System.IO.File]::WriteAllText($TempSshKey, ($env:SSH_KEY -replace "`r`n", "`n") + "`n")
 
-              # 3. Fix SSH permissions using icacls (restricts access to current user only)
+              # 3. Restrict Windows permissions via icacls (removes inherited ACLs, grants current user full control)
               icacls.exe $TempSshKey /inheritance:r /grant:r "$($env:USERNAME):F" | Out-Null
 
               # 4. Configure GIT_SSH_COMMAND with forward slashes for OpenSSH compatibility
               $KeyPathFormatted = $TempSshKey -replace '\\', '/'
               $env:GIT_SSH_COMMAND = "ssh -i `"$KeyPathFormatted`" -o StrictHostKeyChecking=no -o UserKnownHostsFile=NUL"
 
-              # 5. Create directory if missing
+              # 5. Create target directory if missing
               if (-not (Test-Path $DeployDir)) {
                   New-Item -ItemType Directory -Path $DeployDir -Force
               }
 
-              # 6. Clone if first time, otherwise fetch and reset
+              # 6. Clone on first push, fetch & hard reset on subsequent pushes
               if (-not (Test-Path "$DeployDir\.git")) {
                   git clone -b $Branch $RepoUrl $DeployDir
               } else {
@@ -53,7 +52,7 @@ jobs:
               }
           }
           finally {
-              # 7. Clean up the SSH key from disk
+              # 7. Remove private key from server disk
               if (Test-Path $TempSshKey) {
                   Remove-Item -Path $TempSshKey -Force
               }
