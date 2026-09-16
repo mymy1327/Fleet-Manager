@@ -419,6 +419,14 @@ button:hover {
     border: 1px solid rgba(239, 68, 68, 0.25);
 }
 
+/* Low */
+.status-label.low {
+    background-color: #5ada89;
+    color: #0c401f;
+    border: 1px solid #16a34a;
+}
+
+
 /* Medium */
 .status-label.medium {
     background-color: rgba(245, 158, 11, 0.14);
@@ -431,6 +439,13 @@ button:hover {
     background-color: rgba(239, 68, 68, 0.12);
     color: #dc2626;
     border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+/* Critical */
+.status-label.critical {
+    background-color: rgba(120, 7, 7, 0.12);
+    color: #af0909;
+    border: 1px solid rgba(137, 41, 41, 0.25);
 }
 
 /* Passed */
@@ -454,6 +469,7 @@ button:hover {
 }
 
 .fault-card p:first-of-type {
+    margin-top: 6px;
     margin-bottom: 6px;
 
     font-size: 15px;

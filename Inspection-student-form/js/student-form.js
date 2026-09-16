@@ -1,6 +1,7 @@
+
 let vehicle = null;
 let inspections = [];
-
+let faults = [];
 
 document.addEventListener("DOMContentLoaded", () => {
     loadVehicle();
@@ -45,6 +46,7 @@ async function loadVehicle() {
         console.log("Vehicles:", vehicles);
 
         // Find the vehicle with the correct ID
+        
         vehicle = vehicles.find(
             item =>
                 Number(item.id_vehicles) === Number(vehicleId)
@@ -60,13 +62,11 @@ async function loadVehicle() {
 
         renderVehicle(vehicle);
 
-        setupInspectionButton(
-            vehicle.id_vehicles
-        );
-
         loadInspections(
             vehicle.id_vehicles
         );
+                
+        renderOpenFaults(vehicle.id_vehicles);
 
     } catch (error) {
 
@@ -116,6 +116,9 @@ function renderVehicle(vehicle) {
         licenseElement.textContent =
             vehicle.license_plate || "-";
     }
+
+    stateNotification(vehicle.state);
+    setupInspectionButton(vehicle.state,vehicle.id_vehicles);
 }
 
 
@@ -126,27 +129,46 @@ function formatVehicleState(state) {
         case "available":
             return "Vapaa";
 
-        case "disabled":
-            return "Poistettu käytöstä";
+        case "in_use":
+            return "On Käytössä";
+
+        case "disable":
+            return "On poistettu";
 
         default:
             return state || "-";
     }
 }
 
+function stateNotification (state) {
+    const inUseText = document.querySelector(".in-use-text");
+    const inUseDescription = document.querySelector(".in-use-description");
+        if (state === "in_use") {
+        inUseText.innerHTML = "Kone on käytössä";
+        inUseDescription.innerHTML = `
+Voit silti aloittaa oman tarkastuksesi — edellinen käyttäjä kirjataan poistuneeksi.`;
+}       if (state === "available") {
+        inUseText.innerHTML = "Kone on vapaa";
+        inUseDescription.innerHTML = `
+Voit aloittaa tarkastuksen nyt.`;
+}       if (state === "disabled") {
+        inUseText.innerHTML = "Kone on poistettu";
+        inUseDescription.innerHTML = `
+Et saa aloittaa tarkatuksesi.`;
+}
+}
 
-function setupInspectionButton(vehicleId) {
 
-    const button =
-        document.querySelector("#startInspection");
-
+function setupInspectionButton(state, vehicleId) {
+    const button = document.querySelector("#startInspection");
     if (!button) return;
-
-    button.addEventListener("click", () => {
-
-        window.location.href =
-            `inspection-step.html?id=${vehicleId}`;
-    });
+    button.onclick = () => {
+        if (state === "disabled") {
+            alert("Tarkastusta ei voida aloittaa, koska ajoneuvo on ajokelvoton.");
+            return;
+        }
+        window.location.href = `inspection-step.html?id=${vehicleId}`;
+};
 }
 
 async function loadInspections(vehicleId) {
@@ -192,6 +214,54 @@ async function loadInspections(vehicleId) {
         renderLastInspection();
         renderInspectionHistory();
     }
+}
+
+//Render Open faults of the vehicle
+async function renderOpenFaults(vehicleId) {
+    console.log("Loading Faults for vehicle", vehicleId);
+
+    try {
+
+        const url =
+            `../databaseAPI/vehicleProblems.php?vehicle=${vehicleId}`;
+
+        console.log("Fault API URL:", url);
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error(
+                `HTTP error: ${response.status}`
+            );
+        }
+
+        const data = await response.json();
+
+        console.log("All Faults:", data);
+
+        faults = Array.isArray(data) ? data : [];
+
+        const openFaults = faults.filter(
+            fault => fault.state === "open"
+        );
+
+        console.log("Open faults:", openFaults);
+
+        //Render Openfaults to UI
+        renderFaultCards(openFaults);
+
+    } catch (error) {
+
+        console.error(
+            "Inspection information could not be loaded:",
+            error
+        );
+
+        faults = [];
+
+        renderFaultCards([]);
+    }
+
 }
 
 //Take the km form the newest inspection
@@ -355,6 +425,65 @@ function renderInspectionHistory() {
                     `
                     : ""
             }
+        `;
+
+        container.appendChild(card);
+    });
+}
+
+function renderFaultCards(openFaults) {
+
+    const container =
+        document.querySelector(".faults-render");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    container.innerHTML = `
+        <div class="faults-icon">
+                    <span class="material-symbols-outlined">report_problem</span>
+                     <p class="faults-text">Havaitut viat</p>
+        </div>
+        `;
+
+
+    if (openFaults.length === 0) {
+
+        container.innerHTML = `
+                <p class="faults-card p">
+                    Ei avoimia vikoja
+                </span>
+        `;
+
+        return;
+    }
+
+    const faultsValue = 
+    document.querySelector(".faults-value");
+    if (!faultsValue) return;
+
+    faultsValue.innerHTML = "";
+
+    faultsValue.innerHTML = `${openFaults.length}`;
+
+    openFaults.forEach(fault => {
+
+        const card = document.createElement("div");
+
+        card.classList.add(
+            "fault-card"
+        );
+
+        card.innerHTML = `
+                <span class="fault-priority status-label ${fault.priority}">
+                    ${fault.priority || ""}
+                </span>
+                 <p>
+                ${fault.note || "Ei kuvausta"}
+                 </p>
+                 <p>
+                ${fault.date || "Null"}
+                 </p>
         `;
 
         container.appendChild(card);
