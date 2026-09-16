@@ -37,7 +37,11 @@
 ><br />
 <div id="demo8"></div>
 <input id="rewriteCellChecklistId" placeholder="checklist item id" />
-<input id="rewriteCellChecklistColumn" placeholder="checklist item column name (name, description)" style="width: 300px"/>
+<input
+    id="rewriteCellChecklistColumn"
+    placeholder="checklist item column name (name, description)"
+    style="width: 300px"
+/>
 <input id="rewriteCellChecklistName" placeholder="checklist item name" />
 <input id="rewriteCellChecklistDescription" placeholder="checklist item description" />
 <button
@@ -53,11 +57,19 @@
     rewrite checklist item cell</button
 ><br />
 <div id="demo9"></div>
-<input id="deleteChecklistItemId" placeholder="checklist id"/>
-<button onclick="deleteChecklistItem(document.getElementById('deleteChecklistItemId').value)">delete checklist item</button><br />
-<br />
-<div id="demo5"></div>
-<button onclick="getVehicleChecklist(1)">get vehicle checklist</button><br />
+<input id="deleteChecklistItemId" placeholder="checklist id" />
+<button onclick="deleteChecklistItem(document.getElementById('deleteChecklistItemId').value)">
+    delete checklist item</button
+><br />
+<br /><br />
+<img src="/api/files/1">
+
+
+    
+<!--<div id="demo5"></div>
+<input id="fileId" placeholder="file id" />
+<button onclick="getFile(document.getElementById('fileId').value)">get file details</button><br />
+<br />-->
 <!--
 
 <div id="demo7"></div>
@@ -69,7 +81,7 @@
     //let data = {vehicle: 2};
     function getAllVehicles() {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", "../databaseAPI/vehicles.php", true);
+        xhr.open("GET", "/api/vehicles", true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             document.getElementById("demo1").innerHTML = xhr.status + "<br>" + xhr.responseText;
@@ -79,7 +91,7 @@
 
     function getVehicleDetails(vehicleId) {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", "../databaseAPI/vehicles.php?id_vehicles=" + vehicleId, true);
+        xhr.open("GET", "/api/vehicles/" + vehicleId, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             document.getElementById("demo2").innerHTML = xhr.status + "<br>" + xhr.responseText;
@@ -87,9 +99,19 @@
         xhr.send();
     }
 
+    function getFile(fileId) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "/api/files/" + fileId, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            document.getElementById("demo5").src = xhr.responseText;
+        };
+        xhr.send();
+    }
+
     function getAllChecklistItems() {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", "../databaseAPI/checklists.php", true);
+        xhr.open("GET", "/api/checklists", true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             document.getElementById("demo3").innerHTML = xhr.status + "<br>" + xhr.responseText;
@@ -99,20 +121,10 @@
 
     function getChecklistItemDetails(checklistId) {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", "../databaseAPI/checklists.php?id_checklists=" + checklistId, true);
+        xhr.open("GET", "/api/checklists/" + checklistId, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             document.getElementById("demo4").innerHTML = xhr.status + "<br>" + xhr.responseText;
-        };
-        xhr.send();
-    }
-
-    function getVehicleChecklist(vehicleId) {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", "../databaseAPI/vehicleChecklists.php?id_vehicles=" + vehicleId, true);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.onload = () => {
-            document.getElementById("demo5").innerHTML = xhr.status + "<br>" + xhr.responseText;
         };
         xhr.send();
     }
@@ -170,5 +182,4 @@
         };
         xhr.send(JSON.stringify(data));
     }
-    
 </script>

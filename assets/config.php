@@ -23,3 +23,8 @@ function heaDie($code, $response = null)
     http_response_code($code);
     die($response);
 }
+
+function logToConsole(string $log)
+{
+    file_put_contents("php://stdout", $log . "\n");
+}
