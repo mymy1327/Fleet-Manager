@@ -39,9 +39,9 @@ a {
 /* Header and navigation */
 .topbar {
     height: 45px;
-    display: flex;
+    display: grid;
     align-items: center;
-    gap: 22px;
+    grid-template-columns: minmax(150px, 1fr) auto minmax(150px, 1fr);
     padding: 0 max(24px, calc((100% - 830px) / 2));
     background: var(--surface);
     border-bottom: 1px solid var(--line);
@@ -52,6 +52,7 @@ a {
     align-items: center;
     gap: 8px;
     white-space: nowrap;
+    justify-self: start;
 }
 
 .brand-mark {
@@ -94,18 +95,41 @@ a {
     display: flex;
     align-items: center;
     gap: 4px;
-    margin: 0 auto;
+    grid-column: 2;
 }
 
 .main-nav a {
     display: flex;
     align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 30px;
     gap: 7px;
     padding: 6px 10px;
     border-radius: 9px;
     color: #6d7788;
     font-size: 11px;
     white-space: nowrap;
+}
+
+.main-nav a:nth-child(1) {
+    width: 82px;
+}
+
+.main-nav a:nth-child(2) {
+    width: 92px;
+}
+
+.main-nav a:nth-child(3) {
+    width: 116px;
+}
+
+.main-nav a:nth-child(4) {
+    width: 70px;
+}
+
+.main-nav a:nth-child(5) {
+    width: 92px;
 }
 
 .main-nav a span {
@@ -119,11 +143,13 @@ a {
 }
 
 .logout {
+    width: 85px;
     padding: 0;
     border: 0;
     color: #687487;
     background: transparent;
     font-size: 11px;
+    text-align: left;
     white-space: nowrap;
 }
 
@@ -131,9 +157,12 @@ a {
     display: flex;
     align-items: center;
     gap: 12px;
+    grid-column: 3;
+    justify-self: end;
 }
 
 .language-switch {
+    width: 24px;
     padding: 0;
     border: 0;
     color: var(--blue);
@@ -169,6 +198,8 @@ h1 {
 }
 
 .button {
+    width: 145px;
+    height: 32px;
     padding: 7px 15px;
     border: 0;
     border-radius: 7px;
@@ -176,6 +207,7 @@ h1 {
     background: var(--blue);
     box-shadow: 0 2px 4px #cbd9ee;
     font-size: 11px;
+    white-space: nowrap;
     cursor: pointer;
 }
 
@@ -198,6 +230,7 @@ button:disabled, button:hover:disabled {
 
 /* teacher-main-page cards */
 .card,
+.card-teacher-main-page,
 .panel {
     background: var(--surface);
     border: 1px solid var(--line);
@@ -207,23 +240,22 @@ button:disabled, button:hover:disabled {
 
 .card-teacher-main-page {
     position: relative;
-    container-type: inline-size;
-    min-height: 47cqi;
-    padding: 8cqi;
+    min-height: 90px;
+    padding: 15px;
 }
 
 .card-icon {
     position: absolute;
-    top: 8cqi;
-    right: 8cqi;
+    top: 15px;
+    right: 15px;
     display: grid;
     place-items: center;
-    width: 16cqi;
-    height: 16cqi;
-    border-radius: 5cqi;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
     color: var(--blue);
     background: #eaf2ff;
-    font-size: 8cqi;
+    font-size: 14px;
 }
 
 .card-icon.green {
@@ -243,17 +275,17 @@ button:disabled, button:hover:disabled {
 
 .card-value {
     display: block;
-    margin-top: 13cqi;
-    font-size: 10.5cqi;
+    margin-top: 25px;
+    font-size: 20px;
     font-weight: bold;
 }
 
 .card-label {
     position: absolute;
-    top: 8cqi;
-    left: 8cqi;
+    top: 15px;
+    left: 15px;
     color: var(--lessImportantText);
-    font-size: 5.25cqi;
+    font-size: 10px;
 }
 
 /* garage-cards */
@@ -306,6 +338,8 @@ button:disabled, button:hover:disabled {
 }
 
 .vehicle-status {
+    width: 74px;
+    text-align: center;
     padding: 2cqi 5cqi;
     border: 1px solid #b9d4ff;
     border-radius: 12px;
@@ -331,12 +365,12 @@ button:disabled, button:hover:disabled {
 .vehicle-license {
     position: absolute;
     right: 9cqi;
-    bottom: 22cqi;
+    bottom: 23cqi;
     padding: 2cqi 4cqi;
     border-radius: 2cqi;
     color: #657187;
     background: #f1f3f6;
-    font-size: 5.25cqi;
+    font-size: 5.50cqi;
 }
 
 .vehicle-code {
@@ -441,15 +475,38 @@ button:disabled, button:hover:disabled {
 }
 
 .pill {
-    padding: 6px 10px;
+    display: inline-block;
+    width: 60px;
+    height: 28px;
+    text-align: center;
+    padding: 0;
+    border: 0;
     border-radius: 14px;
-    color: #667286;
-    background: #f1f3f6;
+    color: var(--text);
+    background: var(--background);
+    line-height: 28px;
+    cursor: pointer;
+}
+
+.pill:hover,
+.pill.active:hover {
+    color: white;
+    background: #8db5ed;
 }
 
 .pill.active {
     color: white;
-    background: var(--blue);
+    background: var(--blue-dark);
+}
+
+.pill:active {
+    color: white;
+    background: var(--blue-dark);
+}
+
+.pill:hover {
+    color: white;
+    background: #8db5ed;
 }
 
 /* Buttons and form controls */
@@ -462,6 +519,8 @@ button:disabled, button:hover:disabled {
 }
 
 .select {
+    width: 70px;
+    height: 30px;
     padding: 7px 10px;
     border: 1px solid var(--line);
     border-radius: 7px;
@@ -473,6 +532,7 @@ button:disabled, button:hover:disabled {
 @media (max-width: 760px) {
     .topbar {
         height: auto;
+        display: flex;
         min-height: 55px;
         flex-wrap: wrap;
         gap: 10px;
