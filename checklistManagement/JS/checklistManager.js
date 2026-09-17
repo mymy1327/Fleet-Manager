@@ -1,6 +1,6 @@
 async function main() {
   //Load library from API
-  const libraryResponce = await fetch("../../databaseAPI/checklists.php")
+  const libraryResponce = await fetch("../../api/checklists")
   if (!libraryResponce.ok) {
     alert("Failed to load checklist library!")
     return
@@ -47,7 +47,7 @@ async function main() {
 
       //Send request
       const xhr = new XMLHttpRequest();
-      xhr.open("DELETE", "../../databaseAPI/checklists.php", true); //add path to requested file
+      xhr.open("DELETE", "../../api/checklists", true); //add path to requested file
       xhr.setRequestHeader("Content-Type", "application/json");
       xhr.onload = () => {
         //Handle request data

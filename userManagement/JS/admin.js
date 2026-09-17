@@ -1,7 +1,7 @@
 async function main() {
   //Get users from API
   const usersTable = document.getElementById("usersTable");
-  const data = await fetch("./api.php");
+  const data = await fetch("../api/users");
   for (const user of await data.json()) {
     //Create table row for each user
     const row = document.createElement("tr");
@@ -59,7 +59,7 @@ async function main() {
     btnDelete.addEventListener("click", () => {
       if (confirm("Are you sure you want to delete: " + user.name)) {
         const xhr = new XMLHttpRequest();
-        xhr.open("DELETE", "./api.php", true); //add path to requested file
+        xhr.open("DELETE", "../api/users/" + encodeURIComponent(user.id), true); //add path to requested file
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
           if (xhr.status != 200) {
@@ -67,7 +67,7 @@ async function main() {
           }
           window.location.reload();
         };
-        xhr.send(JSON.stringify({id: user.id})); //data is a list send to requested file
+        xhr.send(JSON.stringify()); //data is a list send to requested file
       }
     });
     actions.appendChild(btnDelete);
