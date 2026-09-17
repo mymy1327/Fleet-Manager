@@ -1,9 +1,16 @@
 <?php
 header("Content-Type: application/json");
+//header("Access-Control-Allow-");
+header("Access-Control-Allow-Origin: http://127.0.0.1:5501");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, Origin");
 session_start();
 require "../assets/config.php";
 
-$listOfTables = ["checklists", "vehicles", "files", "users", "inspections", "problems"];
+if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
+    heaDie(200);
+}
+
+$listOfTables = ["checklists", "vehicles", "files", "users", "inspections"];
 
 $path = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 $uri = array_slice(explode("/", $path), 2);
@@ -294,11 +301,11 @@ function rewriteChecklistItemCell($conn, $id, $column, $name, $description)
  * @param int $id checklist id
  * @return true|array[false, int, string|null] true on success | false on failure
  */
-function deleteChecklistItem($conn, $id)
+function deleteEntry($conn, $table, $id)
 {
-    $stmt = $conn->prepare("DELETE FROM `checklists` WHERE id_checklists = ?");
-    $checklistId = (int) $id;
-    $stmt->bind_param("i", $checklistId);
+    $stmt = $conn->prepare("DELETE FROM `$table` WHERE id_$table = ?");
+    $intId = (int) $id;
+    $stmt->bind_param("i", $intId);
     if (!$stmt->execute()) {
         return [false, 404];
     }

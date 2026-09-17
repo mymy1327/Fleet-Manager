@@ -1,5 +1,7 @@
 <?php
 header("Content-Type: application/json");
+header("Access-Control-Allow-Origin: http://127.0.0.1:5501");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, Origin");
 session_start();
 require "../../assets/config.php";
 
@@ -16,11 +18,11 @@ $data = json_decode(file_get_contents("php://input"), true);
  * @param string $filter filtering value
  * @return json|array[false, int, string|null] list of entries | false on failure
  */
-function getFullTable($conn, $filterColumn, $filter)
+function getFullTable($conn, $table = "problems", $filterColumn, $filter)
 {
     //logToConsole($filter);
     if (isset($filterColumn)) {
-        $stmt = $conn->prepare("SELECT * FROM `problems` WHERE `$filterColumn` = ?");
+        $stmt = $conn->prepare("SELECT * FROM `$table` WHERE `$filterColumn` = ?");
         $stmt->bind_param("s", $filter);
         if (!$stmt->execute()) {
             return [false, 404];
@@ -32,6 +34,13 @@ function getFullTable($conn, $filterColumn, $filter)
             return [false, 404];
         }
         $return = $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    foreach ($return as $key => $problem) {
+        $return[$key]["checklist"] = json_decode(
+            getEntryDetails($conn, "checklists", $problem["id_checklists"]),
+            true,
+        );
     }
 
     //logToConsole($return[2]["name"], );
@@ -56,6 +65,13 @@ function getProblemsByVehicleId($conn, $filter)
     }
     $return = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
+    foreach ($return as $key => $problem) {
+        $return[$key]["checklist"] = json_decode(
+            getEntryDetails($conn, "checklists", $problem["id_checklists"]),
+            true,
+        );
+    }
+
     //logToConsole($return[2]["name"], );
     return json_encode($return, JSON_NUMERIC_CHECK);
 }
@@ -66,9 +82,10 @@ function getProblemsByVehicleId($conn, $filter)
  * @param int $id row id
  * @return json|array[false, int, string|null] entry details | false on failure
  */
-function getEntryDetails($conn, $id)
+function getEntryDetails($conn, $table = "problems", $id)
 {
-    $stmt = $conn->prepare("SELECT * FROM `problems` WHERE id_problems = ?");
+    $table = $table ?? "problems";
+    $stmt = $conn->prepare("SELECT * FROM `$table` WHERE id_$table = ?");
     $intId = (int) $id;
     $stmt->bind_param("i", $intId);
     if (!$stmt->execute()) {
@@ -79,6 +96,15 @@ function getEntryDetails($conn, $id)
     if (is_null($return)) {
         return [false, 404];
     }
+
+    if ($table == "problems" && !is_null($return["id_checklists"])) {
+        $checklistTable = getEntryDetails($conn, "checklists", $return["id_checklists"]);
+        if (gettype($checklistTable) == "array" && !$checkllistTable[0]) {
+            heaDie($checklistTable[1]);
+        }
+        $return["checklist"] = json_decode($checklistTable, true);
+    }
+
     return json_encode($return, JSON_NUMERIC_CHECK);
 }
 
@@ -94,13 +120,13 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             heaDie(200, $return);
         }
         if (!isset($uri[1])) {
-            $return = getFullTable($conn, $filterColumn, $filter);
+            $return = getFullTable($conn, null, $filterColumn, $filter);
             if (gettype($return) == "array" && !$return[0]) {
                 heaDie($return[1]);
             }
             heaDie(200, $return);
         } else {
-            $return = getEntryDetails($conn, $uri[1], $filterColumn, $filter);
+            $return = getEntryDetails($conn, null, $uri[1]);
             if (gettype($return) == "array" && !$return[0]) {
                 heaDie($return[1]);
             }
