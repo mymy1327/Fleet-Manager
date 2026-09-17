@@ -12,7 +12,7 @@
  */
 
 session_start();
-require "../../assets/config.php";
+require "../assets/config.php";
 
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     http_response_code(405);
@@ -24,13 +24,15 @@ if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     exit;
 }
 
-$vehicleId = $_GET["vehicle"] ?? null;
+$vehicleId = isset($_GET["vehicle"])
+    ? (int) $_GET["vehicle"]
+    : 0;
 
-if (!$vehicleId) {
+if ($vehicleId <= 0) {
     http_response_code(400);
 
     echo json_encode([
-        "error" => "vehicle is required"
+        "error" => "Valid vehicle ID is required"
     ], JSON_UNESCAPED_UNICODE);
 
     exit;
@@ -43,8 +45,9 @@ $sql = "
         type,
         license_plate,
         code,
+        last_maintenance,
         state,
-        kilometers
+        id_files
     FROM vehicles
     WHERE id_vehicles = ?
     LIMIT 1

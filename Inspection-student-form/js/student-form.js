@@ -266,7 +266,8 @@ async function renderOpenFaults(vehicleId) {
 
         renderFaultCards([]);
     }
-
+        }
+    }
 }
 
 //Take the km form the newest inspection

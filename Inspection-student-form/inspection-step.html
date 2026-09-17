@@ -77,6 +77,90 @@
     </div>
 
 </div>
+<!-- Summary overlay -->
+<div
+    id="summaryModal"
+    class="summary-overlay"
+>
+
+    <!-- Summary modal -->
+    <div class="summary-modal">
+
+        <!-- Header -->
+        <div class="summary-header">
+
+            <h2>
+                Tarkastuksen yhteenveto
+            </h2>
+
+            <button
+                type="button"
+                class="summary-close"
+                id="summary-close"
+                aria-label="Sulje"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <!-- Vehicle information -->
+        <div class="summary-vehicle">
+
+            <div>
+                <span class="material-symbols-outlined">
+                    directions_car
+                </span>
+            </div>
+
+            <div>
+                <strong class="summary-vehicle-name">
+                    Ajoneuvo
+                </strong>
+
+                <p class="summary-vehicle-details">
+                    <!-- Vehicle information -->
+                </p>
+            </div>
+
+        </div>
+
+
+        <!-- Answers -->
+        <div class="summary-answers">
+            <!-- JavaScript will generate answers here -->
+        </div>
+
+
+        <!-- Confirmation -->
+        <label class="summary-confirmation">
+
+            <input
+                type="checkbox"
+                id="summary-confirmation"
+            >
+
+            <span>
+                Olen tarkistanut vastaukseni ja ne ovat oikein.
+            </span>
+
+        </label>
+
+
+        <!-- Submit -->
+        <button
+            type="button"
+            id="summary-submit"
+            class="summary-submit"
+            disabled
+        >
+            Lähetä tarkastus
+        </button>
+
+    </div>
+
+</div>
 <script src="js/inspection-step.js"></script>
 </body>
 </html>

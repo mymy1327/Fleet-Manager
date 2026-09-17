@@ -111,7 +111,6 @@ body {
     margin: 0 auto;
     text-align: center;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 24px;
 
     align-items: start;
@@ -185,13 +184,15 @@ body {
 .question-content {
     grid-column: 1 / -1;
     width: 100%;
-    margin-top: 30px;
-    display: flex;
-    column-gap: 16px;
+    column-gap: 5px;
     justify-content: center;
     box-sizing: border-box;
 }
-
+.question-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
 .question-layout.has-fault {
 
     grid-template-columns:
@@ -204,14 +205,14 @@ body {
 /* Question content becomes left column */
 
 .question-layout.has-fault .question-content {
-    grid-column: 1;
+    grid-column: 1 !important;
 }
 
 
 /* Fault container becomes right column */
 
 .question-layout.has-fault .fault-container {
-    grid-column: 2;
+    grid-column: 2 !important;
 }
 
 .fault-container {
@@ -273,15 +274,6 @@ body {
 .fault-priority .question-option {
     margin-bottom: 8px;
 }
-
-#questionContainer {
-    width: 100%;
-    max-width: 1000px;
-
-    margin: 0 auto;
-
-    text-align: center;
-}
 /*NUMBER INPUT*/
 
 .number-input-wrapper {
@@ -330,6 +322,118 @@ body {
     font-weight: 400;
 }
 
+.kilometer-input-wrapper {
+    width: 100%;
+    max-width: 500px;
+    margin: 30px auto 0;
+}
+
+.kilometer-input-wrapper > label {
+    display: block;
+    margin-bottom: 10px;
+
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.kilometer-input-row {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    height: 58px;
+
+    border: 2px solid #d1d5db;
+    border-radius: 12px;
+
+    background-color: #ffffff;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.kilometer-input-row:focus-within {
+    border-color: #3b82f6;
+
+    box-shadow:
+        0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.kilometer-input-row input {
+    flex: 1;
+
+    width: 100%;
+    height: 100%;
+
+    padding: 0 16px;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    font-size: 20px;
+    font-weight: 600;
+
+    color: #111827;
+}
+
+.kilometer-input-row input::placeholder {
+    color: #9ca3af;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+
+/* Remove browser number arrows */
+
+.kilometer-input-row input::-webkit-outer-spin-button,
+.kilometer-input-row input::-webkit-inner-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
+}
+
+.kilometer-input-row input[type="number"] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+
+.kilometer-input-row span {
+    padding: 0 18px;
+
+    font-size: 17px;
+    font-weight: 600;
+
+    color: #6b7280;
+}
+
+.last-inspection-kilometer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-top: 12px;
+    padding: 14px 16px;
+
+    border-radius: 10px;
+
+    background-color: #f3f4f6;
+}
+
+.last-inspection-kilometer span {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.last-inspection-kilometer strong {
+    font-size: 16px;
+    font-weight: 700;
+    color: #374151;
+}
+
 
 /* Remove number arrows */
 .question-number-input::-webkit-inner-spin-button,
@@ -357,15 +461,80 @@ body {
     color: #64748b;
     pointer-events: none;
 }
-/*LAST INSPECTION*/
-
-.last-inspection-kilometer {
-    margin: 10px 0 0;
-    font-size: 13px;
-    font-weight: 500;
-    color: #64748b;
-}
 /*CHOICE OPTIONS*/
+.fuel-gauge-wrapper {
+    width: 100%;
+    max-width: 420px;
+    margin: 30px auto;
+}
+
+.fuel-gauge {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.fuel-gauge-svg {
+    width: 100%;
+    max-width: 360px;
+    overflow: visible;
+}
+
+.fuel-gauge-background,
+.fuel-gauge-fill {
+    fill: none;
+    stroke-width: 18;
+    stroke-linecap: round;
+}
+
+.fuel-gauge-background {
+    stroke: #e5e7eb;
+}
+
+.fuel-gauge-fill {
+    stroke: #3b82f6;
+    stroke-dasharray: 0 1000;
+    transition: stroke-dasharray 0.15s ease;
+}
+
+.fuel-gauge-value {
+    font-size: 28px;
+    font-weight: 700;
+    fill: #1f2937;
+}
+
+.fuel-gauge-icon {
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.fuel-gauge-icon span {
+    font-size: 28px;
+}
+
+.fuel-slider-wrapper input[type="range"] {
+    width: 100%;
+    cursor: pointer;
+}
+
+.fuel-slider {
+    width: 100%;
+}
+
+.fuel-slider-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.fuel-slider-labels strong {
+    font-size: 18px;
+}
+
 .question-options {
     width: 100%;
     max-width: 500px;
@@ -443,6 +612,7 @@ body {
     background-color: #f8fafc;
     border: 1px dashed #94a3b8;
     border-radius: 14px;
+    margin-bottom: 5px;
 }
 /* Description */
 
@@ -651,6 +821,11 @@ body {
     font-size: 14px;
     font-weight: 600;
 }
+
+.vehicle-info {
+    display: flex;
+    right: 0;
+}
 /*RESPONSIVE - TABLET*/
 @media (max-width: 700px) {
     .inspection-container {
@@ -748,12 +923,16 @@ body {
     position: fixed;
     inset: 0;
     z-index: 9999;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     padding: 20px;
     background-color: rgba(15, 23, 42, 0.55);
     backdrop-filter: blur(4px);
+}
+
+.summary-overlay.show {
+    display: flex;
 }
 /*SUMMARY MODAL*/
 

@@ -4,6 +4,7 @@ let checklists = [];
 let allQuestions = [];
 let currentQuestionIndex = 0;
 let answers = [];
+let previousKilometers = null;
 
 function escapeHTML(value) {
     if (value === null || value === undefined) {
@@ -49,78 +50,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loadInspectionData(vehicleId);
 });
-// GET VEHICLE CHECKLISTS
-
-async function loadVehicleChecklists(
-    vehicleId
-) {
-
-    const response =
-        await fetch(
-            `/Fleet-Manager/api/checklists.php?id_vehicles=${encodeURIComponent(
-                vehicleId
-            )}`
-        );
 
 
-    console.log(
-        "Checklist status:",
-        response.status
-    );
-
-
-    const responseText =
-        await response.text();
-
-
-    console.log(
-        "Checklist response:",
-        responseText
-    );
-
-
-    if (!response.ok) {
-
-        throw new Error(
-            `Checklist API error: ${response.status}`
-        );
-    }
-
-
-    const data =
-        JSON.parse(
-            responseText
-        );
-
-
-    checklists =
-        Array.isArray(data)
-            ? data
-            : data.data || [];
-
-
-    console.log(
-        "Checklists:",
-        checklists
-    );
-}
-
+// Load all inspection data
 async function loadInspectionData(vehicleId) {
 
     try {
 
-        await loadVehicleData(
-            vehicleId
-        );
+        await loadVehicleData(vehicleId);
+
+        await loadChecklistData(vehicleId);
 
         console.log(
             "Vehicle loaded:",
             vehicle
-        );
-
-
-        await loadVehicleChecklists(
-            vehicleId
         );
 
         console.log(
@@ -135,26 +78,23 @@ async function loadInspectionData(vehicleId) {
             );
         }
 
-        if (!checklists.length) {
+        if (
+            !Array.isArray(checklists) ||
+            checklists.length === 0
+        ) {
 
             throw new Error(
                 "No checklists found for this vehicle."
             );
         }
 
-
         currentQuestionIndex = 0;
 
         answers = checklists.map(() => ({
-
             answer: null,
-
             oilPhoto: null,
-
             error: null
-
         }));
-
 
         renderVehicleInformation();
 
@@ -168,6 +108,7 @@ async function loadInspectionData(vehicleId) {
 
         setupBackButton();
 
+        setupSummaryModal();
 
         console.log(
             "Inspection page initialized successfully."
@@ -186,35 +127,125 @@ async function loadInspectionData(vehicleId) {
     }
 }
 
-async function loadVehicleData(
-    vehicleId
-) {
+// Load vehicle information
+// Load vehicle information
+async function loadVehicleData(vehicleId) {
 
-    const response =
-        await fetch(
-            `/Fleet-Manager/api/vehicles.php?vehicle=${encodeURIComponent(
-                vehicleId
-            )}`
-        );
-
+    const response = await fetch(
+        `http://localhost/api/vehicles.php?vehicle=${vehicleId}`
+    );
 
     if (!response.ok) {
-
         throw new Error(
             `Vehicle API error: ${response.status}`
         );
     }
 
+    vehicle = await response.json();
 
-    vehicle =
-        await response.json();
+    console.log("Vehicle:", vehicle);
+}
 
+
+// Load checklist items assigned to the vehicle
+async function loadChecklistData(vehicleId) {
+
+    const response = await fetch(
+        `http://localhost/api/checklists.php?vehicle=${vehicleId}`
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            `Checklist API error: ${response.status}`
+        );
+    }
+
+    const data = await response.json();
+
+    checklists =
+        Array.isArray(data)
+            ? data
+            : data.data || [];
 
     console.log(
-        "Vehicle:",
-        vehicle
+        "Checklists loaded:",
+        checklists
     );
 }
+
+function getAllInspections(vehicleId) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "/api/inspections?id_vehicles=" + vehicleId, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+        console.log("Inspection API status:", xhr.status);
+        console.log("Inspection API response:", xhr.responseText);
+
+        if (xhr.status < 200 || xhr.status >= 300) {
+            console.error(
+                "Inspection API error:",
+                xhr.status
+            );
+            return;
+        }
+         try {
+            const data =
+                JSON.parse(xhr.responseText);
+
+            console.log(
+                "Inspection data:",
+                data
+            );
+
+            if (!Array.isArray(data) ||
+                data.length === 0) {
+
+                previousKilometers = null;
+                return;
+            }
+
+            // Sort inspections by newest date
+            data.sort((a, b) => {
+                return new Date(
+                    b.date
+                ) - new Date(
+                    a.date
+                );
+            });
+
+            const latestInspection =
+                data[0];
+
+            previousKilometers =
+                Number(
+                    latestInspection.kilometers
+                );
+
+            console.log(
+                "Previous kilometers:",
+                previousKilometers
+            );
+
+        } catch (error) {
+            console.error(
+                "Failed to parse inspection data:",
+                error
+            );
+
+            previousKilometers = null;
+        }
+    };
+
+    xhr.onerror = () => {
+        console.error(
+            "Could not connect to inspection API."
+        );
+
+        previousKilometers = null;
+    };
+
+    xhr.send();
+    }
 
 
 // Render vehicle information
@@ -266,7 +297,7 @@ function renderVehicleInformation() {
 
         vehicleKilometers.textContent =
             vehicle.kilometers != null
-                ? `${vehicle.kilometers} km`
+                ? `${previousKilometers} km`
                 : "-";
     }
 }
@@ -297,7 +328,7 @@ function renderQuestion() {
         checklist.name || "Tarkastus";
 
     const description =
-        checklist.descriptions || "";
+        checklist.description || "";
 
     const isOilQuestion =
         questionName
@@ -547,6 +578,20 @@ function renderAnswerOptions(checklist) {
 
     container.innerHTML = "";
 
+    const questionName =
+        checklist.name.toLowerCase();
+
+    // Render kilometer input
+    if (questionName === "kilometrilukema") {
+        renderKilometerInput(container);
+        return;
+    }
+
+    // Render fuel gauge
+    if (questionName === "polttoaineen määrä") {
+        renderFuelGauge(container);
+        return;
+    }
 
     const options = [
         "Hyvä",
@@ -603,7 +648,7 @@ function renderAnswerOptions(checklist) {
             report_problem
         </span>
 
-        Report Faults
+        Ilmoita vika
     `;
 
     faultButton.addEventListener(
@@ -791,6 +836,14 @@ function renderFaultForm() {
                 data-priority="high"
             >
                 Korkea
+            </button>
+
+            <button
+                type="button"
+                class="question-option"
+                data-priority="critical"
+            >
+                Kriittinen
             </button>
 
         </div>
@@ -1194,6 +1247,48 @@ function validateCurrentQuestion() {
     /*
      * Every question requires an answer
      */
+const questionName =
+    checklists[currentQuestionIndex].name
+        .toLowerCase();
+
+if (questionName === "kilometrilukema") {
+    const value =
+        answers[currentQuestionIndex].answer;
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === "" ||
+        Number(value) < 0
+    ) {
+        showValidationError(
+            "Syötä kilometrilukema."
+        );
+
+        return false;
+    }
+
+    return true;
+}
+
+if (questionName === "polttoaineen määrä") {
+    const value =
+        answers[currentQuestionIndex].answer;
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+        showValidationError(
+            "Valitse polttoaineen määrä."
+        );
+
+        return false;
+    }
+
+    return true;
+}
+
     if (
         !answer ||
         !answer.answer
@@ -1300,7 +1395,7 @@ function finishInspection() {
                     checklist.name,
 
                 description:
-                    checklist.descriptions || ""
+                    checklist.description || ""
             })
         ),
 
@@ -1313,7 +1408,7 @@ function finishInspection() {
                     checklist.name,
 
                 description:
-                    checklist.descriptions || "",
+                    checklist.description || "",
 
                 answer:
                     answers[index] || null
@@ -1347,7 +1442,7 @@ function showSummaryModal(
 ) {
     const modal =
         document.getElementById(
-            "summary-modal"
+            "summaryModal"
         );
 
     if (!modal) {
@@ -1362,19 +1457,31 @@ function showSummaryModal(
      * Vehicle information
      */
     const vehicleElement =
-        modal.querySelector(
-            ".summary-vehicle"
-        );
+    modal.querySelector(
+        ".summary-vehicle-name"
+    );
 
-    if (vehicleElement) {
-        const plate =
-            inspectionResult.licensePlate
-                ? ` (${inspectionResult.licensePlate})`
-                : "";
+const vehicleDetails =
+    modal.querySelector(
+        ".summary-vehicle-details"
+    );
 
-        vehicleElement.textContent =
-            `${inspectionResult.vehicle}${plate}`;
-    }
+const plate =
+    inspectionResult.licensePlate
+        ? inspectionResult.licensePlate
+        : "";
+
+if (vehicleElement) {
+    vehicleElement.textContent =
+        inspectionResult.vehicle || "Ajoneuvo";
+}
+
+if (vehicleDetails) {
+    vehicleDetails.textContent =
+        plate
+            ? `Rekisterinumero: ${plate}`
+            : "";
+}
 
     /*
      * Answers
@@ -1395,59 +1502,103 @@ function showSummaryModal(
                         "div"
                     );
 
-                card.classList.add(
-                    "summary-answer"
+                card.classList.add("summary-answer");
+
+                /*
+                * Question number
+                */
+                const questionNumber =
+                  document.createElement("div");
+
+                questionNumber.classList.add(
+                 "summary-question-number");
+
+                questionNumber.textContent =
+                 index + 1;
+
+                card.appendChild(
+                     questionNumber);
+
+
+                    /*
+                    * Question content
+                    */
+                const answerContent =
+                    document.createElement("div");
+
+                answerContent.classList.add(
+                    "summary-answer-content"
                 );
 
+
                 /*
-                 * Question title
-                 */
+                * Question title
+                */
                 const title =
-                    document.createElement(
-                        "h3"
-                    );
+                    document.createElement("p");
+
+                title.classList.add(
+                    "summary-question"
+                );
 
                 title.textContent =
-                    `${index + 1}. ${
-                        item.question
-                    }`;
+                    item.question || "Tarkastus";
 
-                card.appendChild(title);
+                answerContent.appendChild(
+                    title
+                );
+
 
                 /*
-                 * Description
-                 */
+                * Description
+                */
                 if (item.description) {
+
                     const description =
-                        document.createElement(
-                            "p"
-                        );
+                        document.createElement("p");
+
+                    description.classList.add(
+                        "summary-question-description"
+                    );
 
                     description.textContent =
                         item.description;
 
-                    card.appendChild(
+                    answerContent.appendChild(
                         description
                     );
                 }
 
+
                 /*
-                 * Answer
-                 */
+                * Answer
+                */
                 const answerText =
-                    document.createElement(
-                        "p"
-                    );
+                    document.createElement("p");
+
+                answerText.classList.add(
+                    "summary-value"
+                );
 
                 answerText.innerHTML =
                     `<strong>Vastaus:</strong> ${
-                        formatSummaryAnswer(
-                            item.answer
+                        escapeHTML(
+                            formatSummaryAnswer(
+                                item.answer
+                            )
                         )
                     }`;
 
-                card.appendChild(
+                answerContent.appendChild(
                     answerText
+                );
+
+
+                /*
+                * Add content to card
+                */
+                card.appendChild(
+                    answerContent
                 );
 
                 /*
@@ -1783,18 +1934,209 @@ async function submitInspection(
 
     closeSummaryModal();
 }
+function setupSummaryModal() {
+
+    const closeButton =
+        document.getElementById(
+            "summary-close"
+        );
+
+    if (closeButton) {
+
+        closeButton.onclick =
+            closeSummaryModal;
+    }
+}
 
 function closeSummaryModal() {
+
     const modal =
         document.getElementById(
-            "summary-modal"
+            "summaryModal"
         );
 
     if (modal) {
+
         modal.classList.remove(
             "show"
         );
     }
+}
+function renderKilometerInput(container) {
+    const wrapper =
+        document.createElement("div");
+
+    wrapper.className = "kilometer-input-wrapper";
+
+    wrapper.innerHTML = `
+        <label for="kilometerInput">
+            Nykyinen kilometrilukema
+        </label>
+
+        <div class="kilometer-input-row">
+            <input
+                type="number"
+                id="kilometerInput"
+                min="0"
+                step="1"
+                placeholder="Syötä km"
+            >
+            <span>km</span>
+        </div>
+
+        <div class="last-inspection-kilometer">
+            <span>
+                Edellisen tarkastuksen lukema
+            </span>
+
+            <strong>
+                ${getPreviousKilometers()} km
+            </strong>
+        </div>
+    `;
+
+    container.appendChild(wrapper);
+
+    const input =
+        document.getElementById("kilometerInput");
+
+    input.addEventListener("input", () => {
+        answers[currentQuestionIndex].answer =
+            input.value
+                ? Number(input.value)
+                : null;
+    });
+}
+
+function getPreviousKilometers() {
+    if (
+        vehicle &&
+        vehicle.previousKilometers !== undefined
+    ) {
+        return vehicle.previousKilometers;
+    }
+
+    if (
+        vehicle &&
+        vehicle.kilometers !== undefined
+    ) {
+        return vehicle.kilometers;
+    }
+
+    return "-";
+}
+
+function renderFuelGauge(container) {
+    const wrapper =
+        document.createElement("div");
+
+    wrapper.className = "fuel-gauge-wrapper";
+
+    wrapper.innerHTML = `
+        <div class="fuel-gauge">
+            <svg
+                class="fuel-gauge-svg"
+                viewBox="0 0 200 120"
+            >
+                <path
+                    class="fuel-gauge-background"
+                    d="M 20 100 A 80 80 0 0 1 180 100"
+                />
+
+                <path
+                    class="fuel-gauge-fill"
+                    id="fuelGaugeFill"
+                    d="M 20 100 A 80 80 0 0 1 180 100"
+                />
+
+                <text
+                    x="100"
+                    y="78"
+                    text-anchor="middle"
+                    id="fuelGaugeValue"
+                    class="fuel-gauge-value"
+                >
+                    50%
+                </text>
+            </svg>
+
+            <div class="fuel-gauge-icon">
+                <span class="material-symbols-outlined">
+                    local_gas_station
+                </span>
+            </div>
+        </div>
+
+        <div class="fuel-slider-wrapper">
+            <div class="fuel-slider-labels">
+                <span>0 %</span>
+                <strong id="fuelSliderValue">
+                    50 %
+                </strong>
+                <span>100 %</span>
+            </div>
+
+            <input
+                type="range"
+                id="fuelSlider"
+                min="0"
+                max="100"
+                value="50"
+                step="1"
+            >
+        </div>
+    `;
+
+    container.appendChild(wrapper);
+
+    updateFuelGauge(50);
+
+    const slider =
+        document.getElementById("fuelSlider");
+
+    slider.addEventListener("input", () => {
+        const value =
+            Number(slider.value);
+
+        updateFuelGauge(value);
+
+        answers[currentQuestionIndex].answer =
+            value;
+    });
+
+    answers[currentQuestionIndex].answer = 50;
+}
+
+function updateFuelGauge(value) {
+    const gaugeValue =
+        document.getElementById("fuelGaugeValue");
+
+    const sliderValue =
+        document.getElementById("fuelSliderValue");
+
+    const gaugeFill =
+        document.getElementById("fuelGaugeFill");
+
+    if (!gaugeValue ||
+        !sliderValue ||
+        !gaugeFill) {
+        return;
+    }
+
+    gaugeValue.textContent =
+        `${value}%`;
+
+    sliderValue.textContent =
+        `${value} %`;
+
+    const length =
+        gaugeFill.getTotalLength();
+
+    const progress =
+        length * (value / 100);
+
+    gaugeFill.style.strokeDasharray =
+        `${progress} ${length}`;
 }
 
 function showFireworks() {
