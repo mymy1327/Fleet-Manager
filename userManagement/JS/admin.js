@@ -1,7 +1,7 @@
 async function main() {
   //Get users from API
   const usersTable = document.getElementById("usersTable");
-  const data = await fetch("../api/users");
+  const data = await fetch("../../api/users");
   for (const user of await data.json()) {
     //Create table row for each user
     const row = document.createElement("tr");
@@ -9,7 +9,7 @@ async function main() {
 
     //Add username cell
     const username = document.createElement("td");
-    username.innerText = user.name;
+    username.innerText = user.username;
     row.appendChild(username);
 
     //Add email cell
@@ -28,10 +28,11 @@ async function main() {
 
     //Change password button
     const btnChangePassword = document.createElement("button");
+    btnChangePassword.classList.add("button")
     btnChangePassword.innerText = "Change password";
     btnChangePassword.addEventListener("click", () => {
       const xhr = new XMLHttpRequest();
-      xhr.open("PATCH", "./api.php", true); //add path to requested file
+      xhr.open("PATCH", "../../api/users/" + user.id, true); //add path to requested file
       xhr.setRequestHeader("Content-Type", "application/json");
       xhr.onload = () => {
         if (xhr.status != 200) {
@@ -39,7 +40,7 @@ async function main() {
         }
         window.location.reload();
       };
-      xhr.send(JSON.stringify({ function: "changePassword", id: user.id, password: prompt("Enter new password: ") })); //data is a list send to requested file
+      xhr.send(JSON.stringify({ function: "changePassword", password: prompt("Enter new password: ") })); //data is a list send to requested file
     });
     actions.appendChild(btnChangePassword);
 
@@ -48,7 +49,7 @@ async function main() {
     btnEdit.classList.add("button");
     btnEdit.innerText = "Edit";
     btnEdit.addEventListener("click", () => {
-      window.location.href = "../PHP/user.php?id=" + encodeURIComponent(user.id);
+      window.location.href = "./user.php?id=" + encodeURIComponent(user.id_users);
     });
     actions.appendChild(btnEdit);
 
@@ -59,7 +60,7 @@ async function main() {
     btnDelete.addEventListener("click", () => {
       if (confirm("Are you sure you want to delete: " + user.name)) {
         const xhr = new XMLHttpRequest();
-        xhr.open("DELETE", "../api/users/" + encodeURIComponent(user.id), true); //add path to requested file
+        xhr.open("DELETE", "../../api/users/" + user.id, true); //add path to requested file
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
           if (xhr.status != 200) {
