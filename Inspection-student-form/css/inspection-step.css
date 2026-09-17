@@ -112,10 +112,11 @@ body {
     text-align: center;
     display: grid;
     gap: 24px;
-
+    justify-content: center;
     align-items: start;
 }
 /*QUESTION HEADER*/
+
 
 .question-header {
     width: 100%;
@@ -821,8 +822,12 @@ body {
     font-size: 14px;
     font-weight: 600;
 }
-
+.vehicle-icon {
+    justify-self: center;
+}
 .vehicle-info {
+    width: 35%;
+    margin-left: auto;
     padding: 5px;
     display: grid;
     grid-row: fr1 fr1 fr1 fr1;
