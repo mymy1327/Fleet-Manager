@@ -1192,7 +1192,6 @@ body {
     }
 }
 /*CONFETTI*/
-/*FIREWORKS*/
 .fireworks-container {
     position: fixed;
     inset: 0;
@@ -1208,6 +1207,8 @@ body {
 }
 
 .firework-particle {
+    width: 9px;
+    height: 9px;
     position: absolute;
     left: 0;
     top: 0;

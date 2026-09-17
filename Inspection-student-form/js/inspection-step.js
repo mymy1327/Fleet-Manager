@@ -173,80 +173,6 @@ async function loadChecklistData(vehicleId) {
     );
 }
 
-function getAllInspections(vehicleId) {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", "/api/inspections?id_vehicles=" + vehicleId, true);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.onload = () => {
-        console.log("Inspection API status:", xhr.status);
-        console.log("Inspection API response:", xhr.responseText);
-
-        if (xhr.status < 200 || xhr.status >= 300) {
-            console.error(
-                "Inspection API error:",
-                xhr.status
-            );
-            return;
-        }
-         try {
-            const data =
-                JSON.parse(xhr.responseText);
-
-            console.log(
-                "Inspection data:",
-                data
-            );
-
-            if (!Array.isArray(data) ||
-                data.length === 0) {
-
-                previousKilometers = null;
-                return;
-            }
-
-            // Sort inspections by newest date
-            data.sort((a, b) => {
-                return new Date(
-                    b.date
-                ) - new Date(
-                    a.date
-                );
-            });
-
-            const latestInspection =
-                data[0];
-
-            previousKilometers =
-                Number(
-                    latestInspection.kilometers
-                );
-
-            console.log(
-                "Previous kilometers:",
-                previousKilometers
-            );
-
-        } catch (error) {
-            console.error(
-                "Failed to parse inspection data:",
-                error
-            );
-
-            previousKilometers = null;
-        }
-    };
-
-    xhr.onerror = () => {
-        console.error(
-            "Could not connect to inspection API."
-        );
-
-        previousKilometers = null;
-    };
-
-    xhr.send();
-    }
-
 
 // Render vehicle information
 function renderVehicleInformation() {
@@ -297,7 +223,7 @@ function renderVehicleInformation() {
 
         vehicleKilometers.textContent =
             vehicle.kilometers != null
-                ? `${previousKilometers} km`
+                ? `${vehicle.kilometers} km`
                 : "-";
     }
 }
@@ -2141,13 +2067,10 @@ function updateFuelGauge(value) {
 
 function showFireworks() {
     const container =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
-    container.classList.add(
-        "fireworks"
-    );
+    container.className =
+        "fireworks-container";
 
     container.style.pointerEvents =
         "none";
@@ -2156,9 +2079,148 @@ function showFireworks() {
         container
     );
 
+    // Create large central fireworks
+    for (let i = 0; i < 6; i++) {
+        setTimeout(() => {
+            createFireworkBurst(container);
+        }, i * 280);
+    }
+
     setTimeout(() => {
         container.remove();
-    }, 3000);
+    }, 5000);
+}
+
+
+function createFireworkBurst(container) {
+    const burst =
+        document.createElement("div");
+
+    burst.className =
+        "firework-burst";
+
+    // Keep fireworks around the center of the screen
+    const x =
+        35 + Math.random() * 30;
+
+    const y =
+        25 + Math.random() * 30;
+
+    burst.style.left =
+        `${x}vw`;
+
+    burst.style.top =
+        `${y}vh`;
+
+    container.appendChild(
+        burst
+    );
+
+    // Create many particles
+    const particleCount = 48;
+
+    for (
+        let i = 0;
+        i < particleCount;
+        i++
+    ) {
+        const particle =
+            document.createElement("span");
+
+        particle.className =
+            "firework-particle";
+
+        const angle =
+            (360 / particleCount) * i;
+
+        // Large explosion radius
+        const distance =
+            180 + Math.random() * 220;
+
+        // Large particles
+        const size =
+            7 + Math.random() * 5;
+
+        particle.style.setProperty(
+            "--angle",
+            `${angle}deg`
+        );
+
+        particle.style.setProperty(
+            "--distance",
+            `${distance}px`
+        );
+
+        particle.style.width =
+            `${size}px`;
+
+        particle.style.height =
+            `${size}px`;
+
+        burst.appendChild(
+            particle
+        );
+    }
+
+    setTimeout(() => {
+        burst.remove();
+    }, 2100);
+}
+
+function createFirework(container) {
+    const firework =
+        document.createElement("div");
+
+    firework.className =
+        "firework";
+
+    firework.style.left =
+        `${20 + Math.random() * 60}%`;
+
+    firework.style.top =
+        `${15 + Math.random() * 40}%`;
+
+    container.appendChild(
+        firework
+    );
+
+    for (let i = 0; i < 24; i++) {
+        const particle =
+            document.createElement("span");
+
+        particle.className =
+            "firework-particle";
+
+        const angle =
+            (Math.PI * 2 * i) / 24;
+
+        const distance =
+            60 + Math.random() * 80;
+
+        const x =
+            Math.cos(angle) * distance;
+
+        const y =
+            Math.sin(angle) * distance;
+
+        particle.style.setProperty(
+            "--x",
+            `${x}px`
+        );
+
+        particle.style.setProperty(
+            "--y",
+            `${y}px`
+        );
+
+        firework.appendChild(
+            particle
+        );
+    }
+
+    setTimeout(() => {
+        firework.remove();
+    }, 1400);
 }
 
 function showErrorMessage(message) {

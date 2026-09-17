@@ -21,27 +21,26 @@ async function loadVehicle() {
 
     try {
 
-        const response = await fetch(
-            `../Vehiclelist/vehicles.php`
-        );
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "../../api/vehicles/" + vehicleId, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            console.log("Raw vehicle response:", xhr.responeText);
 
-        if (!response.ok) {
-            throw new Error(
-                `HTTP error: ${response.status}`
-            );
-        }
-
-        const text = await response.text();
-
-        console.log("Raw vehicle response:", text);
-
-        if (!text) {
+            if (!xhr.responeText) {
             throw new Error(
                 "Vehicle API returned an empty response."
             );
         }
+        const vehicles = xhr.responeText;
+        console.log(vehicles);
+        };
 
-        const vehicles = JSON.parse(text);
+        
+
+        
+
+        
 
         console.log("Vehicles:", vehicles);
 
