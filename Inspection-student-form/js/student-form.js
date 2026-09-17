@@ -1,3 +1,4 @@
+let restapi = "http://10.1.17.4:5501";
 let vehicle = null;
 let inspections = [];
 let faults = [];
@@ -6,161 +7,97 @@ document.addEventListener("DOMContentLoaded", () => {
     loadVehicle();
 });
 
-async function loadVehicle() {
+function loadVehicle() {
     const params = new URLSearchParams(window.location.search);
     const vehicleId = params.get("id");
 
     if (!vehicleId) {
-        console.error("Vehicle ID puuttuu URL-osoitteesta.");
         showVehicleError("Ajoneuvon tunnus puuttuu.");
         return;
     }
 
-    try {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", "../../api/vehicles/" + vehicleId, true);
-        xhr.setRequestHeader("Content-Type", "application/json");
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", restapi + "/api/vehicles/" + vehicleId, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
 
-        xhr.onload = () => {
-            console.log("Raw vehicle response:", xhr.responeText);
+    xhr.onload = () => {
+        console.log("Vehicle API:", xhr.status, xhr.responseText);
 
-            if (!xhr.responeText) {
-                throw new Error(
-                    "Vehicle API returned an empty response."
-                );
-            }
-
-            const vehicles = xhr.responeText;
-            console.log(vehicles);
-        };
-
-        console.log("Vehicles:", vehicles);
-
-        // Find the vehicle with the correct ID
-        vehicle = vehicles.find(
-            item =>
-                Number(item.id_vehicles) === Number(vehicleId)
-        );
-
-        console.log("Selected vehicle:", vehicle);
-
-        if (!vehicle) {
-            throw new Error(
-                `Vehicle with ID ${vehicleId} not found`
-            );
+        if (xhr.status < 200 || xhr.status >= 300) {
+            showVehicleError("Ajoneuvon tietoja ei voitu ladata.");
+            return;
         }
 
-        renderVehicle(vehicle);
+        try {
+            vehicle = JSON.parse(xhr.responseText);
+            renderVehicle(vehicle);
+            loadInspections(vehicle.id_vehicles);
+            loadProblems(vehicle.id_vehicles);
+        } catch (error) {
+            console.error("Vehicle JSON error:", error);
+            showVehicleError("Ajoneuvon tietoja ei voitu ladata.");
+        }
+    };
 
-        loadInspections(
-            vehicle.id_vehicles
-        );
-
-        renderOpenFaults(vehicle.id_vehicles);
-    } catch (error) {
-        console.error(
-            "Vehicle information could not be loaded:",
-            error
-        );
-
-        showVehicleError(
-            "Ajoneuvon tietoja ei voitu ladata."
-        );
-    }
+    xhr.onerror = () => showVehicleError("Yhteys palvelimeen epäonnistui.");
+    xhr.send();
 }
 
 function renderVehicle(vehicle) {
-    const nameElement =
-        document.querySelector(".vehicle-name");
+    const name = document.querySelector(".vehicle-name");
+    const type = document.querySelector(".vehicle-type");
+    const status = document.querySelector(".vehicle-status");
+    const license = document.querySelector(".vehicle-license");
+    const kilometer = document.querySelector(".vehicle-kilometer");
 
-    const typeElement =
-        document.querySelector(".vehicle-type");
-
-    const statusElement =
-        document.querySelector(".vehicle-status");
-
-    const licenseElement =
-        document.querySelector(".vehicle-license");
-
-    if (nameElement) {
-        nameElement.textContent =
-            vehicle.name || "-";
-    }
-
-    if (typeElement) {
-        typeElement.textContent =
-            vehicle.type || "-";
-    }
-
-    if (statusElement) {
-        statusElement.textContent =
-            formatVehicleState(vehicle.state);
-    }
-
-    if (licenseElement) {
-        licenseElement.textContent =
-            vehicle.license_plate || "-";
-    }
+    if (name) name.textContent = vehicle.name || "-";
+    if (type) type.textContent = vehicle.type || "-";
+    if (status) status.textContent = formatVehicleState(vehicle.state);
+    if (license) license.textContent = vehicle.license_plate || "-";
+    if (kilometer) kilometer.textContent = `${vehicle.km ?? "-"} km`;
 
     stateNotification(vehicle.state);
-    setupInspectionButton(
-        vehicle.state,
-        vehicle.id_vehicles
-    );
+    setupInspectionButton(vehicle.state, vehicle.id_vehicles);
 }
 
 function formatVehicleState(state) {
     switch (state) {
-        case "available":
-            return "Vapaa";
-
-        case "in_use":
-            return "On Käytössä";
-
-        case "disable":
-            return "On poistettu";
-
-        default:
-            return state || "-";
+        case "available": return "Vapaa";
+        case "in_use": return "On käytössä";
+        case "disabled": return "Poistettu käytöstä";
+        default: return state || "-";
     }
 }
 
 function stateNotification(state) {
-    const inUseText =
-        document.querySelector(".in-use-text");
+    const text = document.querySelector(".in-use-text");
+    const description = document.querySelector(".in-use-description");
 
-    const inUseDescription =
-        document.querySelector(".in-use-description");
+    if (!text || !description) return;
 
     if (state === "in_use") {
-        inUseText.innerHTML = "Kone on käytössä";
-        inUseDescription.innerHTML = `
-Voit silti aloittaa oman tarkastuksesi — edellinen käyttäjä kirjataan poistuneeksi.`;
+        text.textContent = "Ajoneuvo on käytössä";
+        description.textContent = "Voit silti aloittaa oman tarkastuksesi — edellinen käyttäjä kirjataan poistuneeksi.";
     }
 
     if (state === "available") {
-        inUseText.innerHTML = "Kone on vapaa";
-        inUseDescription.innerHTML = `
-Voit aloittaa tarkastuksen nyt.`;
+        text.textContent = "Ajoneuvo on vapaa";
+        description.textContent = "Voit aloittaa tarkastuksen nyt.";
     }
 
     if (state === "disabled") {
-        inUseText.innerHTML = "Kone on poistettu";
-        inUseDescription.innerHTML = `
-Et saa aloittaa tarkatuksesi.`;
+        text.textContent = "Ajoneuvo on poistettu käytöstä";
+        description.textContent = "Et saa aloittaa tarkastusta.";
     }
 }
 
 function setupInspectionButton(state, vehicleId) {
     const button = document.querySelector("#startInspection");
-
     if (!button) return;
 
     button.onclick = () => {
         if (state === "disabled") {
-            alert(
-                "Tarkastusta ei voida aloittaa, koska ajoneuvo on ajokelvoton."
-            );
+            alert("Tarkastusta ei voida aloittaa, koska ajoneuvo on ajokelvoton.");
             return;
         }
 
@@ -168,243 +105,142 @@ function setupInspectionButton(state, vehicleId) {
     };
 }
 
-async function loadInspections(vehicleId) {
-    console.log("Loading inspections for vehicle:", vehicleId);
-
-    try {
-        const url = `../databaseAPI/vehicleInspections.php?vehicle=${vehicleId}`;
-
-        console.log("Inspection API URL:", url);
-
-        const response = await fetch(url);
-
-        if (!response.ok) {
-            throw new Error(`HTTP error: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        console.log("Inspections:", data);
-
-        inspections = Array.isArray(data) ? data : [];
-
-        renderKilometers();
-        renderLastInspection();
-        renderInspectionHistory();
-    } catch (error) {
-        console.error(
-            "Inspection information could not be loaded:",
-            error
-        );
-
-        inspections = [];
-
-        renderKilometers();
-        renderLastInspection();
-        renderInspectionHistory();
-    }
-}
-
-//Render Open faults of the vehicle
-async function renderOpenFaults(vehicleId) {
-    console.log("Loading Faults for vehicle", vehicleId);
-
+function loadInspections(vehicleId) {
     const xhr = new XMLHttpRequest();
-
-    xhr.open(
-        "GET",
-        "/api/vehicleProblems.php?vehicle=" + encodeURIComponent(vehicleId),
-        true
-    );
-
+    xhr.open("GET", restapi + "/api/inspections?id_vehicles=" + vehicleId, true);
     xhr.setRequestHeader("Content-Type", "application/json");
 
     xhr.onload = () => {
-        console.log("Fault API status:", xhr.status);
-        console.log("Fault API response:", xhr.responseText);
+        if (xhr.status < 200 || xhr.status >= 300) {
+            inspections = [];
+            renderInspectionData();
+            return;
+        }
 
-        if (xhr.status >= 200 && xhr.status < 300) {
-            try {
-                const data = JSON.prase(xhr.responseText);
-
-                console.log("Parsed data:", data);
-                console.log("All Faults:", data);
-
-                faults = Array.isArray(data)
-                    ? data
-                    : data.faults || data.data || [];
-
-                const openFaults = faults.filter(
-                    fault => fault.state === "open"
-                );
-
-                console.log("Open faults:", openFaults);
-
-                //Render Openfaults to UI
-                renderFaultCards(openFaults);
-            } catch (error) {
-                console.error(
-                    "Inspection information could not be loaded:",
-                    error
-                );
-
-                faults = [];
-
-                renderFaultCards([]);
-            }
+        try {
+            inspections = JSON.parse(xhr.responseText);
+            inspections = Array.isArray(inspections) ? inspections : [];
+            inspections.sort((a, b) => new Date(b.date) - new Date(a.date));
+            renderInspectionData();
+        } catch (error) {
+            console.error("Inspection JSON error:", error);
+            inspections = [];
+            renderInspectionData();
         }
     };
+
+    xhr.send();
 }
 
-//Take the km form the newest inspection
+function loadProblems(vehicleId) {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", restapi + "/api/problems?id_vehicles=" + vehicleId, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onload = () => {
+        if (xhr.status < 200 || xhr.status >= 300) {
+            faults = [];
+            renderFaultCards([]);
+            return;
+        }
+
+        try {
+            faults = JSON.parse(xhr.responseText);
+            faults = Array.isArray(faults) ? faults : [];
+            renderFaultCards(faults.filter(fault => fault.state === "open"));
+        } catch (error) {
+            console.error("Problems JSON error:", error);
+            faults = [];
+            renderFaultCards([]);
+        }
+    };
+
+    xhr.send();
+}
+
+function renderInspectionData() {
+    renderKilometers();
+    renderLastInspection();
+    renderInspectionHistory();
+}
+
 function renderKilometers() {
     const element = document.querySelector(".kilometers-value");
-
     if (!element) return;
 
-    if (!inspections.length) {
-        element.textContent = "-";
-        return;
-    }
-
-    const latestInspection = inspections[0];
-
-    element.textContent =
-        latestInspection.km != null
-            ? `${latestInspection.km} km`
-            : "-";
+    element.textContent = inspections.length
+        ? `${inspections[0].km ?? "-"} km`
+        : "-";
 }
 
-//renderLastInspection
 function renderLastInspection() {
-    const nameElement =
-        document.querySelector(".last-inspection-name");
-
-    const statusElement =
-        document.querySelector(".last-inspection-status");
-
-    const dateElement =
-        document.querySelector(".last-inspection-date");
+    const name = document.querySelector(".last-inspection-name");
+    const status = document.querySelector(".last-inspection-status");
+    const date = document.querySelector(".last-inspection-date");
 
     if (!inspections.length) {
-        if (nameElement) {
-            nameElement.textContent = "Ei tarkastuksia";
-        }
-
-        if (statusElement) {
-            statusElement.textContent = "";
-        }
-
-        if (dateElement) {
-            dateElement.textContent = "";
-        }
-
+        if (name) name.textContent = "Ei tarkastuksia";
+        if (status) status.textContent = "";
+        if (date) date.textContent = "";
         return;
     }
 
     const inspection = inspections[0];
 
-    if (nameElement) {
-        nameElement.textContent =
-            inspection.username || "Tuntematon käyttäjä";
+    if (name) name.textContent = inspection.user ?? "Tuntematon käyttäjä";
+
+    if (status) {
+        const passed = Number(inspection.passed) === 1;
+        status.textContent = passed ? "Hyväksytty" : "Hylätty";
+        status.className = `last-inspection-status status-label ${passed ? "passed" : "failed"}`;
     }
 
-    if (statusElement) {
-        statusElement.textContent =
-            Number(inspection.passed) === 1
-                ? "Hyväksytty"
-                : "Hylätty";
-
-        statusElement.className =
-            Number(inspection.passed) === 1
-                ? "last-inspection-status status-label passed"
-                : "last-inspection-status status-label failed";
-    }
-
-    if (dateElement) {
-        dateElement.textContent =
-            formatInspectionDate(inspection.date);
-    }
+    if (date) date.textContent = formatInspectionDate(inspection.date);
 }
 
-//Format date
-function formatInspectionDate(dateString) {
-    if (!dateString) return "-";
+function formatInspectionDate(date) {
+    if (!date) return "-";
 
-    const date = new Date(dateString);
+    const value = new Date(date);
 
-    if (Number.isNaN(date.getTime())) {
-        return dateString;
-    }
-
-    return date.toLocaleString("fi-FI", {
-        dateStyle: "short",
-        timeStyle: "short"
-    });
+    return Number.isNaN(value.getTime())
+        ? date
+        : value.toLocaleString("fi-FI", {
+            dateStyle: "short",
+            timeStyle: "short"
+        });
 }
 
 //render all Inspections history
 function renderInspectionHistory() {
-    const container =
-        document.querySelector(".inspection-history");
-
+    const container = document.querySelector(".inspection-history");
     if (!container) return;
 
-    container.innerHTML = "";
+    container.innerHTML = `
+        <div class="inspection-history-icon">
+            <span class="material-symbols-outlined">history</span>
+            <p class="inspection-history-text">Aikaisemmat tarkastukset</p>
+        </div>
+    `;
 
     if (!inspections.length) {
-        container.innerHTML = `
-            <p class="no-inspections">
-                Ei aikaisempia tarkastuksia.
-            </p>
-        `;
-
+        container.innerHTML += `<p class="no-inspections">Ei aikaisempia tarkastuksia.</p>`;
         return;
     }
 
-    const title = document.createElement("div");
-
-    title.classList.add("inspection-history-icon");
-
-    title.innerHTML = `
-        <span class="material-symbols-outlined">
-            history
-        </span>
-        <p class="inspection-history-text">Aikaisemmat tarkastukset</p>
-    `;
-
-    container.appendChild(title);
-
-    inspections.forEach((inspection) => {
+    inspections.forEach(inspection => {
+        const passed = Number(inspection.passed) === 1;
         const card = document.createElement("div");
 
-        card.classList.add("inspection-history-content");
-
-        const passed = Number(inspection.passed) === 1;
-
+        card.className = "inspection-history-content";
         card.innerHTML = `
-            <p class="inspection-history-name">
-                ${inspection.username || "Tuntematon käyttäjä"}
-            </p>
-            <span class="inspection-history-status status-label
-                ${passed ? "passed" : "failed"}">
+            <p class="inspection-history-name">Käyttäjä ${inspection.user ?? "-"}</p>
+            <span class="inspection-history-status status-label ${passed ? "passed" : "failed"}">
                 ${passed ? "Hyväksytty" : "Hylätty"}
             </span>
-            <p class="inspection-history-kilometer">
-                ${inspection.km ?? "-"} km
-            </p>
-            <p class="inspection-history-date">
-                ${formatInspectionDate(inspection.date)}
-            </p>
-            ${
-                inspection.note
-                    ? `
-                        <p class="inspection-history-note">
-                            ${inspection.note}
-                        </p>
-                    `
-                    : ""
-            }
+            <p class="inspection-history-kilometer">${inspection.km ?? "-"} km</p>
+            <p class="inspection-history-date">${formatInspectionDate(inspection.date)}</p>
+            ${inspection.note ? `<p class="inspection-history-note">${inspection.note}</p>` : ""}
         `;
 
         container.appendChild(card);
@@ -413,10 +249,11 @@ function renderInspectionHistory() {
 
 function renderFaultCards(openFaults) {
     const container = document.querySelector(".faults-render");
+    const count = document.querySelector(".faults-value");
 
     if (!container) return;
 
-    container.innerHTML = "";
+    if (count) count.textContent = openFaults.length;
 
     container.innerHTML = `
         <div class="faults-icon">
@@ -425,38 +262,21 @@ function renderFaultCards(openFaults) {
         </div>
     `;
 
-    if (openFaults.length === 0) {
-        container.innerHTML = `
-            <p class="faults-card p">
-                Ei avoimia vikoja
-            </span>
-        `;
-
+    if (!openFaults.length) {
+        container.innerHTML += `<p class="faults-card">Ei avoimia vikoja</p>`;
         return;
     }
 
-    const faultsValue = document.querySelector(".faults-value");
-
-    if (!faultsValue) return;
-
-    faultsValue.innerHTML = "";
-    faultsValue.innerHTML = `${openFaults.length}`;
-
     openFaults.forEach(fault => {
         const card = document.createElement("div");
-
-        card.classList.add("fault-card");
+        card.className = "fault-card";
 
         card.innerHTML = `
-            <span class="fault-priority status-label ${fault.priority}">
-                ${fault.priority || ""}
+            <span class="fault-priority status-label ${fault.priority || ""}">
+                ${fault.priority || "-"}
             </span>
-            <p>
-                ${fault.note || "Ei kuvausta"}
-            </p>
-            <p>
-                ${fault.date || "Null"}
-            </p>
+            <p>${fault.checklist?.name || "Vika"}</p>
+            <p>${fault.note || "Ei kuvausta"}</p>
         `;
 
         container.appendChild(card);
