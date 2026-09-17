@@ -230,112 +230,50 @@ function renderVehicleInformation() {
 
 // Render the current question
 function renderQuestion() {
-
-    const container =
-        document.getElementById("questionContainer");
+    const container = document.getElementById("questionContainer");
 
     if (!container) {
         console.error("#questionContainer not found");
         return;
     }
 
-    const checklist =
-        checklists[currentQuestionIndex];
+    const checklist = checklists[currentQuestionIndex];
 
     if (!checklist) {
-        console.error(
-            "Checklist not found:",
-            currentQuestionIndex
-        );
+        console.error("Checklist not found:", currentQuestionIndex);
         return;
     }
 
-    const questionName =
-        checklist.name || "Tarkastus";
+    const questionName = checklist.name || "Tarkastus";
+    const description = checklist.description || "";
+    const isOilQuestion = questionName.toLowerCase().includes("öljy");
+    const currentAnswer = answers[currentQuestionIndex]?.answer;
+    const hasFault = currentAnswer === "Report Faults";
 
-    const description =
-        checklist.description || "";
-
-    const isOilQuestion =
-        questionName
-            .toLowerCase()
-            .includes("öljy");
-
-
-    const currentAnswer =
-    answers[currentQuestionIndex]?.answer;
-
-const hasFault =
-    currentAnswer === "Report Faults";
-
-container.innerHTML = `
-
-    <div class="question-layout ${hasFault ? "has-fault" : ""}">
-
-        <div class="question-header">
-
-            <span class="material-symbols-outlined question-icon">
-                ${getQuestionIcon(questionName)}
-            </span>
-
-            <h2 class="question-title">
-                ${escapeHTML(questionName)}
-            </h2>
-
-            <span class="required-label">
-                Pakollinen
-            </span>
-
+    container.innerHTML = `
+        <div class="question-layout ${hasFault ? "has-fault" : ""}">
+            <div class="question-header">
+                <span class="material-symbols-outlined question-icon">${getQuestionIcon(questionName)}</span>
+                <h2 class="question-title">${escapeHTML(questionName)}</h2>
+                <span class="required-label">Pakollinen</span>
+            </div>
+            ${description ? `<p class="question-description">${escapeHTML(description)}</p>` : ""}
+            <div class="question-content">
+                ${isOilQuestion ? renderOilPhoto() : ""}
+                <div id="answerOptions" class="question-options"></div>
+            </div>
+            <div id="faultContainer" class="fault-container" style="${hasFault ? "" : "display:none;"}"></div>
         </div>
-
-
-        ${
-            description
-                ? `
-                    <p class="question-description">
-                        ${escapeHTML(description)}
-                    </p>
-                  `
-                : ""
-        }
-
-
-        <div class="question-content">
-
-            ${
-                isOilQuestion
-                    ? renderOilPhoto()
-                    : ""
-            }
-
-            <div
-                id="answerOptions"
-                class="question-options"
-            ></div>
-
-        </div>
-
-
-        <div
-            id="faultContainer"
-            class="fault-container"
-            style="${hasFault ? "" : "display:none;"}"
-        ></div>
-
-    </div>
-`;
-
+    `;
 
     renderAnswerOptions(checklist);
 
     if (isOilQuestion) {
-        setupOilPhoto();
-}
+        setupOilCamera();
+    }
 
     restoreCurrentAnswer();
-
     renderProgress();
-
     updateNavigationButtons();
 }
 
@@ -684,255 +622,142 @@ function selectFault() {
 }
 
 function renderFaultForm() {
-
-    const container =
-        document.getElementById("faultContainer");
+    const container = document.getElementById("faultContainer");
 
     if (!container) return;
 
     container.style.display = "block";
 
     container.innerHTML = `
-
-        <h3 class="fault-title">
-            Report
-        </h3>
-
+        <h3 class="fault-title">Report</h3>
         <div class="photo-input-wrapper">
-
-            <p class="photo-description">
-                Ota kuva viasta.
-            </p>
-
-            <label
-                for="faultPhotoInput"
-                class="photo-camera-button"
-                id="faultPhotoButton"
-            >
-                <span class="material-symbols-outlined">
-                    photo_camera
-                </span>
-
+            <p class="photo-description">Ota kuva viasta.</p>
+            <button type="button" class="photo-camera-button" id="faultPhotoButton">
+                <span class="material-symbols-outlined">photo_camera</span>
                 Ota kuva viasta
-            </label>
-
-            <input
-                type="file"
-                id="faultPhotoInput"
-                class="question-photo-input"
-                accept="image/*"
-                capture="environment"
-            >
-
+            </button>
+            <div id="faultPhotoPreview" class="question-photo-preview"></div>
         </div>
-
-
-        <textarea
-            id="faultDescription"
-            class="fault-description"
-            placeholder="Kuvaile vika..."
-        ></textarea>
-
-
+        <textarea id="faultDescription" class="fault-description" placeholder="Kuvaile vika..."></textarea>
         <div class="fault-priority">
-
-            <p class="fault-label">
-                Vian prioriteetti
-            </p>
-
-            <button
-                type="button"
-                class="question-option"
-                data-priority="low"
-            >
-                Matala
-            </button>
-
-            <button
-                type="button"
-                class="question-option"
-                data-priority="medium"
-            >
-                Keskitaso
-            </button>
-
-            <button
-                type="button"
-                class="question-option"
-                data-priority="high"
-            >
-                Korkea
-            </button>
-
-            <button
-                type="button"
-                class="question-option"
-                data-priority="critical"
-            >
-                Kriittinen
-            </button>
-
+            <p class="fault-label">Vian prioriteetti</p>
+            <button type="button" class="question-option" data-priority="low">Matala</button>
+            <button type="button" class="question-option" data-priority="medium">Keskitaso</button>
+            <button type="button" class="question-option" data-priority="high">Korkea</button>
+            <button type="button" class="question-option" data-priority="critical">Kriittinen</button>
         </div>
-
     `;
 
     setupFaultForm();
+    setupFaultCamera();
+}
+
+function setupFaultCamera() {
+    const button = document.getElementById("faultPhotoButton");
+
+    if (!button) {
+        console.error("#faultPhotoButton not found");
+        return;
+    }
+
+    button.onclick = () => {
+        console.log("Fault camera button clicked");
+
+        openCamera("fault", (picture) => {
+            console.log("Fault picture received:", picture);
+
+            if (!answers[currentQuestionIndex].error) {
+                answers[currentQuestionIndex].error = {};
+            }
+
+            answers[currentQuestionIndex].error.photo = picture;
+            answers[currentQuestionIndex].error.photoConfirmed = true;
+
+            showQuestionPhotoPreview("faultPhotoPreview", picture);
+
+            button.classList.add("photo-selected");
+            button.innerHTML = `
+                <span class="material-symbols-outlined">check_circle</span>
+                Kuva valittu
+            `;
+
+            updateNavigationButtons();
+        });
+    };
 }
 
 function setupFaultForm() {
-
-    const photoInput =
-        document.getElementById(
-            "faultPhotoInput"
-        );
-
-    const photoButton =
-        document.getElementById(
-            "faultPhotoButton"
-        );
-
-    const description =
-        document.getElementById(
-            "faultDescription"
-        );
-
-
-    // PHOTO
-
-    if (photoInput) {
-
-        photoInput.addEventListener(
-            "change",
-            () => {
-
-                const file =
-                    photoInput.files[0];
-
-                if (!file) return;
-
-                answers[
-                    currentQuestionIndex
-                ].error.photo = file;
-
-                photoButton.classList.add(
-                    "photo-selected"
-                );
-
-                photoButton.innerHTML = `
-
-                    <span class="material-symbols-outlined">
-                        check_circle
-                    </span>
-
-                    Kuva valittu
-
-                `;
-
-                updateNavigationButtons();
-            }
-        );
-    }
-
-
-    // DESCRIPTION
+    const description = document.getElementById("faultDescription");
 
     if (description) {
-
-        description.addEventListener(
-            "input",
-            () => {
-
-                answers[
-                    currentQuestionIndex
-                ].error.description =
-                    description.value;
-
-                updateNavigationButtons();
+        description.addEventListener("input", () => {
+            if (!answers[currentQuestionIndex].error) {
+                answers[currentQuestionIndex].error = {};
             }
-        );
+
+            answers[currentQuestionIndex].error.description = description.value;
+            updateNavigationButtons();
+        });
     }
 
+    document.querySelectorAll("[data-priority]").forEach(button => {
+        button.addEventListener("click", () => {
+            document.querySelectorAll("[data-priority]").forEach(item => {
+                item.classList.remove("selected");
+            });
 
-    // PRIORITY
+            button.classList.add("selected");
 
-    document
-        .querySelectorAll(
-            "[data-priority]"
-        )
-        .forEach(button => {
+            if (!answers[currentQuestionIndex].error) {
+                answers[currentQuestionIndex].error = {};
+            }
 
-            button.addEventListener(
-                "click",
-                () => {
-
-                    document
-                        .querySelectorAll(
-                            "[data-priority]"
-                        )
-                        .forEach(item => {
-
-                            item.classList.remove(
-                                "selected"
-                            );
-                        });
-
-                    button.classList.add(
-                        "selected"
-                    );
-
-                    answers[
-                        currentQuestionIndex
-                    ].error.priority =
-                        button.dataset.priority;
-
-                    updateNavigationButtons();
-                }
-            );
+            answers[currentQuestionIndex].error.priority = button.dataset.priority;
+            updateNavigationButtons();
         });
+    });
 }
 
 function renderOilPhoto() {
-
     return `
-
         <div class="photo-input-wrapper">
-
-            <p class="photo-description">
-                Ota kuva moottoriöljyn mittatikusta.
-                Kuva on pakollinen.
-            </p>
-
-
-            <label
-                for="oilPhotoInput"
-                class="photo-camera-button"
-                id="oilPhotoButton"
-            >
-
-                <span class="material-symbols-outlined">
-                    photo_camera
-                </span>
-
+            <p class="photo-description">Ota kuva moottoriöljyn mittatikusta. Kuva on pakollinen.</p>
+            <button type="button" class="photo-camera-button" id="oilPhotoButton">
+                <span class="material-symbols-outlined">photo_camera</span>
                 Ota kuva mittatikusta
-
-            </label>
-
-
-            <input
-                type="file"
-                id="oilPhotoInput"
-                class="question-photo-input"
-                accept="image/*"
-                capture="environment"
-            >
-
-
-            <p class="photo-required">
-                * Pakollinen kuva
-            </p>
-
+            </button>
+            <div id="oilPhotoPreview" class="question-photo-preview"></div>
+            <p class="photo-required">* Pakollinen kuva</p>
         </div>
+    `;
+}
 
+function setupOilCamera() {
+    const button = document.getElementById("oilPhotoButton");
+
+    if (!button) return;
+
+    button.onclick = () => {
+        openCamera("oil", (picture) => {
+            answers[currentQuestionIndex].oilPhoto = picture;
+            answers[currentQuestionIndex].oilPhotoConfirmed = true;
+            showQuestionPhotoPreview("oilPhotoPreview", picture);
+        });
+    };
+}
+
+function showQuestionPhotoPreview(elementId, picture) {
+    const container = document.getElementById(elementId);
+
+    if (!container || !picture) return;
+
+    const imageUrl = URL.createObjectURL(picture);
+
+    container.innerHTML = `
+        <div class="question-photo-preview-content">
+            <img src="${imageUrl}" alt="Otettu kuva">
+            <span class="photo-success">Kuva valittu</span>
+        </div>
     `;
 }
 
