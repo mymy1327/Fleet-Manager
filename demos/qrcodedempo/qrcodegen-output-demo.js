@@ -35,18 +35,14 @@ var app;
     }
     // Creates a single QR Code, then appends it to the document.
     function doBasicDemo() {
-        appendHeading("Basic");
-        const text = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"; // User-supplied Unicode text
+        const text = "wergiergoierggio543583458oijt3jio4goji"; // User-supplied Unicode text
         const errCorLvl = qrcodegen.QrCode.Ecc.LOW; // Error correction level
         const qr = qrcodegen.QrCode.encodeText(text, errCorLvl); // Make the QR Code symbol
         drawCanvas(qr, 10, 4, "#FFFFFF", "#000000", appendCanvas("")); // Draw it on screen
     }
     // Creates a variety of QR Codes that exercise different features of the library, and appends each one to the document.
     
-    function appendHeading(text) {
-        let h2 = outputElem.appendChild(document.createElement("h2"));
-        h2.textContent = text;
-    }
+   
     function appendCanvas(caption) {
         let p = outputElem.appendChild(document.createElement("p"));
         p.textContent = caption + "";
