@@ -1,4 +1,5 @@
 // Global inspection data
+const restapi = "http://10.1.17.4:5501";
 let vehicle = null;
 let checklists = [];
 let allQuestions = [];
@@ -19,77 +20,57 @@ function escapeHTML(value) {
         .replace(/'/g, "&#039;");
 }
 
+function getVehicle(vehicleId, onComplete = null) {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", restapi + "/api/vehicles/" + vehicleId, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onload = () => {
+        console.log("Vehicle API:", xhr.status, xhr.responseText);
+
+        if (xhr.status < 200 || xhr.status >= 300) {
+            console.error("Vehicle API error:", xhr.status);
+            return;
+        }
+
+        try {
+            const data = JSON.parse(xhr.responseText);
+
+            vehicle = data;
+            checklists = Array.isArray(data.checklist) ? data.checklist : [];
+            previousKilometers = data.km ?? null;
+
+            console.log("Vehicle:", vehicle);
+            console.log("Checklists:", checklists);
+            console.log("Previous km:", previousKilometers);
+
+            if (onComplete) onComplete();
+        } catch (error) {
+            console.error("JSON parse error:", error);
+        }
+    };
+
+    xhr.onerror = () => console.error("Vehicle API connection failed.");
+    xhr.send();
+}
+
 // Initialize the inspection page
 document.addEventListener("DOMContentLoaded", () => {
-
-    const params =
-        new URLSearchParams(
-            window.location.search
-        );
-
-    const vehicleId =
-        params.get("id");
-
-    console.log(
-        "Vehicle ID:",
-        vehicleId
-    );
+    const params = new URLSearchParams(window.location.search);
+    const vehicleId = params.get("id");
 
     if (!vehicleId) {
-
-        console.error(
-            "Vehicle ID not found in URL"
-        );
-
-        showErrorMessage(
-            "Ajoneuvon tunnistetta ei löytynyt."
-        );
-
+        showErrorMessage("Ajoneuvon tunnistetta ei löytynyt.");
         return;
     }
 
-    loadInspectionData(vehicleId);
-});
-
-
-// Load all inspection data
-async function loadInspectionData(vehicleId) {
-
-    try {
-
-        await loadVehicleData(vehicleId);
-
-        await loadChecklistData(vehicleId);
-
-        console.log(
-            "Vehicle loaded:",
-            vehicle
-        );
-
-        console.log(
-            "Checklists loaded:",
-            checklists
-        );
-
-        if (!vehicle) {
-
-            throw new Error(
-                "Vehicle data is missing."
-            );
-        }
-
-        if (
-            !Array.isArray(checklists) ||
-            checklists.length === 0
-        ) {
-
-            throw new Error(
-                "No checklists found for this vehicle."
-            );
+    getVehicle(vehicleId, () => {
+        if (!vehicle || !checklists.length) {
+            showErrorMessage("Ajoneuvon tietoja ei löytynyt.");
+            return;
         }
 
         currentQuestionIndex = 0;
-
         answers = checklists.map(() => ({
             answer: null,
             oilPhoto: null,
@@ -97,135 +78,24 @@ async function loadInspectionData(vehicleId) {
         }));
 
         renderVehicleInformation();
-
         renderProgress();
-
         renderQuestion();
-
         updateNavigationButtons();
-
         setupNavigation();
-
         setupBackButton();
-
         setupSummaryModal();
+    });
+});
 
-        console.log(
-            "Inspection page initialized successfully."
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Inspection initialization error:",
-            error
-        );
-
-        showErrorMessage(
-            "Tarkastuksen tietojen lataaminen epäonnistui."
-        );
-    }
-}
-
-// Load vehicle information
-// Load vehicle information
-async function loadVehicleData(vehicleId) {
-
-    const response = await fetch(
-        `http://localhost/api/vehicles.php?vehicle=${vehicleId}`
-    );
-
-    if (!response.ok) {
-        throw new Error(
-            `Vehicle API error: ${response.status}`
-        );
-    }
-
-    vehicle = await response.json();
-
-    console.log("Vehicle:", vehicle);
-}
-
-
-// Load checklist items assigned to the vehicle
-async function loadChecklistData(vehicleId) {
-
-    const response = await fetch(
-        `http://localhost/api/checklists.php?vehicle=${vehicleId}`
-    );
-
-    if (!response.ok) {
-        throw new Error(
-            `Checklist API error: ${response.status}`
-        );
-    }
-
-    const data = await response.json();
-
-    checklists =
-        Array.isArray(data)
-            ? data
-            : data.data || [];
-
-    console.log(
-        "Checklists loaded:",
-        checklists
-    );
-}
 
 
 // Render vehicle information
 function renderVehicleInformation() {
+    document.querySelector(".vehicle-name").textContent = vehicle.name;
+    document.querySelector(".vehicle-license").textContent = vehicle.license_plate;
 
-    if (!vehicle) {
-
-        console.error(
-            "Vehicle data is missing."
-        );
-
-        return;
-    }
-
-
-    const vehicleName =
-        document.querySelector(
-            ".vehicle-name"
-        );
-
-    const vehiclePlate =
-        document.querySelector(
-            ".vehicle-license"
-        );
-
-    const vehicleKilometers =
-        document.querySelector(
-            ".vehicle-kilometer"
-        );
-
-
-    if (vehicleName) {
-
-        vehicleName.textContent =
-            vehicle.name || "-";
-    }
-
-
-    if (vehiclePlate) {
-
-        vehiclePlate.textContent =
-            vehicle.license_plate ||
-            vehicle.plate ||
-            "-";
-    }
-
-
-    if (vehicleKilometers) {
-
-        vehicleKilometers.textContent =
-            vehicle.kilometers != null
-                ? `${vehicle.kilometers} km`
-                : "-";
-    }
+    const vehicleKilometers = document.querySelector(".vehicle-kilometer");
+    if (vehicleKilometers) vehicleKilometers.textContent = vehicle.km + " km";
 }
 
 // Render the current question
@@ -1668,17 +1538,6 @@ async function submitInspection(
         "Submitting inspection:",
         inspectionResult
     );
-
-    /*
-     * Later:
-     *
-     * FormData
-     * -> PHP API
-     * -> save inspection
-     * -> save photos
-     * -> save faults
-     */
-
     alert(
         "Tarkastus on vahvistettu!"
     );
@@ -1740,9 +1599,7 @@ function renderKilometerInput(container) {
                 Edellisen tarkastuksen lukema
             </span>
 
-            <strong>
-                ${getPreviousKilometers()} km
-            </strong>
+            <strong>${getPreviousKilometers()} km</strong>
         </div>
     `;
 
@@ -1760,21 +1617,7 @@ function renderKilometerInput(container) {
 }
 
 function getPreviousKilometers() {
-    if (
-        vehicle &&
-        vehicle.previousKilometers !== undefined
-    ) {
-        return vehicle.previousKilometers;
-    }
-
-    if (
-        vehicle &&
-        vehicle.kilometers !== undefined
-    ) {
-        return vehicle.kilometers;
-    }
-
-    return "-";
+    return previousKilometers ?? "-";
 }
 
 function renderFuelGauge(container) {
