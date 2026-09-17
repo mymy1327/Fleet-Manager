@@ -6,7 +6,7 @@ async function main() {
   }
 
   //Load item from API
-  const itemResponce = await fetch("../../databaseAPI/checklists.php?id_checklist=" + encodeURIComponent(params.get("checklist")));
+  const itemResponce = await fetch("../../api/checklists/" + encodeURIComponent(params.get("checklist")));
   if (!itemResponce.ok) {
     alert("Failed to load checklist item!");
     return;
@@ -35,7 +35,7 @@ document.getElementById("btnSubmit").addEventListener("click", () => {
 
     //Send request
     const xhr = new XMLHttpRequest();
-    xhr.open("PATCH", "../../databaseAPI/checklists.php", true); //add path to requested file
+    xhr.open("PATCH", "../../api/checklists", true); //add path to requested file
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onload = () => {
       //Handle request data
@@ -48,7 +48,7 @@ document.getElementById("btnSubmit").addEventListener("click", () => {
 
         //Send request
         const xhr = new XMLHttpRequest();
-        xhr.open("PATCH", "../../databaseAPI/checklists.php", true); //add path to requested file
+        xhr.open("PATCH", "../../api/checklists", true); //add path to requested file
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
           //Handle request data
@@ -75,7 +75,7 @@ document.getElementById("btnSubmit").addEventListener("click", () => {
 
     //Send request
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "../../databaseAPI/checklists.php", true); //add path to requested file
+    xhr.open("POST", "../../api/checklists", true); //add path to requested file
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onload = () => {
       //Handle request data

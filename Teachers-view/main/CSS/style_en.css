@@ -179,6 +179,11 @@ h1 {
     cursor: pointer;
 }
 
+button:disabled, button:hover:disabled {
+    background: var(--lessImportantText);
+    cursor: not-allowed;
+}
+
 .button:hover {
     background: var(--blue-dark);
 }

@@ -1,3 +1,7 @@
+<?php
+    //CheckAccessSession("admin")
+?>
+
 <!doctype html>
 <html lang="fi">
     <head>

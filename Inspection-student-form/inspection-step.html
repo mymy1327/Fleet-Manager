@@ -19,6 +19,16 @@
             </button>
 
             <h1>Ajoneuvon tarkastus</h1>
+            <div class="vehicle-info">
+                <div class="vehicle-icon">
+                    <span class="material-symbols-outlined">local_shipping</span>
+                     <p class="form-icon"><strong> Fleet Manager</strong></p>
+                </div>
+                <h2 class="vehicle-name"></h2>
+                <p class="vehicle-license"></p>
+                <p class="vehicle-kilometer"></p>
+                
+            </div>
         </header>
     <div class="inspection-container">
 
@@ -62,6 +72,90 @@
             class="inspection-next"
             type="button">
             Seuraava
+        </button>
+
+    </div>
+
+</div>
+<!-- Summary overlay -->
+<div
+    id="summaryModal"
+    class="summary-overlay"
+>
+
+    <!-- Summary modal -->
+    <div class="summary-modal">
+
+        <!-- Header -->
+        <div class="summary-header">
+
+            <h2>
+                Tarkastuksen yhteenveto
+            </h2>
+
+            <button
+                type="button"
+                class="summary-close"
+                id="summary-close"
+                aria-label="Sulje"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <!-- Vehicle information -->
+        <div class="summary-vehicle">
+
+            <div>
+                <span class="material-symbols-outlined">
+                    directions_car
+                </span>
+            </div>
+
+            <div>
+                <strong class="summary-vehicle-name">
+                    Ajoneuvo
+                </strong>
+
+                <p class="summary-vehicle-details">
+                    <!-- Vehicle information -->
+                </p>
+            </div>
+
+        </div>
+
+
+        <!-- Answers -->
+        <div class="summary-answers">
+            <!-- JavaScript will generate answers here -->
+        </div>
+
+
+        <!-- Confirmation -->
+        <label class="summary-confirmation">
+
+            <input
+                type="checkbox"
+                id="summary-confirmation"
+            >
+
+            <span>
+                Olen tarkistanut vastaukseni ja ne ovat oikein.
+            </span>
+
+        </label>
+
+
+        <!-- Submit -->
+        <button
+            type="button"
+            id="summary-submit"
+            class="summary-submit"
+            disabled
+        >
+            Lähetä tarkastus
         </button>
 
     </div>

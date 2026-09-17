@@ -1,7 +1,14 @@
 <?php
 header("Content-Type: application/json");
+//header("Access-Control-Allow-");
+header("Access-Control-Allow-Origin: http://127.0.0.1:5501");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, Origin");
 session_start();
 require "../assets/config.php";
+
+if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
+    heaDie(200);
+}
 
 $listOfTables = ["checklists", "vehicles", "files", "users", "inspections"];
 
@@ -15,7 +22,8 @@ $data = json_decode(file_get_contents("php://input"), true);
  * returns all entries in table
  * @param mysqli $conn connection to database
  * @param string $table db table name
- * @param string $filter filtering parameters
+ * @param string $filterColumn filtered column
+ * @param string $filter filtering value
  * @return json|array[false, int, string|null] list of entries | false on failure
  */
 function getFullTable($conn, $table, $filterColumn, $filter)
@@ -57,15 +65,35 @@ function getEntryDetails($conn, $table, $id)
         return [false, 404];
     }
     $return = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+    if (is_null($return)) {
+        return [false, 404];
+    }
     if ($table == $listOfTables[1]) {
         $return["checklist"] = getAllChecklistItemsForVehicle($conn, $intId);
+        $stmt = $conn->prepare("SELECT km FROM `inspections` WHERE id_vehicles = ? ORDER BY date DESC LIMIT 1");
+        $stmt->bind_param("i", $intId);
+        if (!$stmt->execute()) {
+            return [false, 404];
+        }
+        $return["km"] = $stmt->get_result()->fetch_assoc()["km"] ?? null;
     } elseif ($table == $listOfTables[2]) {
         header("Content-Type: " . $return["type"]);
         header("Content-Length: " . strlen($return["data"]));
         echo $return["data"];
         die();
+    } elseif ($table == $listOfTables[4]) {
+        if ($return["passed"] === 0) {
+            $return["problems"] = json_decode(getFullTable($conn, "problems", "id_inspections", $intId), true);
+            foreach ($return["problems"] as $key => $problem) {
+                $return["problems"][$key]["checklist"] = json_decode(
+                    getEntryDetails($conn, "checklists", $problem["id_checklists"]),
+                    true,
+                );
+            }
+        }
     }
-    return json_encode($return);
+    return json_encode($return, JSON_NUMERIC_CHECK);
 }
 
 function getAllChecklistItemsForVehicle($conn, $id)
@@ -273,11 +301,11 @@ function rewriteChecklistItemCell($conn, $id, $column, $name, $description)
  * @param int $id checklist id
  * @return true|array[false, int, string|null] true on success | false on failure
  */
-function deleteChecklistItem($conn, $id)
+function deleteEntry($conn, $table, $id)
 {
-    $stmt = $conn->prepare("DELETE FROM `checklists` WHERE id_checklists = ?");
-    $checklistId = (int) $id;
-    $stmt->bind_param("i", $checklistId);
+    $stmt = $conn->prepare("DELETE FROM `$table` WHERE id_$table = ?");
+    $intId = (int) $id;
+    $stmt->bind_param("i", $intId);
     if (!$stmt->execute()) {
         return [false, 404];
     }
@@ -290,20 +318,26 @@ if (!in_array($uri[0], $listOfTables)) {
 
 switch ($_SERVER["REQUEST_METHOD"]) {
     case "GET":
-        if (!isset($uri[1])) {
-            $filterColumn = null;
-            $filter = null;
-            if (isset($_GET["id_vehicles"]) && !is_null($_GET["id_vehicles"]) && $_GET["id_vehicles"] != "") {
-                $filterColumn = "id_vehicles";
-                $filter = $_GET["id_vehicles"];
+        $filterColumn = null;
+        $filter = null;
+        if (isset($_GET["id_vehicles"]) && !is_null($_GET["id_vehicles"]) && $_GET["id_vehicles"] != "") {
+            $filterColumn = "id_vehicles";
+            $filter = $_GET["id_vehicles"];
+            if ($uri[0] == $listOfTables[0]) {
+                heaDie(200, json_encode(getAllChecklistItemsForVehicle($conn, $filter), JSON_NUMERIC_CHECK));
             }
+        } elseif (isset($_GET["code"]) && !is_null($_GET["code"]) && $_GET["code"] != "") {
+            $filterColumn = "code";
+            $filter = $_GET["code"];
+        }
+        if (!isset($uri[1])) {
             $return = getFullTable($conn, $uri[0], $filterColumn, $filter);
             if (gettype($return) == "array" && !$return[0]) {
                 heaDie($return[1]);
             }
             heaDie(200, $return);
         } else {
-            $return = getEntryDetails($conn, $uri[0], $uri[1]);
+            $return = getEntryDetails($conn, $uri[0], $uri[1], $filterColumn, $filter);
             if (gettype($return) == "array" && !$return[0]) {
                 heaDie($return[1]);
             }

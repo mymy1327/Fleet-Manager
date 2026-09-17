@@ -43,7 +43,7 @@ async function main() {
         if (xhr.status == 200) {
           alert("Failed to save changes!");
         }
-        window.location.href = "../HTML/admin.php";
+        window.location.href = "../PHP/admin.php";
       };
       xhr.send(JSON.stringify(data)); //data is a list send to requested file
     }
