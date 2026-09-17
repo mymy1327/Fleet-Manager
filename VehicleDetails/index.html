@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fleet Manager</title>
+    <link rel="stylesheet" href="../Teachers-view/main/CSS/style_en.css">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="#home" aria-label="Fleet Manager home">
+            <span class="brand-mark" aria-hidden="true">&#x26DF;</span>
+            <strong>Fleet Manager</strong>
+        </a>
+        <nav class="main-nav" aria-label="Main navigation">
+            <a href="#home" data-view="home"><span>&#x2317;</span>Home</a>
+            <a href="#fleet" data-view="fleet"><span class="nav-icon" aria-hidden="true">&#x26DF;</span>Fleet</a>
+            <a href="#inspections" data-view="inspections"><span>&#x1F5B9;</span>Inspections</a>
+            <a href="#faults" data-view="faults"><span>&#x25B3;</span>Faults</a>
+            <a href="#reports" data-view="reports"><span>&#x25A5;</span>Reports</a>
+        </nav>
+        <div class="header-actions">
+            <button class="language-switch" type="button" data-language-switch>FI</button>
+            <button class="logout" type="button">&#x21AA;&nbsp; Logout</button>
+        </div>
+    </header>
+<!-- CONNECTION TO THE MAIN INDEX CONTAINING ALL THE  BUTTON USABILITY-->
+    <main id="app" class="page">
+        <section data-view-content="home">
+            <!-- CARD SHOWING THE VEHICLE-->
+             <div>
+
+             </div>
+            <section>
+            </section>
+            <!-- LATEST INSPECTIONS/PROBLEMS-->
+            <section>
+                
+            </section>
+        </section>
+
+        <section data-view-content="fleet" hidden>
+            
+        </section>
+
+        <section data-view-content="inspections" hidden>
+            </section>
+
+        <section data-view-content="faults" hidden>
+           </section>
+
+        <section data-view-content="reports" hidden>
+           </section>
+    </main>
+    <script src="vehicledetails.js"></script>
+</body>
+</html>
