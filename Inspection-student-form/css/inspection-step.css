@@ -838,14 +838,20 @@ body {
     justify-self: center;
 }
 .vehicle-license {
-    font-size: 18px;
+    font-size: 15px;
     grid-row: 3;
     justify-self: center;
+    border-radius: 8px;
+    background-color: #5ada89b1;
+    color: #0c401f;
+    border: 1px solid #16a34a;
+    margin-left: 0;
 }
 .vehicle-kilometer {
-    font-size: 18px;
+    font-size: 15px;
     grid-row: 4;
     justify-self: center;
+    color:#94a3b8;
 }
 /*RESPONSIVE - TABLET*/
 @media (max-width: 700px) {
