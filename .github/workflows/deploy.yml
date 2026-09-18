@@ -9,14 +9,13 @@ permissions:
 
 env:
   GITHUB_TOKEN: ${{ github.token }}
+  GIT_TERMINAL_PROMPT: "0"
 
 # Never run two sync operations for the same branch at the same time.
 # Different branches can still synchronize in parallel.
 concurrency:
   group: branch-sync-${{ github.repository }}-${{ github.ref }}
   cancel-in-progress: false
-
-
 
 
 jobs:
@@ -101,27 +100,25 @@ jobs:
             cd "$DEPLOY_DIR"
 
             git init --initial-branch="$GITHUB_REF_NAME"
+            git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
 
-            git remote add origin \
-              "https://github.com/${GITHUB_REPOSITORY}.git"
+            test -n "$GITHUB_TOKEN" || {
+              echo "GITHUB_TOKEN is empty"
+              exit 1
+            }
 
-            # Configure Git to use the temporary GitHub Actions token.
-            git -c http.extraheader="AUTHORIZATION: bearer ${GITHUB_TOKEN}" \
-              fetch --prune origin \
-              "$GITHUB_SHA"
+            git \
+              -c "http.extraheader=Authorization: Bearer ${GITHUB_TOKEN}" \
+              -c credential.helper= \
+              fetch --prune origin "$GITHUB_SHA"
 
-            # Create the local branch pointing at the pushed commit.
             git checkout -B "$GITHUB_REF_NAME" "$GITHUB_SHA"
-
-            # Make the repository group-writable.
             git config core.sharedRepository group
 
             echo "Initial clone completed."
-
           else
             echo "Git repository already exists."
           fi
-
       # ------------------------------------------------------------
       # 4. Make sure the existing directory is clean
       # ------------------------------------------------------------
@@ -165,13 +162,12 @@ jobs:
 
           cd "$DEPLOY_DIR"
 
-          echo "Fetching from GitHub..."
+          git remote set-url origin "https://github.com/${GITHUB_REPOSITORY}.git"
 
-          git -c http.extraheader="AUTHORIZATION: bearer ${GITHUB_TOKEN}" \
-            fetch \
-            --prune \
-            origin \
-            "$GITHUB_SHA"
+          git \
+            -c "http.extraheader=Authorization: Bearer ${GITHUB_TOKEN}" \
+            -c credential.helper= \
+            fetch --prune origin "$GITHUB_SHA"
 
       # ------------------------------------------------------------
       # 6. Checkout the exact commit that triggered this workflow
