@@ -10,7 +10,9 @@
 <input id="createVehicleLicensePlate" placeholder="license plate" />
 <input id="createVehicleCode" placeholder="code" />
 <input type="date" id="createVehicleLastMaintenance" placeholder="YYYY-MM-DD last maintenance" />
-create a file first
+<input type="number" id="createVehicleLastMaintenanceKm" placeholder="last maintenance in km" />
+<input type="date" id="createVehicleNextMaintenance" placeholder="next maintenance" />
+<input type="number" id="createVehicleMaintenanceIntervalKm" placeholder="maintenance interval km" />
 <input id="createVehicleIdFiles" placeholder="file id" />
 <select id="createVehicleState">
     <option value="available">available</option>
@@ -25,6 +27,9 @@ create a file first
             document.getElementById('createVehicleLicensePlate').value,
             document.getElementById('createVehicleCode').value,
             document.getElementById('createVehicleLastMaintenance').value,
+            document.getElementById('createVehicleLastMaintenanceKm').value,
+            document.getElementById('createVehicleNextMaintenance').value,
+            document.getElementById('createVehicleMaintenanceIntervalKm').value,
             document.getElementById('createVehicleIdFiles').value,
             document.getElementById('createVehicleState').value,
         )
@@ -32,7 +37,11 @@ create a file first
 >
     create vehicle
 </button>
-<br /><br />
+<br />
+<div id="demo20"></div>
+<input id="deleteVehicleId" placeholder="vehicle id" />
+<button onclick="deleteVehicle(document.getElementById('deleteVehicleId').value)">delete vehicle</button><br />
+<br />
 <div id="demo3"></div>
 <input id="filterChecklists" placeholder="filter checklists by vehicle id" />
 <button onclick="getAllChecklistItems(document.getElementById('filterChecklists').value)">
@@ -98,7 +107,7 @@ create a file first
     delete checklist item</button
 ><br />
 <br /><br />
-<img src="/api/files/1" />
+<img src="https://developmenterasmus.kolojar.cz/api/files/1" />
 <br /><br />
 <div id="demo5"></div>
 <input type="file" id="fileId" name="file" placeholder="file id" />
@@ -131,6 +140,9 @@ create a file first
 >
     create new user</button
 ><br />
+<div id="demo21"></div>
+<input id="deleteUserId" placeholder="user id" />
+<button onclick="deleteUser(document.getElementById('deleteUserId').value)">delete user</button><br />
 <br />
 <div id="demo11"></div>
 <input id="filterInspections" placeholder="filter by vehicle id" />
@@ -139,6 +151,46 @@ create a file first
 <div id="demo12"></div>
 <input id="inspectionsId" placeholder="inspection id" />
 <button onclick="getInspectionDetails(document.getElementById('inspectionsId').value)">get inspection details</button
+><br />
+<div id="demo18"></div>
+<input id="inspectionsVehicleId" placeholder="vehicle id" />
+<input id="inspectionsPassed" type="checkbox" />passed
+<input id="inspectionsNote" placeholder="note" />
+<input id="inspectionsUserId" placeholder="user id" />
+<input id="inspectionsKm" placeholder="Km reading" />
+<div>
+    <input
+        id="inspectionsFuel"
+        type="range"
+        min="0"
+        max="100"
+        placeholder="fuel level 0% -> 100%"
+        onchange="document.getElementById('fuelMeter').innerText = this.value"
+    />
+    <div id="fuelMeter"></div>
+</div>
+<input id="inspectionsOilPic" placeholder="oil pic file id" />
+<select id="inspectionsType">
+    <option value="departure" selected>departure</option>
+    <option value="return">return</option>
+</select>
+<input id="inspectionsLink" placeholder="departure inspection id" />
+<button
+    onclick="
+        createInspection(
+            document.getElementById('inspectionsVehicleId').value,
+            document.getElementById('inspectionsPassed').checked ? 1 : 0,
+            document.getElementById('inspectionsNote').value,
+            document.getElementById('inspectionsUserId').value,
+            document.getElementById('inspectionsKm').value,
+            document.getElementById('inspectionsFuel').value,
+            document.getElementById('inspectionsType').value,
+            document.getElementById('inspectionsOilPic').value,
+            document.getElementById('inspectionsLink').value,
+        )
+    "
+>
+    create inspection</button
 ><br /><br />
 <div id="demo13"></div>
 <input id="filterProblems" placeholder="filter by vehicle id" />
@@ -146,15 +198,33 @@ create a file first
 <div id="demo14"></div>
 <input id="problemId" placeholder="problem id" />
 <button onclick="getProblemDetails(document.getElementById('problemId').value)">get problem details</button><br />
-<!--
-
-<div id="demo7"></div>
-<button onclick="getAllChecklistItems()">get all checklist items</button><br />
-<div id="demo8"></div>
-<button onclick="getChecklistItemDetails(2)">get checklist item details</button><br />
--->
+<div id="demo22"></div>
+<input id="createProblemInspId" placeholder="inspection id" />
+<input id="createProblemCheckId" placeholder="checklist id" />
+<input id="createProblemNote" placeholder="note" />
+<input id="createProblemFileId" placeholder="file id" />
+<select id="createProblemPriority">
+    <option value="low" selected>low</option>
+    <option value="medium">medium</option>
+    <option value="high">high</option>
+    <option value="critical">critical</option>
+</select>
+<button
+    onclick="
+        createProblem(
+            document.getElementById('createProblemInspId').value,
+            document.getElementById('createProblemCheckId').value,
+            document.getElementById('createProblemNote').value,
+            document.getElementById('createProblemFileId').value,
+            document.getElementById('createProblemPriority').value,
+        )
+    "
+>
+    create problem
+</button>
 <script>
-    const restapi = "http://10.1.17.4:5501";
+    const restapi = "https://developmenterasmus.kolojar.cz";
+    //const restapi = "http://127.0.0.1:5501";
 
     function getAllVehicles(code = null) {
         const xhr = new XMLHttpRequest();
@@ -269,9 +339,7 @@ create a file first
     function createFile(fileElement) {
         const formData = new FormData();
         formData.append("file", fileElement.files[0]);
-        //console.log(fileElement.files[0]);
 
-        //console.log(formData);
         const xhr = new XMLHttpRequest();
         xhr.open("POST", restapi + "/api/files", true);
         xhr.onload = () => {
@@ -301,7 +369,6 @@ create a file first
         data.email = email;
         data.password = password;
         data.role = role;
-        //console.log(role)
         const xhr = new XMLHttpRequest();
         xhr.open("POST", restapi + "/api/users", true);
         xhr.setRequestHeader("Content-Type", "application/json");
@@ -312,7 +379,18 @@ create a file first
         xhr.send(JSON.stringify(data));
     }
 
-    function createVehicle(name, type, license_plate, code, last_maintenance, id_files, state) {
+    function createVehicle(
+        name,
+        type,
+        license_plate,
+        code,
+        last_maintenance,
+        last_maintenance_km,
+        next_maintenance,
+        maintenance_interval_km,
+        id_files,
+        state,
+    ) {
         let data = {};
         data.name = name;
         data.type = type;
@@ -321,13 +399,53 @@ create a file first
         data.last_maintenance = last_maintenance;
         data.id_files = id_files;
         data.state = state;
-        console.log(last_maintenance);
+        data.last_maintenance_km = last_maintenance_km;
+        data.next_maintenance = next_maintenance;
+        data.maintenance_interval_km = maintenance_interval_km;
         const xhr = new XMLHttpRequest();
         xhr.open("POST", restapi + "/api/vehicles", true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             // code work with response here (code: xhr.status, json response: xhr.responseText)
             document.getElementById("demo17").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send(JSON.stringify(data));
+    }
+
+    function createProblem(inspectionId, checklistId, note, fileId, priority = "medium") {
+        let data = {};
+        data.id_inspections = inspectionId;
+        data.id_checklists = checklistId;
+        data.note = note;
+        data.id_files = fileId;
+        data.priority = priority;
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", restapi + "/api/problems", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            // code work with response here (code: xhr.status, json response: xhr.responseText)
+            document.getElementById("demo22").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send(JSON.stringify(data));
+    }
+
+    function createInspection(id_vehicles, passed, note, id_users, km, fuel, type, oil_picture, link = null) {
+        let data = {};
+        data.id_vehicles = id_vehicles;
+        data.passed = passed;
+        data.note = note;
+        data.id_users = id_users;
+        data.km = km;
+        data.fuel = fuel;
+        data.type = type;
+        data.oil_picture = oil_picture;
+        data.link = link;
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", restapi + "/api/inspections", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            // code work with response here (code: xhr.status, json response: xhr.responseText)
+            document.getElementById("demo18").innerHTML = xhr.status + "<br>" + xhr.responseText;
         };
         xhr.send(JSON.stringify(data));
     }
@@ -339,6 +457,28 @@ create a file first
         xhr.onload = () => {
             // work with response here (code: xhr.status, json response: xhr.responseText)
             document.getElementById("demo9").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send();
+    }
+
+    function deleteVehicle(vehicleId) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("DELETE", restapi + "/api/vehicles/" + vehicleId, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            // work with response here (code: xhr.status, json response: xhr.responseText)
+            document.getElementById("demo20").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send();
+    }
+
+    function deleteUser(userId) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("DELETE", restapi + "/api/users/" + userId, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            // work with response here (code: xhr.status, json response: xhr.responseText)
+            document.getElementById("demo21").innerHTML = xhr.status + "<br>" + xhr.responseText;
         };
         xhr.send();
     }

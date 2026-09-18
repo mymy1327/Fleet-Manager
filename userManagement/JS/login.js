@@ -10,9 +10,11 @@ loginButton.addEventListener("click", () => {
   //Create data
   loginButton.disabled = true;
   const data = {};
-  data["username"] = document.getElementById("username")
-  data["password"] = document.getElementById("password")
-  data["next"] = params.get("next")
+  data["username"] = document.getElementById("username").value
+  data["password"] = document.getElementById("password").value
+  if(params.has("next")) {
+    data["next"] = params.get("next")
+  }
 
   //Send POST
   const xhr = new XMLHttpRequest();

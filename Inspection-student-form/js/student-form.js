@@ -1,4 +1,4 @@
-let restapi = "http://10.1.17.4:5501";
+let restapi = " https://developmenterasmus.kolojar.cz";
 let vehicle = null;
 let inspections = [];
 let faults = [];

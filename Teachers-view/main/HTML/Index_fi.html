@@ -8,7 +8,8 @@
 </head>
 <body>
     <header class="topbar">
-        <a class="brand" href="#home" aria-label="Fleet Manager etusivu"><span class="brand-mark" aria-hidden="true">&#x26DF;</span>
+        <a class="brand" href="#home" aria-label="Fleet Manager etusivu">
+            <span class="brand-mark" aria-hidden="true">&#x26DF;</span>
             <strong>Fleet Manager</strong>
         </a>
         <nav class="main-nav" aria-label="Päänavigaatio">
@@ -19,7 +20,7 @@
             <a href="#reports" data-view="reports"><span>&#x25A5;</span>Raportit</a>
         </nav>
         <div class="header-actions">
-            <button class="language-switch" type="button" data-language-switch>EN</button>
+            <button class="language-switch" type="button" data-language-switch>FI</button>
             <button class="logout" type="button">&#x21AA;&nbsp; Kirjaudu ulos</button>
         </div>
     </header>
@@ -38,23 +39,12 @@
                 <section class="panel large"><h2 class="panel-title">Avoimet viat<a class="panel-action" href="#faults">Näytä kaikki</a></h2><div class="empty">Ei avoimia vikoja — kaikki kunnossa!</div></section>
             </div>
         </section>
+
         <section data-view-content="fleet" hidden>
             <div class="page-heading"><div><h1>Kalusto</h1><p class="subtitle">Hallitse kalustoa</p></div><button class="button" type="button">&#xFF0B;&nbsp; Lisää ajoneuvo</button></div>
-            <section class="garage-list">
-                <div class="empty"><span class="empty-icon" aria-hidden="true">&#x26DF;</span>Ei vielä ajoneuvoja. Lisää ensimmäinen ajoneuvo!</div>
-                <article class="card-garage">
-                    <img class="Vehicle-image" src="image.png" alt="Ajoneuvo">
-                    <div class="vehicle-details">
-                        <div class="vehicle-heading">
-                            <h2 class="vehicle-model">malli</h2>
-                            <span class="vehicle-status">käyttötila</span>
-                        </div>
-                        <p class="vehicle-type">mallin-tarkennus</p>
-                        <p class="vehicle-distance"><span aria-hidden="true">&#x25CE;</span>kilometrit</p>
-                        <span class="vehicle-license">rekisterinumero</span>
-                        <p class="vehicle-code"><span aria-hidden="true">&#x259A;</span> M-MTWIR600</p>
-                    </div>
-                </article>
+            <section id="car" class="garage-list">
+                <div class="empty"><span class="empty-icon" aria-hidden="true">&#x26DF;</span>No vehicles yet. Add the first one!</div>
+                
             </section>
         </section>
         <section data-view-content="inspections" hidden>
@@ -83,5 +73,6 @@
         </section>
     </main>
     <script src="../JS/app.js"></script>
+    <script src="../../../VehicleList/vehiclelist.js"></script>
 </body>
 </html>
