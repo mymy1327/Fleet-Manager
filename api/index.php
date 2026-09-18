@@ -32,6 +32,7 @@ $data = json_decode(file_get_contents("php://input"), true);
  */
 function getFullTable($conn, $table, $filterColumn, $filter)
 {
+    global $listOfTables;
     //logToConsole($filter);
     if (isset($filterColumn)) {
         $stmt = $conn->prepare("SELECT * FROM `$table` WHERE `$filterColumn` = ?");
@@ -48,6 +49,16 @@ function getFullTable($conn, $table, $filterColumn, $filter)
         $return = $result->fetch_all(MYSQLI_ASSOC);
     }
 
+    if ($table == $listOfTables[1]) {
+        foreach ($result as $key => $vehicle) {
+            $stmt = $conn->prepare("SELECT km FROM `inspections` WHERE id_vehicles = ? ORDER BY date DESC LIMIT 1");
+            $stmt->bind_param("i", $vehicle["id_vehicles"]);
+            if (!$stmt->execute()) {
+                return [false, 404];
+            }
+            $return[$key]["km"] = $stmt->get_result()->fetch_assoc()["km"] ?? null;
+        }
+    }
     //logToConsole($return[2]["name"], );
     return json_encode($return, JSON_NUMERIC_CHECK);
 }
