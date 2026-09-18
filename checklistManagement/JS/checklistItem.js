@@ -53,7 +53,7 @@ document.getElementById("btnSubmit").addEventListener("click", () => {
         xhr.onload = () => {
           //Handle request data
           if (xhr.status == 200 || xhr.status == 201) {
-            window.location.href = "../HTML/checklistManager.html";
+            window.location.href = "../PHP/checklistManager.php";
           } else {
             alert("Failed to save data: " + xhr.responceText);
           }
@@ -80,7 +80,7 @@ document.getElementById("btnSubmit").addEventListener("click", () => {
     xhr.onload = () => {
       //Handle request data
       if (xhr.status == 200 || xhr.status == 201) {
-        window.location.href = "../HTML/checklistManager.html";
+        window.location.href = "../PHP/checklistManager.php";
       } else {
         alert("Failed to save data: " + xhr.responceText);
       }
