@@ -8,7 +8,6 @@ const ip = "10.1.17.4:5501"
 function getVehicleDetails(vehicleId) {
         const xhr = new XMLHttpRequest();
         xhr.open("GET", `http://${ip}/api/vehicles`, true);
-        xhr.open("GET", `http://${ip}/api/vehicles`, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             console.log(xhr.status)
@@ -27,12 +26,16 @@ function getVehicleDetails(vehicleId) {
                 // set id
                 newArticle.id = newId;
                 
-                
+                //set the imagebox
+                let picturebox = document.createElement("div")
+                picturebox.textContent = "heloeheohloerlherholershol"
+                picturebox.classList.add("panel")
 
                 //set the image
                 let picture = document.createElement("img")
-                picture.src = `http://${ip}/api/files/${(parseInt(intelligeble[x].id_files))}`;
-                picture.classList.add("Vehicle-image")
+                picture.src = `/api/files/${(parseInt(intelligeble[x].id_files))}`;
+                picture.style.width = "80px"
+                picture.style.height = "80px" 
                 //set the div for everything else
                 let vehicledetails = document.createElement("div")
                 vehicledetails.classList.add("vehicle-details")
@@ -158,7 +161,6 @@ function getAllVehicles() {
     xhr.send(null);
 }
 
-    getVehicleDetails();
     getVehicleDetails();
 })
 
