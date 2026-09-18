@@ -50,7 +50,7 @@ function getFullTable($conn, $table, $filterColumn, $filter)
     }
 
     if ($table == $listOfTables[1]) {
-        foreach ($result as $key => $vehicle) {
+        foreach ($return as $key => $vehicle) {
             $stmt = $conn->prepare("SELECT km FROM `inspections` WHERE id_vehicles = ? ORDER BY date DESC LIMIT 1");
             $stmt->bind_param("i", $vehicle["id_vehicles"]);
             if (!$stmt->execute()) {
@@ -482,19 +482,22 @@ switch ($_SERVER["REQUEST_METHOD"]) {
                 $return = createNewChecklistItem($conn, $data["name"], $data["description"]);
                 break;
             case 1:
-                $return = createNewVehicle(
-                    $conn,
-                    $data["name"],
-                    $data["type"],
-                    $data["license_plate"],
-                    $data["code"],
-                    $data["last_maintenance"],
-                    $data["last_maintenance_km"],
-                    $data["next_maintenance"],
-                    $data["maintenance_interval_km"],
-                    $data["id_files"],
-                    $data["state"],
-                );
+                if (isset($uri[1])) {
+                } else {
+                    $return = createNewVehicle(
+                        $conn,
+                        $data["name"],
+                        $data["type"],
+                        $data["license_plate"],
+                        $data["code"],
+                        $data["last_maintenance"],
+                        $data["last_maintenance_km"],
+                        $data["next_maintenance"],
+                        $data["maintenance_interval_km"],
+                        $data["id_files"],
+                        $data["state"],
+                    );
+                }
                 break;
             case 2:
                 $return = createNewFile($conn, $_FILES["file"]);
