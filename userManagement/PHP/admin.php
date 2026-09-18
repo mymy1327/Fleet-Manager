@@ -1,9 +1,10 @@
 <?php
-    //CheckAccessSession("admin")
+require __DIR__ . "/../../assets/sharedUserFunctions.php";
+    CheckAccessSession(["admin"])
 ?>
 
 <!doctype html>
-<html lang="fi">
+<html lang="en">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -22,7 +23,7 @@
             <nav class="main-nav" aria-label="Main navigation"></nav>
             <div class="header-actions">
                 <button class="language-switch" type="button" data-language-switch>FI</button>
-                <button class="logout" type="button">↪&nbsp; Logout</button>
+                <a href='./logout.php'> <button class="logout" type="button">↪&nbsp; Logout</button></a>
             </div>
         </header>
         <main id="app" class="page">

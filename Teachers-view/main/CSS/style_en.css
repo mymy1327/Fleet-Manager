@@ -11,6 +11,7 @@
     --orange: #f2a51b;
     --red: #ec6670;
     --garageListBackground: #e5e5e6;
+    --lightBlue: #3b86ff;
 }
 
 /* Base styles */
@@ -151,6 +152,7 @@ a {
     font-size: 11px;
     text-align: left;
     white-space: nowrap;
+    cursor: pointer;
 }
 
 .header-actions {
@@ -312,7 +314,7 @@ button:disabled, button:hover:disabled {
 .Vehicle-image {
     display: block;
     padding: 2%;
-    border: 1px solid var(--line); 
+    border: 1px solid var(--line);
     border-radius: 5px;
     background-color: var(--background);
     width: 100%;
@@ -491,7 +493,7 @@ button:disabled, button:hover:disabled {
 .pill:hover,
 .pill.active:hover {
     color: white;
-    background: #8db5ed;
+    background: var(--lightBlue);
 }
 
 .pill.active {
@@ -506,7 +508,7 @@ button:disabled, button:hover:disabled {
 
 .pill:hover {
     color: white;
-    background: #8db5ed;
+    background: var(--lightBlue);
 }
 
 /* Buttons and form controls */
