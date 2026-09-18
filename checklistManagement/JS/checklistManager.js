@@ -2,7 +2,7 @@ async function main() {
   //Load library from API
   const libraryResponce = await fetch("../../api/checklists")
   if (!libraryResponce.ok) {
-    alert("Failed to load checklist library!")
+    window.location.href = ("../../errorPages/PHP/handleError.php?code=503&message=" + encodeURIComponent(await libraryResponce.text()) + "&from="+encodeURIComponent(window.location.href));
     return
   }
 

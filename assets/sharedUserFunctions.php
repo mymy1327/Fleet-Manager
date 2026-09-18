@@ -135,15 +135,26 @@ function PathToURL(string $path) {
  * Handles error using custom sides
  * @param int $code HTTP error code
  * @param string|null $message Status message, set to null for none
+ * @param string|null $from Overwrite source URL
  */
-function HandleError(int $code, string|null $message = null) {
+function HandleError(int $code, string|null $message = null, string|null $from = null) {
     //Get paths
     $path = __DIR__ . "/../errorPages/PHP/" . $code . ".php";
     $url = PathToURL($path);
 
+    //Chceck if from is null
+    if($from === null) {
+        $from = $_SERVER['REQUEST_URI'];
+    }
+
+    //Check if message not empty
+    if($message === "") {
+        $message = null;
+    }
+
     //Check if path exists
     if(file_exists($path)) {
-        $url = "Location: " . $url . "?from=" . rawurlencode($_SERVER['REQUEST_URI']);
+        $url = "Location: " . $url . "?from=" . rawurlencode($from);
         if($message !== null) {
             $url .= "&message=" . urlencode($message);
         }

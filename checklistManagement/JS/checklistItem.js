@@ -2,14 +2,15 @@ const params = new URLSearchParams(window.location.search);
 async function main() {
   //Check if need to load
   if (!params.has("checklist")) {
-    return;
+    window.location.href = ("../../errorPages/PHP/handleError.php?code=400&message=" + encodeURIComponent("Missing checklist argument.") + "&from="+encodeURIComponent(window.location.href));
+    return
   }
 
   //Load item from API
   const itemResponce = await fetch("../../api/checklists/" + encodeURIComponent(params.get("checklist")));
   if (!itemResponce.ok) {
-    alert("Failed to load checklist item!");
-    return;
+    window.location.href = ("../../errorPages/PHP/handleError.php?code=" + itemResponce.status + "&message=" + encodeURIComponent(await itemResponce.text()) + "&from="+encodeURIComponent(window.location.href));
+    return
   }
 
   //Parse item

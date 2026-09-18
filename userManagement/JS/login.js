@@ -25,7 +25,7 @@ loginButton.addEventListener("click", () => {
     //Validate responce
     if (xhr.status != 200) {
       if (xhr.status == 503) {
-        window.location.replace("../../errorPages/PHP/handleError.php?code=503&message=" + encodeURIComponent(JSON.parse(xhr.responseText)["message"]));
+        window.location.href = ("../../errorPages/PHP/handleError.php?code=503&message=" + encodeURIComponent(JSON.parse(xhr.responseText)["message"]) + "&from="+encodeURIComponent(window.location.href));
         return
       }
       alert("Failed to login!");
