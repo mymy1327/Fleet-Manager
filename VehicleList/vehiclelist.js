@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
 let carlist = document.getElementById("car")
 
 const xhr = new XMLHttpRequest();
-const ip = "../../../"
+const ip = "../../.."
 
 function getVehicleDetails(vehicleId) {
         const xhr = new XMLHttpRequest();
@@ -34,8 +34,7 @@ function getVehicleDetails(vehicleId) {
                 //set the image
                 let picture = document.createElement("img")
                 picture.src = `/api/files/${(parseInt(intelligeble[x].id_files))}`;
-                picture.style.width = "80px"
-                picture.style.height = "80px" 
+                picture.classList.add("Vehicle-image")
                 //set the div for everything else
                 let vehicledetails = document.createElement("div")
                 vehicledetails.classList.add("vehicle-details")

@@ -261,7 +261,7 @@ button:disabled, button:hover:disabled {
 
 .card-icon.available {
     color: var(--green);
-    background: #e8fbf4;
+    background: #4be237;
 }
 
 .card-icon.occupied {
@@ -328,23 +328,23 @@ button:disabled, button:hover:disabled {
 
 .vehicle-heading {
     display: flex;
-    align-items: center;
     justify-content: space-between;
     gap: 5cqi;
 }
 
 .vehicle-model {
+    align-items: center;
     margin: 0;
     font-size: 10cqi;
 }
 
 .vehicle-status {
     width: 74px;
+    height: 24px;
     text-align: center;
     padding: 2cqi 5cqi;
     border: 1px solid #b9d4ff;
     border-radius: 12px;
-    color: var(--blue);
     background: #f3f8ff;
     font-size: 6.5cqi;
     white-space: nowrap;
