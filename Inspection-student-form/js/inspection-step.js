@@ -9,6 +9,8 @@ let answers = [];
 let previousKilometers = null;
 let previousInspection = null;
 
+sessionStorage.getItem("login")
+
 function escapeHTML(value) {
     if (value === null || value === undefined) {
         return "";
@@ -1876,4 +1878,232 @@ function openPhotoViewer(photo) {
             image.src = "";
         }
     };
+}
+
+// SUBMIT PART //
+function createFile(blob) {
+    return new Promise((resolve, reject) => {
+        const formData = new FormData();
+        formData.append("file", blob, "inspection.jpg");
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", restapi + "/api/files", true);
+
+        xhr.onload = () => {
+            if (xhr.status < 200 || xhr.status >= 300) {
+                reject(new Error("File upload failed: " + xhr.status));
+                return;
+            }
+
+            try {
+                const data = JSON.parse(xhr.responseText);
+                console.log("File created:", data);
+                resolve(data.new_id);
+            } catch (error) {
+                reject(new Error("Invalid file response."));
+            }
+        };
+
+        xhr.onerror = () => reject(new Error("File upload connection failed."));
+        xhr.send(formData);
+    });
+}
+
+function createInspection(id_vehicles, passed, note, id_users, km, fuel, type, oil_picture, link = null) {
+    return new Promise((resolve, reject) => {
+        const data = {
+            id_vehicles,
+            passed,
+            note,
+            id_users,
+            km,
+            fuel,
+            type,
+            oil_picture,
+            link
+        };
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", restapi + "/api/inspections", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        xhr.onload = () => {
+            console.log("Inspection:", xhr.status, xhr.responseText);
+
+            if (xhr.status < 200 || xhr.status >= 300) {
+                reject(new Error("Inspection creation failed: " + xhr.status));
+                return;
+            }
+
+            try {
+                const data = JSON.parse(xhr.responseText);
+                console.log("Created inspection:", data);
+                resolve(data.id_inspections);
+            } catch (error) {
+                reject(new Error("Invalid inspection response."));
+            }
+        };
+
+        xhr.onerror = () => reject(new Error("Inspection connection failed."));
+        xhr.send(JSON.stringify(data));
+    });
+}
+
+function createProblem(inspectionId, checklistId, note, fileId, priority = "medium") {
+    return new Promise((resolve, reject) => {
+        const data = {
+            id_inspections: inspectionId,
+            id_checklists: checklistId,
+            note,
+            id_files: fileId,
+            priority
+        };
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", restapi + "/api/problems", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        xhr.onload = () => {
+            console.log("Problem:", xhr.status, xhr.responseText);
+
+            if (xhr.status < 200 || xhr.status >= 300) {
+                reject(new Error("Problem creation failed: " + xhr.status));
+                return;
+            }
+
+            resolve(JSON.parse(xhr.responseText));
+        };
+
+        xhr.onerror = () => reject(new Error("Problem connection failed."));
+        xhr.send(JSON.stringify(data));
+    });
+}
+
+function buildInspectionNote() {
+    const notes = [];
+
+    checklists.forEach((checklist, index) => {
+        const answer = answers[index]?.answer;
+
+        if (answer === "Huono" || answer === "En tiedä") {
+            notes.push(`${checklist.name} - ${answer}`);
+        }
+    });
+    if (notes.length == 0) {
+        return null;
+    }
+    return notes.join("\n");
+}
+
+function getInspectionPassed() {
+    const excludedQuestions = [
+        "Polttoaineen määrä",
+        "Kilometrilukema"
+    ];
+
+    return answers
+        .filter(item => !excludedQuestions.includes(item.question))
+        .every(item => {
+            const answer = item?.answer;
+            return answer === "Hyvä" || answer === "Kunnossa";
+        })
+        ? 1
+        : 0;
+}
+
+function validateInspectionAnswers() {
+    for (let i = 0; i < checklists.length; i++) {
+        if (!answers[i]?.answer) {
+            currentQuestionIndex = i;
+            renderQuestion();
+            updateNavigationButtons();
+            alert("Vastaa kaikkiin tarkastuskysymyksiin.");
+            return false;
+        }
+    }
+
+    return true;
+}
+function getAnswerByChecklistName(name) {
+    const index = checklists.findIndex(item => item.name === name);
+    return index === -1 ? null : answers[index]?.answer;
+}
+async function submitInspection (inspectionResult) {
+    if (!validateInspectionAnswers()) return;
+    const submitButton = document.getElementById("summary-submit");
+
+    if(submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = "Lähetetään...";
+    }
+    const userId = Number(sessionStorage.getItem("login"));
+
+        if(!userId) {
+            alert("Käyttäjää ei löytynyt. Kirjaudu uudelleen.");
+            return;
+        }
+
+    try {
+        const vehicleId = vehicle.id_vehicles;
+        const km = getAnswerByChecklistName("Kilometrilukema") ?? vehicle.km;
+        const fuel = getAnswerByChecklistName("Polttoaineen määrä") ?? 0;
+        const note = buildInspectionNote();
+        const passed = getInspectionPassed();
+
+        let oilPictureId = 0;
+
+        const oilIndex = checklists.findIndex (
+            checklist => checklist.name === "Moottoriöljyn taso"
+        );
+
+        if (oilIndex !== -1 && answers[oilIndex]?.oilPhoto) {
+            oilPictureId = await createFile(answers[oilIndex].oilPhoto);
+        }
+
+        const inspectionId = await createInspection(
+            vehicleId,
+            passed,
+            note,
+            userId,
+            km,
+            fuel,
+            "return",
+            oilPictureId,
+            null
+        );
+
+        console.log("Inspection ID:", inspectionId);
+
+        for (let i = 0; i < checklists.length; i++) {
+            const checklist = checklist[i];
+            const answer = answers[i];
+
+            if (!answers?.error) continue;
+
+            if (!answer.error.photo) {
+                throw new Error('Kuvavika puuttuu: ${checklist.name}');
+            }
+
+            const fileId = await createFile(answer.error.photo);
+            await createProblem(
+                inspectionId,
+                checklist.id_checklists,
+                answer.error.description || answer.answer,
+                fileId,
+                answer.error.priority || "medium"
+            );
+        }
+
+        alert("Tarkastus lähetetty onnistuneesti.");
+        window.location.href = 'http://localhost/inspection-student-form/index.html?id=${vehicleId}';
+
+    } catch (error) {
+        console.error("Inspection submission error:", error);
+        alert("Tarkastuksen lähettäminen epäonnistui.");
+
+        if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = "Lähetä tarkastus";
+        }
+    }
 }

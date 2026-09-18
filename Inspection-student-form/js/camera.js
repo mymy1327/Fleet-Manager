@@ -173,6 +173,3 @@ function closeCamera() {
     takePictureButton = null;
     cameraCallback = null;
 }
-
-console.log("camera.js loaded");
-console.log("openCamera:", typeof openCamera);
