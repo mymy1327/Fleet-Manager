@@ -1,15 +1,37 @@
 // funni css
 document.addEventListener('DOMContentLoaded', function() {
-let carlist = document.getElementById("car")
+let carlist = document.getElementById("vehicle")
 
 const xhr = new XMLHttpRequest();
-const ip = "10.1.17.4:5501"
-
-function getVehicleDetails(vehicleId) {
+const ip = ".."
+function getAllInspections(changing, vehicleId = null) {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", `http://${ip}/api/vehicles`, true);
+        xhr.open("GET", "/api/inspections?id_vehicles=" + vehicleId, true); // ?id_vehicles can be removed
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
+            
+            unintelligeble = JSON.parse(xhr.responseText)
+            let temp = 0
+            for (x in unintelligeble){
+                if (x.id_inspections > temp){
+                    temp = x.id_inspections
+                }
+            }
+            newestkm = unintelligeble.id_inpsection
+            console.log(unintelligeble)
+            // work with response here (code: xhr.status, json response: xhr.responseText)
+            console.log(unintelligeble.km)
+            changing.textContent = unintelligeble.km
+        };
+        xhr.send();
+    }
+function getVehicleDetails(vehicleId) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", `/api/vehicles`, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            
+            console.log(`/api/vehicles`)
             console.log(xhr.status)
             console.log(1)
             console.log(xhr.responseText)
@@ -20,22 +42,23 @@ function getVehicleDetails(vehicleId) {
             for (x in intelligeble){
                 // create id
                 let newId = /item-${i+1}/;
+
+
+                
+
                 //create div
                 let newArticle = document.createElement("article")
                 newArticle.classList.add("card-garage");
                 // set id
                 newArticle.id = newId;
-                
-                //set the imagebox
-                let picturebox = document.createElement("div")
-                picturebox.textContent = "heloeheohloerlherholershol"
-                picturebox.classList.add("panel")
+
+                let clickableconnection = document.createElement("a")
+                clickableconnection.href = `../../../VehicleDetails/index.html?code=${intelligeble[x].code}`
 
                 //set the image
                 let picture = document.createElement("img")
                 picture.src = `/api/files/${(parseInt(intelligeble[x].id_files))}`;
-                picture.style.width = "80px"
-                picture.style.height = "80px" 
+                picture.classList.add("Vehicle-image")
                 //set the div for everything else
                 let vehicledetails = document.createElement("div")
                 vehicledetails.classList.add("vehicle-details")
@@ -48,6 +71,10 @@ function getVehicleDetails(vehicleId) {
                 let vehiclestatus = document.createElement("span")
                 vehiclestatus.classList.add("vehicle-status")
                 vehiclestatus.textContent = intelligeble[x].state
+                // to be done 
+                if (intelligeble[x].state === "in_use"){
+                    vehiclestatus.classList = ("")
+                }
 
                 let vehicletype = document.createElement("p")
                 vehicletype.textContent = intelligeble[x].type
@@ -55,7 +82,7 @@ function getVehicleDetails(vehicleId) {
                 //set the type
                 let vehicledistance = document.createElement("p")
                 vehicledistance.classList.add("vehicle-distance")
-                vehicledistance.textContent = "no"
+                vehicledistance.textContent = getAllInspections(vehicledistance, intelligeble[x].id_vehicles)
 
                 let vehiclelicense = document.createElement("span")
                 vehiclelicense.classList.add("vehicle-license")
@@ -66,8 +93,9 @@ function getVehicleDetails(vehicleId) {
                 vehiclecode.textContent = intelligeble[x].code
                 
                 //append in div
-                newArticle.appendChild(picture)
-                newArticle.appendChild(vehicledetails)
+                newArticle.appendChild(clickableconnection)
+                clickableconnection.appendChild(picture)
+                clickableconnection.appendChild(vehicledetails)
                 vehicledetails.appendChild(vehicleheading)
                 vehicleheading.appendChild(vehiclemodel)
                 vehicleheading.appendChild(vehiclestatus)
