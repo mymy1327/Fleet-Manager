@@ -245,18 +245,11 @@ function createNewUser($conn, $username, $email, $password, $role)
     );
 }
 
-function createNewInspection(
-    $conn,
-    $id_vehicles,
-    $passed,
-    $note,
-    $id_users,
-    $km,
-    $fuel,
-    $oil_picture,
-    $type,
-    $link,
-) {
+function createNewInspection($conn, $id_vehicles, $passed, $note, $id_users, $km, $fuel, $oil_picture, $type, $link)
+{
+    if ($type == "departure") {
+        $link = null;
+    }
     $stmt = $conn->prepare(
         "INSERT INTO `inspections`(`id_vehicles`, `passed`, `note`, `id_users`, `km`, `fuel`, `oil_picture`, `type`, `link`) VALUES (?,?,?,?,?,?,?,?,?)",
     );
@@ -271,6 +264,10 @@ function createNewInspection(
         $type,
         (int) $link ?? null,
     ];
+
+    if ($type == "departure") {
+        $format[8] = null;
+    }
     $stmt->bind_param(
         "iisiiiisi",
         $format[0],
