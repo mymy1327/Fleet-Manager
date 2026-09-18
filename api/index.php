@@ -386,9 +386,10 @@ function rewriteChecklistItemCell($conn, $id, $column, $name, $description)
 }
 
 /**
- * delete checklist item
+ * delete entry
  * @param mysqli $conn connection to database
- * @param int $id checklist id
+ * @param string $table db table name
+ * @param int $id entry id
  * @return true|array[false, int, string|null] true on success | false on failure
  */
 function deleteEntry($conn, $table, $id)
