@@ -32,7 +32,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          BASE_DIR="/srv/projects/${GITHUB_REPOSITORY#*/}"
+          BASE_DIR="/home/fedora/sambashare/FleetManager"
 
           BRANCH="$GITHUB_REF_NAME"
 
