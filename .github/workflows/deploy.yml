@@ -1,90 +1,224 @@
-name: Sync Branch Folders on Windows
+name: Sync branch to development server
 
 on:
   push:
-    branches:
-      - main
-      - staging
-      - dev
+
+# Only allow the workflow to read the repository.
+permissions:
+  contents: read
+
+# Never run two sync operations for the same branch at the same time.
+# Different branches can still synchronize in parallel.
+concurrency:
+  group: branch-sync-${{ github.repository }}-${{ github.ref }}
+  cancel-in-progress: false
+
+
+
 
 jobs:
-  sync-folder:
+  sync:
+    name: Sync ${{ github.ref_name }}
     runs-on: self-hosted
-    defaults:
-      run:
-        shell: powershell -ExecutionPolicy Bypass -File {0}
 
     steps:
-      - name: Sync Code to Branch Folder
-        env:
-          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+
+      # ------------------------------------------------------------
+      # 1. Calculate the directory for this branch
+      # ------------------------------------------------------------
+      - name: Calculate branch directory
+        id: paths
+        shell: bash
         run: |
-          $Branch = "${{ github.ref_name }}"
-          $DeployDir = "C:\apps\$Branch"
-          $RepoUrl = "git@github.com:${{ github.repository }}.git"
+          set -euo pipefail
 
-          # 1. Create unique temp key file path
-          $TempSshKey = Join-Path $env:TEMP "deploy_key_$([Guid]::NewGuid().ToString('N'))"
+          BASE_DIR="/srv/projects/${GITHUB_REPOSITORY#*/}"
 
-          try {
-              # 2. Write private key with Unix line endings (LF)
-              [System.IO.File]::WriteAllText($TempSshKey, ($env:SSH_KEY -replace "`r`n", "`n") + "`n")
+          BRANCH="$GITHUB_REF_NAME"
 
-              # 3. Restrict Windows permissions via icacls (removes inherited ACLs, grants current user full control)
-              icacls.exe $TempSshKey /inheritance:r /grant:r "$($env:USERNAME):F" | Out-Null
+          # Make the branch name filesystem-friendly.
+          #
+          # Examples:
+          #   main              -> main
+          #   develop           -> develop
+          #   feature/login     -> feature-login
+          #   bugfix/foo/bar    -> bugfix-foo-bar
+          #
+          SAFE_BRANCH="$(printf '%s' "$BRANCH" | \
+            sed 's#[^A-Za-z0-9._-]#-#g')"
 
-              # 4. Set GIT_SSH_COMMAND with proper key path and verbose mode
-              $env:GIT_SSH_COMMAND = "ssh -i `"$TempSshKey`" -o StrictHostKeyChecking=no -o UserKnownHostsFile=NUL -v"
+          # Add a short hash of the original branch name.
+          #
+          # This prevents collisions such as:
+          #
+          #   feature/foo-bar
+          #   feature-foo/bar
+          #
+          # both becoming the same directory.
+          BRANCH_HASH="$(printf '%s' "$BRANCH" | sha256sum | cut -c1-8)"
 
-              # 5. Test SSH connection before cloning
-              Write-Host "Testing SSH connection to GitHub..."
-              $sshTest = & ssh -i "$TempSshKey" -o StrictHostKeyChecking=no -o UserKnownHostsFile=NUL -T git@github.com 2>$null
-              if ($LASTEXITCODE -eq 1) {
-                  Write-Host "SSH key authentication successful"
-              } elseif ($LASTEXITCODE -ne 0) {
-                  Write-Error "SSH connection test failed: $sshTest"
-                  exit 1
-              }
+          DIRECTORY_NAME="${SAFE_BRANCH}-${BRANCH_HASH}"
 
-              # 6. Create target directory if missing
-              if (-not (Test-Path $DeployDir)) {
-                  New-Item -ItemType Directory -Path $DeployDir -Force | Out-Null
-                  Write-Host "Created directory: $DeployDir"
-              }
+          DEPLOY_DIR="${BASE_DIR}/${DIRECTORY_NAME}"
 
-              # 7. Clone on first push, fetch & hard reset on subsequent pushes
-              if (-not (Test-Path "$DeployDir\.git")) {
-                  Write-Host "Cloning repository branch '$Branch' into $DeployDir..."
-                  git clone -b $Branch $RepoUrl $DeployDir
-                  if ($LASTEXITCODE -ne 0) {
-                      Write-Error "Failed to clone repository"
-                      exit 1
-                  }
-              } else {
-                  Write-Host "Repository already exists, updating branch '$Branch'..."
-                  Set-Location $DeployDir
-                  git fetch origin $Branch
-                  if ($LASTEXITCODE -ne 0) {
-                      Write-Error "Failed to fetch from origin"
-                      exit 1
-                  }
-                  git reset --hard "origin/$Branch"
-                  if ($LASTEXITCODE -ne 0) {
-                      Write-Error "Failed to reset to origin/$Branch"
-                      exit 1
-                  }
-              }
-              
-              Write-Host "Successfully synced branch '$Branch' to $DeployDir"
-          }
-          catch {
-              Write-Error "An error occurred: $_"
-              exit 1
-          }
-          finally {
-              # 8. Remove private key from server disk
-              if (Test-Path $TempSshKey) {
-                  Remove-Item -Path $TempSshKey -Force
-                  Write-Host "Cleaned up temporary SSH key"
-              }
-          }
+          echo "Repository : $GITHUB_REPOSITORY"
+          echo "Branch     : $BRANCH"
+          echo "Directory  : $DEPLOY_DIR"
+
+          echo "base_dir=$BASE_DIR" >> "$GITHUB_OUTPUT"
+          echo "deploy_dir=$DEPLOY_DIR" >> "$GITHUB_OUTPUT"
+          echo "directory_name=$DIRECTORY_NAME" >> "$GITHUB_OUTPUT"
+
+      # ------------------------------------------------------------
+      # 2. Create the directory if necessary
+      # ------------------------------------------------------------
+      - name: Create branch directory
+        shell: bash
+        env:
+          DEPLOY_DIR: ${{ steps.paths.outputs.deploy_dir }}
+        run: |
+          set -euo pipefail
+
+          mkdir -p "$DEPLOY_DIR"
+
+      # ------------------------------------------------------------
+      # 3. Clone the repository for the first time
+      # ------------------------------------------------------------
+      - name: Clone repository if needed
+        shell: bash
+        env:
+          DEPLOY_DIR: ${{ steps.paths.outputs.deploy_dir }}
+        run: |
+          set -euo pipefail
+
+          if [ ! -d "$DEPLOY_DIR/.git" ]; then
+            echo "No Git repository found."
+            echo "Creating new repository..."
+
+            cd "$DEPLOY_DIR"
+
+            git init --initial-branch="$GITHUB_REF_NAME"
+
+            git remote add origin \
+              "https://github.com/${GITHUB_REPOSITORY}.git"
+
+            # Configure Git to use the temporary GitHub Actions token.
+            git -c http.extraheader="AUTHORIZATION: bearer ${GITHUB_TOKEN}" \
+              fetch --prune origin \
+              "$GITHUB_SHA"
+
+            # Create the local branch pointing at the pushed commit.
+            git checkout -B "$GITHUB_REF_NAME" "$GITHUB_SHA"
+
+            # Make the repository group-writable.
+            git config core.sharedRepository group
+
+            echo "Initial clone completed."
+
+          else
+            echo "Git repository already exists."
+          fi
+
+      # ------------------------------------------------------------
+      # 4. Make sure the existing directory is clean
+      # ------------------------------------------------------------
+      - name: Check for local changes
+        shell: bash
+        env:
+          DEPLOY_DIR: ${{ steps.paths.outputs.deploy_dir }}
+        run: |
+          set -euo pipefail
+
+          cd "$DEPLOY_DIR"
+
+          echo "Checking for local developer changes..."
+
+          if [ -n "$(git status --porcelain)" ]; then
+            echo ""
+            echo "ERROR: The branch directory contains local changes."
+            echo ""
+            echo "Directory:"
+            echo "  $DEPLOY_DIR"
+            echo ""
+            echo "Git status:"
+            git status --short
+            echo ""
+            echo "The GitHub Action will NOT overwrite developer changes."
+            echo ""
+            exit 1
+          fi
+
+          echo "Working tree is clean."
+
+      # ------------------------------------------------------------
+      # 5. Fetch the pushed commit
+      # ------------------------------------------------------------
+      - name: Fetch branch
+        shell: bash
+        env:
+          DEPLOY_DIR: ${{ steps.paths.outputs.deploy_dir }}
+        run: |
+          set -euo pipefail
+
+          cd "$DEPLOY_DIR"
+
+          echo "Fetching from GitHub..."
+
+          git -c http.extraheader="AUTHORIZATION: bearer ${GITHUB_TOKEN}" \
+            fetch \
+            --prune \
+            origin \
+            "$GITHUB_SHA"
+
+      # ------------------------------------------------------------
+      # 6. Checkout the exact commit that triggered this workflow
+      # ------------------------------------------------------------
+      - name: Checkout pushed commit
+        shell: bash
+        env:
+          DEPLOY_DIR: ${{ steps.paths.outputs.deploy_dir }}
+        run: |
+          set -euo pipefail
+
+          cd "$DEPLOY_DIR"
+
+          # Make sure the local branch exists and points to the
+          # exact commit that triggered this workflow.
+          git checkout -B "$GITHUB_REF_NAME" "$GITHUB_SHA"
+
+          # Make the working tree group writable for Samba users.
+          git config core.sharedRepository group
+
+          echo ""
+          echo "======================================"
+          echo "Branch:  $GITHUB_REF_NAME"
+          echo "Commit:  $GITHUB_SHA"
+          echo "Path:    $DEPLOY_DIR"
+          echo "======================================"
+          echo ""
+
+          git status --short
+          git log -1 --oneline
+
+      # ------------------------------------------------------------
+      # 7. Verify that we ended up at the expected commit
+      # ------------------------------------------------------------
+      - name: Verify checkout
+        shell: bash
+        env:
+          DEPLOY_DIR: ${{ steps.paths.outputs.deploy_dir }}
+        run: |
+          set -euo pipefail
+
+          cd "$DEPLOY_DIR"
+
+          ACTUAL_SHA="$(git rev-parse HEAD)"
+
+          if [ "$ACTUAL_SHA" != "$GITHUB_SHA" ]; then
+            echo "ERROR: Checkout verification failed."
+            echo "Expected: $GITHUB_SHA"
+            echo "Actual:   $ACTUAL_SHA"
+            exit 1
+          fi
+
+          echo "Checkout verified successfully."
