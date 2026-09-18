@@ -46,7 +46,9 @@ function getVehicleDetails(vehicleId) {
                 vehiclemodel.textContent = intelligeble[x].name
                 let vehiclestatus = document.createElement("span")
                 vehiclestatus.classList.add("vehicle-status")
-                vehiclestatus.textContent = intelligeble[x].state
+                const vehicleState = intelligeble[x].state
+                vehiclestatus.dataset.state = vehicleState
+                vehiclestatus.textContent = vehicleState
 
                 let vehicletype = document.createElement("p")
                 vehicletype.textContent = intelligeble[x].type
