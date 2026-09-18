@@ -107,8 +107,13 @@ jobs:
               exit 1
             }
 
+            AUTH_HEADER="$(
+              printf 'x-access-token:%s' "$GITHUB_TOKEN" |
+              base64 | tr -d '\n'
+            )"
+
             git \
-              -c "http.extraheader=Authorization: Bearer ${GITHUB_TOKEN}" \
+              -c "http.extraheader=AUTHORIZATION: basic ${AUTH_HEADER}" \
               -c credential.helper= \
               fetch --prune origin "$GITHUB_SHA"
 
@@ -164,8 +169,13 @@ jobs:
 
           git remote set-url origin "https://github.com/${GITHUB_REPOSITORY}.git"
 
+          AUTH_HEADER="$(
+            printf 'x-access-token:%s' "$GITHUB_TOKEN" |
+            base64 | tr -d '\n'
+          )"
+
           git \
-            -c "http.extraheader=Authorization: Bearer ${GITHUB_TOKEN}" \
+            -c "http.extraheader=AUTHORIZATION: basic ${AUTH_HEADER}" \
             -c credential.helper= \
             fetch --prune origin "$GITHUB_SHA"
 
