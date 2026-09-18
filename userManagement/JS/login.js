@@ -23,6 +23,10 @@ loginButton.addEventListener("click", () => {
   xhr.setRequestHeader("Content-Type", "application/json");
   xhr.onload = () => {
     if (xhr.status != 200) {
+      if (xhr.status == 503) {
+        window.location.replace("../../errorPages/PHP/handleError.php?code=503&message=" + encodeURIComponent(JSON.parse(xhr.responseText)["message"]));
+        return
+      }
       alert("Failed to login!");
       loginButton.disabled = false;
       return

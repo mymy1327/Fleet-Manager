@@ -1,6 +1,8 @@
 sessionStorage.clear("login");
 const params = new URLSearchParams(window.location.search);
+let uri = "./login.php";
 if(params.has("next")) {
-  window.location.href = "./login.php?next=" + encodeURIComponent(params.get("next"))
+  uri += "?next=" + encodeURIComponent(params.get("next"))
 }
-window.location.href = "./login.php";
+console.log(uri);
+window.location.replace(uri)
