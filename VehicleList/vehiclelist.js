@@ -3,11 +3,11 @@ document.addEventListener('DOMContentLoaded', function() {
 let carlist = document.getElementById("car")
 
 const xhr = new XMLHttpRequest();
-const ip = "10.1.17.4:5501"
+const ip = "../"
 
 function getVehicleDetails(vehicleId) {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", `http://${ip}/api/vehicles`, true);
+        xhr.open("GET", `${ip}/api/vehicles`, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             console.log(xhr.status)
