@@ -259,17 +259,17 @@ button:disabled, button:hover:disabled {
     font-size: 14px;
 }
 
-.card-icon.green {
+.card-icon.available {
     color: var(--green);
     background: #e8fbf4;
 }
 
-.card-icon.orange {
+.card-icon.occupied {
     color: var(--orange);
     background: #fff6e5;
 }
 
-.card-icon.red {
+.card-icon.notInUse {
     color: var(--red);
     background: #fff0f1;
 }
@@ -340,7 +340,7 @@ button:disabled, button:hover:disabled {
 
 .vehicle-status {
     width: 74px;
-    text-align: center;
+    text-align: right;
     padding: 2cqi 5cqi;
     border: 1px solid #b9d4ff;
     border-radius: 12px;
