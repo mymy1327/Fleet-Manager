@@ -1,9 +1,18 @@
 <?php
+/**
+ * @var mysqli $conn
+ */
 header("Content-Type: application/json");
-header("Access-Control-Allow-Origin: http://127.0.0.1:5501");
+header("Allow: DELETE, PUT, PATCH");
+header("Access-Control-Allow-Methods: DELETE");
+header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, Origin");
 //session_start();
 require "../../assets/config.php";
+
+if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
+    heaDie(200);
+}
 
 $path = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 $uri = array_slice(explode("/", $path), 2);
