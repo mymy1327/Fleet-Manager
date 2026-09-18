@@ -1,10 +1,18 @@
 <?php
 session_start();
 $_SESSION["login"] = "";
-if(isset($_GET["next"])) {
-    header("Location: ./login.php?next=" . rawurlencode($_GET["next"]));
-} else {
-    header("Location: ./login.php");
-}
-exit();
 ?>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Logout</title>
+</head>
+<body>
+	<h1>Please wait...</h1>
+	<script src='../JS/logout.js'></script>
+</body>
+</html>

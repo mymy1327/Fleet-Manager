@@ -3,6 +3,7 @@ const params = new URLSearchParams(window.location.search)
 document.getElementById("passwordEye").addEventListener("change", () => {
   document.getElementById("password").type =  document.getElementById("passwordEye").checked ? "text" : "password"
 })
+sessionStorage.clear("login");
 
 //Login button
 const loginButton = document.getElementById("login")
@@ -29,7 +30,9 @@ loginButton.addEventListener("click", () => {
 
     //Redirect
     try {
-      window.location.href = JSON.parse(xhr.responseText)["next"]
+      const resp = JSON.parse(xhr.responseText);
+      sessionStorage.setItem("login", resp["id"]);
+      window.location.href = resp["next"]
     } catch (e) {
       alert("Failed to login!")
       console.error(e);

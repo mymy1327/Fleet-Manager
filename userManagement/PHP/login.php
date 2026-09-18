@@ -25,6 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 } else {
                     $result["next"] = $data["next"];
                 }
+                $result["id"] = $user["id_users"];
                 echo (json_encode($result));
                 die();
             }
