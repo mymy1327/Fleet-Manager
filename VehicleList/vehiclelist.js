@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
 let carlist = document.getElementById("car")
 
 const xhr = new XMLHttpRequest();
-const ip = "../"
+const ip = "../../"
 
 function getVehicleDetails(vehicleId) {
         const xhr = new XMLHttpRequest();
