@@ -4,7 +4,35 @@
 <div id="demo2"></div>
 <input id="vehicleId" placeholder="vehicle id" />
 <button onclick="getVehicleDetails(document.getElementById('vehicleId').value)">get vehicle details</button><br />
-<br />
+<div id="demo17"></div>
+<input id="createVehicleName" placeholder="name" />
+<input id="createVehicleType" placeholder="type" />
+<input id="createVehicleLicensePlate" placeholder="license plate" />
+<input id="createVehicleCode" placeholder="code" />
+<input type="date" id="createVehicleLastMaintenance" placeholder="YYYY-MM-DD last maintenance" />
+create a file first
+<input id="createVehicleIdFiles" placeholder="file id" />
+<select id="createVehicleState">
+    <option value="available">available</option>
+    <option value="in_use">in use</option>
+    <option value="disabled">disabled</option>
+</select>
+<button
+    onclick="
+        createVehicle(
+            document.getElementById('createVehicleName').value,
+            document.getElementById('createVehicleType').value,
+            document.getElementById('createVehicleLicensePlate').value,
+            document.getElementById('createVehicleCode').value,
+            document.getElementById('createVehicleLastMaintenance').value,
+            document.getElementById('createVehicleIdFiles').value,
+            document.getElementById('createVehicleState').value,
+        )
+    "
+>
+    create vehicle
+</button>
+<br /><br />
 <div id="demo3"></div>
 <input id="filterChecklists" placeholder="filter checklists by vehicle id" />
 <button onclick="getAllChecklistItems(document.getElementById('filterChecklists').value)">
@@ -73,19 +101,31 @@
 <img src="/api/files/1" />
 <br /><br />
 <div id="demo5"></div>
-<input type="file" id="fileId" placeholder="file id" />
+<input type="file" id="fileId" name="file" placeholder="file id" />
 <button onclick="createFile(document.getElementById('fileId'))">create file</button><br />
 <br />
+<div id="demo15"></div>
+<input id="filterRole" placeholder="filter users by role" />
+<button onclick="getAllUsers(document.getElementById('filterRole').value)">getAllUsers</button><br />
+<div id="demo16"></div>
+<input id="userId" placeholder="user id" />
+<button onclick="getUserDetails(document.getElementById('userId').value)">get user details</button><br />
 <div id="demo10"></div>
 <input id="createUsername" placeholder="username" />
 <input id="createEmail" type="email" placeholder="email" />
 <input id="createPassword" placeholder="password" />
+<select id="createRole">
+    <option value="user">user</option>
+    <option value="teacher">teacher</option>
+    <option value="admin">admin</option>
+</select>
 <button
     onclick="
         createUser(
             document.getElementById('createUsername').value,
             document.getElementById('createEmail').value,
             document.getElementById('createPassword').value,
+            document.getElementById('createRole').value,
         )
     "
 >
@@ -114,8 +154,8 @@
 <button onclick="getChecklistItemDetails(2)">get checklist item details</button><br />
 -->
 <script>
-    let restapi = "http://10.1.17.4:5501";
-    //let data = {vehicle: 2};
+    const restapi = "http://10.1.17.4:5501";
+
     function getAllVehicles(code = null) {
         const xhr = new XMLHttpRequest();
         xhr.open("GET", restapi + "/api/vehicles?code=" + code, true); // ?code can be removed
@@ -156,6 +196,28 @@
         xhr.onload = () => {
             // work with response here (code: xhr.status, json response: xhr.responseText)
             document.getElementById("demo13").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send();
+    }
+
+    function getAllUsers(role = null) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", restapi + "/api/users?role=" + role, true); // ?role can be removed
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            // work with response here (code: xhr.status, json response: xhr.responseText)
+            document.getElementById("demo15").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send();
+    }
+
+    function getUserDetails(userId) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", restapi + "/api/users/" + userId, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            // work with response here (code: xhr.status, json response: xhr.responseText)
+            document.getElementById("demo16").innerHTML = xhr.status + "<br>" + xhr.responseText;
         };
         xhr.send();
     }
@@ -233,24 +295,13 @@
         xhr.send(JSON.stringify(data));
     }
 
-    function deleteChecklistItem(checklistId) {
-        let data = {};
-        data.id_checklists = checklistId;
-        const xhr = new XMLHttpRequest();
-        xhr.open("DELETE", "../databaseAPI/checklists.php", true);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.onload = () => {
-            // work with response here (code: xhr.status, json response: xhr.responseText)
-            document.getElementById("demo9").innerHTML = xhr.status + "<br>" + xhr.responseText;
-        };
-        xhr.send(JSON.stringify(data));
-    }
-
-    function createUser(username, email, password) {
+    function createUser(username, email, password, role) {
         let data = {};
         data.username = username;
         data.email = email;
         data.password = password;
+        data.role = role;
+        //console.log(role)
         const xhr = new XMLHttpRequest();
         xhr.open("POST", restapi + "/api/users", true);
         xhr.setRequestHeader("Content-Type", "application/json");
@@ -259,6 +310,37 @@
             document.getElementById("demo10").innerHTML = xhr.status + "<br>" + xhr.responseText;
         };
         xhr.send(JSON.stringify(data));
+    }
+
+    function createVehicle(name, type, license_plate, code, last_maintenance, id_files, state) {
+        let data = {};
+        data.name = name;
+        data.type = type;
+        data.license_plate = license_plate;
+        data.code = code;
+        data.last_maintenance = last_maintenance;
+        data.id_files = id_files;
+        data.state = state;
+        console.log(last_maintenance);
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", restapi + "/api/vehicles", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            // code work with response here (code: xhr.status, json response: xhr.responseText)
+            document.getElementById("demo17").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send(JSON.stringify(data));
+    }
+
+    function deleteChecklistItem(checklistId) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("DELETE", restapi + "/api/checklists/" + checklistId, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            // work with response here (code: xhr.status, json response: xhr.responseText)
+            document.getElementById("demo9").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send();
     }
 
     function rewriteChecklistItem(checklistId, name, description) {

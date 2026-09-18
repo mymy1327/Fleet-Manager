@@ -148,9 +148,7 @@ function renderQuestion() {
 }
 
 function restoreCurrentAnswer() {
-
-    const current =
-        answers[currentQuestionIndex];
+    const current = answers[currentQuestionIndex];
 
     if (!current) {
         return;
@@ -160,143 +158,78 @@ function restoreCurrentAnswer() {
     // Restore normal answer
 
     if (current.answer) {
+    const selected = document.querySelector(`.question-option[data-value="${CSS.escape(current.answer)}"]`);
 
-        const selected =
-            document.querySelector(
-                `.question-option[data-value="${CSS.escape(
-                    current.answer
-                )}"]`
-            );
-
-        if (selected) {
-
-            selected.classList.add(
-                "selected"
-            );
-        }
+        if (selected) {selected.classList.add("selected");}
     }
 
 
     // Restore fault form
 
-    if (
-        current.answer === "Report Faults"
-    ) {
-        const layout =
-            document.querySelector(".question-layout");
+    if (current.answer === "Report Faults") {
+        const layout =document.querySelector(".question-layout");
 
-        if (layout) {
-            layout.classList.add("has-fault");
-        }
+        if (layout) {layout.classList.add("has-fault");}
 
         renderFaultForm();
 
-        const description =
-            document.getElementById(
-                "faultDescription"
-            );
+        const description =document.getElementById("faultDescription");
 
-        if (
-            description &&
-            current.error
-        ) {
-
-            description.value =
+        if (description && current.error) {
+                description.value =
                 current.error.description || "";
         }
 
-        const priority =
-            current.error?.priority;
+        const priority =current.error?.priority;
 
         if (priority) {
-
-            const priorityButton =
-                document.querySelector(
-                    `[data-priority="${CSS.escape(
-                        priority
-                    )}"]`
-                );
+            const priorityButton =document.querySelector(`[data-priority="${CSS.escape(priority)}"]`);
 
             if (priorityButton) {
+    priorityButton.classList.add("selected");
+}
+}
+}
 
-                priorityButton.classList.add(
-                    "selected"
-                );
-            }
-        }
+// Restore oil photo button
+if (current.oilPhoto) {
+    const oilButton = document.getElementById("oilPhotoButton");
+    if (oilButton) {
+        oilButton.classList.add("photo-selected");
+        oilButton.innerHTML = `
+            <span class="material-symbols-outlined">
+                check_circle
+            </span>
+            Kuva otettu
+        `;
     }
-
-
-    // Restore oil photo button
-
-    if (current.oilPhoto) {
-
-        const oilButton =
-            document.getElementById(
-                "oilPhotoButton"
-            );
-
-        if (oilButton) {
-
-            oilButton.classList.add(
-                "photo-selected"
-            );
-
-            oilButton.innerHTML = `
-
-                <span class="material-symbols-outlined">
-                    check_circle
-                </span>
-
-                Kuva otettu
-
-            `;
-        }
-    }
+}
 }
 
 function getQuestionIcon(questionName) {
-
-    const name =
-        questionName.toLowerCase();
+    const name = questionName.toLowerCase();
 
     if (name.includes("öljy")) {
         return "oil_barrel";
     }
 
-    if (
-        name.includes("rengas") ||
-        name.includes("renka")
-    ) {
+    if (name.includes("rengas") || name.includes("renka")) {
         return "tire_repair";
     }
 
-    if (
-        name.includes("valo") ||
-        name.includes("valot")
-    ) {
+    if (name.includes("valo") || name.includes("valot")) {
         return "lightbulb";
     }
 
-    if (
-        name.includes("jäähdytys") ||
-        name.includes("neste")
-    ) {
+    if (name.includes("jÃ¤Ã¤hdytys") || name.includes("neste")) {
         return "water_drop";
     }
 
-    if (
-        name.includes("kilometri") ||
-        name.includes("km")
-    ) {
+    if (name.includes("kilometri") || name.includes("km")) {
         return "speed";
     }
 
-    if (
-        name.includes("polttoaine") ||
-        name.includes("bensiini") ||
-        name.includes("diesel")
-    ) {
+    if (name.includes("polttoaine") || name.includes("bensiini") || name.includes("diesel")) {
         return "local_gas_station";
     }
 
@@ -304,16 +237,12 @@ function getQuestionIcon(questionName) {
 }
 
 function renderAnswerOptions(checklist) {
-
-    const container =
-        document.getElementById("answerOptions");
-
+    const container = document.getElementById("answerOptions");
     if (!container) return;
 
     container.innerHTML = "";
 
-    const questionName =
-        checklist.name.toLowerCase();
+    const questionName = checklist.name.toLowerCase();
 
     // Render kilometer input
     if (questionName === "kilometrilukema") {
@@ -334,125 +263,79 @@ function renderAnswerOptions(checklist) {
         "En tiedä"
     ];
 
-
     options.forEach(option => {
-
-        const button =
-            document.createElement("button");
-
+        const button = document.createElement("button");
         button.type = "button";
+        button.className = "question-option";
+        button.dataset.value = option;
+        button.textContent = option;
 
-        button.className =
-            "question-option";
-
-        button.dataset.value =
-            option;
-
-        button.textContent =
-            option;
-
-        button.addEventListener(
-            "click",
-            () => {
-
-                selectAnswer(option);
-            }
-        );
+        button.addEventListener("click", () => {
+            selectAnswer(option);
+        });
 
         container.appendChild(button);
     });
 
-
     //Report faults if needed
-
-    const faultButton =
-        document.createElement("button");
-
+    const faultButton = document.createElement("button");
     faultButton.type = "button";
-
-    faultButton.className =
-        "question-option report-fault";
-
-    faultButton.dataset.value =
-        "Report Faults";
+    faultButton.className = "question-option report-fault";
+    faultButton.dataset.value = "Report Faults";
 
     faultButton.innerHTML = `
-
         <span class="material-symbols-outlined">
             report_problem
         </span>
-
         Ilmoita vika
     `;
 
-    faultButton.addEventListener(
-        "click",
-        () => {
-
-            selectFault();
-        }
-    );
+    faultButton.addEventListener("click", () => {
+        selectFault();
+    });
 
     container.appendChild(faultButton);
 }
 
 function selectAnswer(value) {
-
-    const current =
-        answers[currentQuestionIndex];
+    const current = answers[currentQuestionIndex];
 
     current.answer = value;
-
     current.error = null;
 
-
     // Remove selected
-    document
-        .querySelectorAll(".question-option")
-        .forEach(button => {
-
-            button.classList.remove("selected");
-        });
-
+    document.querySelectorAll(".question-option").forEach(button => {
+        button.classList.remove("selected");
+    });
 
     // Select current
-    const selected =
-        document.querySelector(
-            `.question-option[data-value="${CSS.escape(value)}"]`
-        );
+    const selected = document.querySelector(
+        `.question-option[data-value="${CSS.escape(value)}"]`
+    );
 
     if (selected) {
         selected.classList.add("selected");
     }
 
-    const layout =
-    document.querySelector(".question-layout");
+    const layout = document.querySelector(".question-layout");
 
     if (layout) {
         layout.classList.remove("has-fault");
-}
-
-
-    // Hide fault form
-    const faultContainer =
-        document.getElementById("faultContainer");
-
-    if (faultContainer) {
-
-        faultContainer.style.display =
-            "none";
-
-        faultContainer.innerHTML = "";
     }
 
+    // Hide fault form
+    const faultContainer = document.getElementById("faultContainer");
+
+    if (faultContainer) {
+        faultContainer.style.display = "none";
+        faultContainer.innerHTML = "";
+    }
 
     updateNavigationButtons();
 }
 
 function selectFault() {
-
-    const current =
-        answers[currentQuestionIndex];
+    const current = answers[currentQuestionIndex];
 
     current.answer = "Report Faults";
 
@@ -464,30 +347,25 @@ function selectFault() {
         };
     }
 
-    document
-        .querySelectorAll(".question-option")
-        .forEach(button => {
-            button.classList.remove("selected");
-        });
+    document.querySelectorAll(".question-option").forEach(button => {
+        button.classList.remove("selected");
+    });
 
-    const faultButton =
-        document.querySelector(
-            '.question-option[data-value="Report Faults"]'
-        );
+    const faultButton = document.querySelector(
+        '.question-option[data-value="Report Faults"]'
+    );
 
     if (faultButton) {
         faultButton.classList.add("selected");
     }
 
-    const layout =
-        document.querySelector(".question-layout");
+    const layout = document.querySelector(".question-layout");
 
     if (layout) {
         layout.classList.add("has-fault");
     }
 
     renderFaultForm();
-
     updateNavigationButtons();
 }
 
@@ -632,73 +510,38 @@ function showQuestionPhotoPreview(elementId, picture) {
 }
 
 function setupOilPhoto() {
-
-    const input =
-        document.getElementById(
-            "oilPhotoInput"
-        );
-
-    const button =
-        document.getElementById(
-            "oilPhotoButton"
-        );
+    const input = document.getElementById("oilPhotoInput");
+    const button = document.getElementById("oilPhotoButton");
 
     if (!input || !button) return;
 
+    input.addEventListener("change", () => {
+        const file = input.files[0];
 
-    input.addEventListener(
-        "change",
-        () => {
+        if (!file) return;
 
-            const file =
-                input.files[0];
+        answers[currentQuestionIndex].oilPhoto = file;
 
-            if (!file) return;
+        button.classList.add("photo-selected");
 
+        button.innerHTML = `
+            <span class="material-symbols-outlined">
+                check_circle
+            </span>
+            Kuva otettu
+        `;
 
-            answers[
-                currentQuestionIndex
-            ].oilPhoto = file;
-
-
-            button.classList.add(
-                "photo-selected"
-            );
-
-            button.innerHTML = `
-
-                <span class="material-symbols-outlined">
-                    check_circle
-                </span>
-
-                Kuva otettu
-
-            `;
-
-
-            updateNavigationButtons();
-        }
-    );
+        updateNavigationButtons();
+    });
 }
 
 function renderProgress() {
-    const questionNumber =
-        document.getElementById("questionNumber");
+    const questionNumber = document.getElementById("questionNumber");
+    const progressPercent = document.getElementById("progressPercent");
+    const progressSegments = document.getElementById("progressSegments");
 
-    const progressPercent =
-        document.getElementById("progressPercent");
-
-    const progressSegments =
-        document.getElementById("progressSegments");
-
-    if (
-        !questionNumber ||
-        !progressPercent ||
-        !progressSegments
-    ) {
-        console.error(
-            "Progress elements not found."
-        );
+    if (!questionNumber || !progressPercent || !progressSegments) {
+        console.error("Progress elements not found.");
         return;
     }
 
@@ -713,29 +556,22 @@ function renderProgress() {
 
     const current = currentQuestionIndex + 1;
 
-    const percentage = Math.round(
-        (current / total) * 100
-    );
+    const percentage = Math.round((current / total) * 100);
 
     // Question number
-    questionNumber.textContent =
-        `${current} / ${total}`;
+    questionNumber.textContent = `${current} / ${total}`;
 
     // Percentage
-    progressPercent.textContent =
-        `${percentage}%`;
+    progressPercent.textContent = `${percentage}%`;
 
     // Clear old segments
     progressSegments.innerHTML = "";
 
     // Create one segment for each question
     for (let i = 0; i < total; i++) {
-        const segment =
-            document.createElement("div");
+        const segment = document.createElement("div");
 
-        segment.classList.add(
-            "progress-segment"
-        );
+        segment.classList.add("progress-segment");
 
         /*
          * Active:
@@ -752,61 +588,38 @@ function renderProgress() {
             segment.classList.add("current");
         }
 
-        progressSegments.appendChild(
-            segment
-        );
+        progressSegments.appendChild(segment);
     }
 }
 
 function updateNavigationButtons() {
-    const previousButton =
-        document.getElementById(
-            "previousButton"
-        );
-
-    const nextButton =
-        document.getElementById(
-            "nextButton"
-        );
+    const previousButton = document.getElementById("previousButton");
+    const nextButton = document.getElementById("nextButton");
 
     if (previousButton) {
-        previousButton.disabled =
-            currentQuestionIndex === 0;
+        previousButton.disabled = currentQuestionIndex === 0;
     }
 
     if (nextButton) {
-        if (
-            currentQuestionIndex ===
-            checklists.length - 1
-        ) {
-            nextButton.textContent =
-                "Valmis";
+        if (currentQuestionIndex === checklists.length - 1) {
+            nextButton.textContent = "Valmis";
         } else {
-            nextButton.textContent =
-                "Seuraava";
+            nextButton.textContent = "Seuraava";
         }
     }
 }
 
 function setupNavigation() {
-    const previousButton =
-        document.getElementById(
-            "previousButton"
-        );
+    const previousButton =document.getElementById("previousButton");
 
-    const nextButton =
-        document.getElementById(
-            "nextButton"
-        );
+    const nextButton =document.getElementById("nextButton");
 
     if (previousButton) {
-        previousButton.onclick =
-            previousQuestion;
+        previousButton.onclick =previousQuestion;
     }
 
     if (nextButton) {
-        nextButton.onclick =
-            nextQuestion;
+        nextButton.onclick =nextQuestion;
     }
 }
 
@@ -821,10 +634,7 @@ function previousQuestion() {
     renderProgress();
     updateNavigationButtons();
 
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
+    window.scrollTo({top: 0,behavior: "smooth"});
 }
 
 function nextQuestion() {
@@ -832,34 +642,23 @@ function nextQuestion() {
         return;
     }
 
-    if (
-        currentQuestionIndex <
-        checklists.length - 1
-    ) {
+    if (currentQuestionIndex <checklists.length - 1) {
         currentQuestionIndex++;
 
         renderQuestion();
         renderProgress();
         updateNavigationButtons();
 
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-
+        window.scrollTo({top: 0,behavior: "smooth"});
         return;
     }
-
     // Last question
     finishInspection();
 }
 
 function validateCurrentQuestion() {
-    const checklist =
-        checklists[currentQuestionIndex];
-
-    const answer =
-        answers[currentQuestionIndex];
+    const checklist = checklists[currentQuestionIndex];
+    const answer = answers[currentQuestionIndex];
 
     if (!checklist) {
         return false;
@@ -868,112 +667,61 @@ function validateCurrentQuestion() {
     /*
      * Every question requires an answer
      */
-const questionName =
-    checklists[currentQuestionIndex].name
-        .toLowerCase();
+    const questionName = checklists[currentQuestionIndex].name.toLowerCase();
 
-if (questionName === "kilometrilukema") {
-    const value =
-        answers[currentQuestionIndex].answer;
+    if (questionName === "kilometrilukema") {
+        const value = answers[currentQuestionIndex].answer;
 
-    if (
-        value === null ||
-        value === undefined ||
-        value === "" ||
-        Number(value) < 0
-    ) {
-        showValidationError(
-            "Syötä kilometrilukema."
-        );
+        if (value === null || value === undefined || value === "" || Number(value) < 0) {
+            showValidationError("Syötä kilometrilukema.");
+            return false;
+        }
 
-        return false;
+        return true;
     }
 
-    return true;
-}
+    if (questionName === "polttoaineen määrä") {
+        const value = answers[currentQuestionIndex].answer;
 
-if (questionName === "polttoaineen määrä") {
-    const value =
-        answers[currentQuestionIndex].answer;
+        if (value === null || value === undefined) {
+            showValidationError("Valitse polttoaineen määrä.");
+            return false;
+        }
 
-    if (
-        value === null ||
-        value === undefined
-    ) {
-        showValidationError(
-            "Valitse polttoaineen määrä."
-        );
-
-        return false;
+        return true;
     }
 
-    return true;
-}
-
-    if (
-        !answer ||
-        !answer.answer
-    ) {
-        alert(
-            "Valitse vastaus ennen jatkamista."
-        );
-
+    if (!answer || !answer.answer) {
+        alert("Valitse vastaus ennen jatkamista.");
         return false;
     }
 
     /*
      * Oil question requires photo
      */
-    const isOilQuestion =
-        (checklist.name || "")
-            .toLowerCase()
-            .includes("öljy");
+    const isOilQuestion = (checklist.name || "").toLowerCase().includes("öljy");
 
-    if (
-        isOilQuestion &&
-        !answer.oilPhoto
-    ) {
-        alert(
-            "Ota kuva moottoriöljyn mittatikusta."
-        );
-
+    if (isOilQuestion && !answer.oilPhoto) {
+        alert("Ota kuva moottoriöljyn mittatikusta.");
         return false;
     }
 
     /*
      * Fault validation
      */
-    if (
-        answer.answer === "Report Faults" ||
-        answer.answer === "Ilmoita vika"
-    ) {
-        if (
-            !answer.error ||
-            !answer.error.photo
-        ) {
-            alert(
-                "Ota kuva viasta ennen jatkamista."
-            );
-
+    if (answer.answer === "Report Faults" || answer.answer === "Ilmoita vika") {
+        if (!answer.error || !answer.error.photo) {
+            alert("Ota kuva viasta ennen jatkamista.");
             return false;
         }
 
-        if (
-            !answer.error.description ||
-            answer.error.description.trim() === ""
-        ) {
-            alert(
-                "Kuvaile vika ennen jatkamista."
-            );
-
+        if (!answer.error.description || answer.error.description.trim() === "") {
+            alert("Kuvaile vika ennen jatkamista.");
             return false;
         }
 
         if (!answer.error.priority) {
-            alert(
-                "Valitse vian prioriteetti."
-            );
-
+            alert("Valitse vian prioriteetti.");
             return false;
         }
     }
@@ -991,9 +739,7 @@ function finishInspection() {
 
         vehicle:
             vehicle?.name ||
-            document.querySelector(
-                ".vehicle-name"
-            )?.textContent ||
+            document.querySelector(".vehicle-name")?.textContent ||
             "",
 
         vehicleType:
@@ -1037,10 +783,7 @@ function finishInspection() {
         )
     };
 
-    console.log(
-        "Inspection result:",
-        inspectionResult
-    );
+    console.log("Inspection result:", inspectionResult);
 
     /*
      * Show fireworks when inspection reaches 100%
@@ -1052,321 +795,199 @@ function finishInspection() {
      * before summary opens
      */
     setTimeout(() => {
-        showSummaryModal(
-            inspectionResult
-        );
+        showSummaryModal(inspectionResult);
     }, 500);
 }
 
-function showSummaryModal(
-    inspectionResult
-) {
-    const modal =
-        document.getElementById(
-            "summaryModal"
-        );
+function showSummaryModal(inspectionResult) {
+    const modal = document.getElementById("summaryModal");
 
     if (!modal) {
-        console.error(
-            "Summary modal was not found."
-        );
-
+        console.error("Summary modal was not found.");
         return;
     }
 
     /*
      * Vehicle information
      */
-    const vehicleElement =
-    modal.querySelector(
-        ".summary-vehicle-name"
-    );
+    const vehicleElement = modal.querySelector(".summary-vehicle-name");
+    const vehicleDetails = modal.querySelector(".summary-vehicle-details");
 
-const vehicleDetails =
-    modal.querySelector(
-        ".summary-vehicle-details"
-    );
-
-const plate =
-    inspectionResult.licensePlate
+    const plate = inspectionResult.licensePlate
         ? inspectionResult.licensePlate
         : "";
 
-if (vehicleElement) {
-    vehicleElement.textContent =
-        inspectionResult.vehicle || "Ajoneuvo";
-}
+    if (vehicleElement) {
+        vehicleElement.textContent = inspectionResult.vehicle || "Ajoneuvo";
+    }
 
-if (vehicleDetails) {
-    vehicleDetails.textContent =
-        plate
+    if (vehicleDetails) {
+        vehicleDetails.textContent = plate
             ? `Rekisterinumero: ${plate}`
             : "";
-}
+    }
 
     /*
      * Answers
      */
-    const answersContainer =
-        modal.querySelector(
-            ".summary-answers"
-        );
+    const answersContainer = modal.querySelector(".summary-answers");
 
     if (answersContainer) {
         answersContainer.innerHTML = "";
 
-        inspectionResult.answers.forEach(
-            (item, index) => {
+        inspectionResult.answers.forEach((item, index) => {
+            const card = document.createElement("div");
+            card.classList.add("summary-answer");
 
-                const card =
-                    document.createElement(
-                        "div"
-                    );
+            /*
+             * Question number
+             */
+            const questionNumber = document.createElement("div");
 
-                card.classList.add("summary-answer");
+            questionNumber.classList.add("summary-question-number");
+            questionNumber.textContent = index + 1;
 
-                /*
-                * Question number
-                */
-                const questionNumber =
-                  document.createElement("div");
+            card.appendChild(questionNumber);
 
-                questionNumber.classList.add(
-                 "summary-question-number");
+            /*
+             * Question content
+             */
+            const answerContent = document.createElement("div");
 
-                questionNumber.textContent =
-                 index + 1;
+            answerContent.classList.add("summary-answer-content");
 
-                card.appendChild(
-                     questionNumber);
+            /*
+             * Question title
+             */
+            const title = document.createElement("p");
 
+            title.classList.add("summary-question");
+            title.textContent = item.question || "Tarkastus";
 
-                    /*
-                    * Question content
-                    */
-                const answerContent =
-                    document.createElement("div");
+            answerContent.appendChild(title);
 
-                answerContent.classList.add(
-                    "summary-answer-content"
-                );
+            /*
+             * Description
+             */
+            if (item.description) {
+                const description = document.createElement("p");
 
+                description.classList.add("summary-question-description");
+                description.textContent = item.description;
 
-                /*
-                * Question title
-                */
-                const title =
-                    document.createElement("p");
+                answerContent.appendChild(description);
+            }
 
-                title.classList.add(
-                    "summary-question"
-                );
+            /*
+             * Answer
+             */
+            const answerText = document.createElement("p");
 
-                title.textContent =
-                    item.question || "Tarkastus";
+            answerText.classList.add("summary-value");
 
-                answerContent.appendChild(
-                    title
-                );
+            answerText.innerHTML = `<strong>Vastaus:</strong> ${
+                escapeHTML(formatSummaryAnswer(item.answer))
+            }`;
 
+            answerContent.appendChild(answerText);
 
-                /*
-                * Description
-                */
-                if (item.description) {
+            /*
+             * Add content to card
+             */
+            card.appendChild(answerContent);
 
-                    const description =
-                        document.createElement("p");
-
-                    description.classList.add(
-                        "summary-question-description"
-                    );
-
-                    description.textContent =
-                        item.description;
-
-                    answerContent.appendChild(
-                        description
-                    );
-                }
-
-
-                /*
-                * Answer
-                */
-                const answerText =
-                    document.createElement("p");
-
-                answerText.classList.add(
-                    "summary-value"
-                );
-
-                answerText.innerHTML =
-                    `<strong>Vastaus:</strong> ${
-                        escapeHTML(
-                            formatSummaryAnswer(
-                                item.answer
-                            )
-                        )
-                    }`;
-
-                answerContent.appendChild(
-                    answerText
-                );
-
-
-                /*
-                * Add content to card
-                */
-                card.appendChild(
-                    answerContent
-                );
-
-                /*
-                 * Oil photo
-                 */
-                if (
-                    item.answer?.oilPhoto
-                ) {
-                    appendSummaryPhoto(
-                        card,
-                        item.answer.oilPhoto,
-                        "Öljymittatikun kuva"
-                    );
-                }
-
-                /*
-                 * Normal photo
-                 */
-                if (
-                    item.answer?.photo
-                ) {
-                    appendSummaryPhoto(
-                        card,
-                        item.answer.photo
-                    );
-                }
-
-                /*
-                 * Fault
-                 */
-                if (
-                    item.answer?.error
-                ) {
-                    const fault =
-                        item.answer.error;
-
-                    const faultBox =
-                        document.createElement(
-                            "div"
-                        );
-
-                    faultBox.classList.add(
-                        "summary-fault"
-                    );
-
-                    const faultTitle =
-                        document.createElement(
-                            "strong"
-                        );
-
-                    faultTitle.textContent =
-                        "Vika";
-
-                    faultBox.appendChild(
-                        faultTitle
-                    );
-
-                    /*
-                     * Description
-                     */
-                    if (
-                        fault.description
-                    ) {
-                        const description =
-                            document.createElement(
-                                "p"
-                            );
-
-                        description.textContent =
-                            `Kuvaus: ${
-                                fault.description
-                            }`;
-
-                        faultBox.appendChild(
-                            description
-                        );
-                    }
-
-                    /*
-                     * Priority
-                     */
-                    if (
-                        fault.priority
-                    ) {
-                        const priority =
-                            document.createElement(
-                                "p"
-                            );
-
-                        priority.textContent =
-                            `Prioriteetti: ${
-                                getPriorityLabel(
-                                    fault.priority
-                                )
-                            }`;
-
-                        faultBox.appendChild(
-                            priority
-                        );
-                    }
-
-                    card.appendChild(
-                        faultBox
-                    );
-
-                    /*
-                     * Fault photo
-                     */
-                    if (fault.photo) {
-                        appendSummaryPhoto(
-                            card,
-                            fault.photo,
-                            "Kuva viasta"
-                        );
-                    }
-                }
-
-                answersContainer.appendChild(
-                    card
+            /*
+             * Oil photo
+             */
+            if (item.answer?.oilPhoto) {
+                appendSummaryPhoto(
+                    card,
+                    item.answer.oilPhoto,
+                    "Öljymittatikun kuva"
                 );
             }
-        );
+
+            /*
+             * Normal photo
+             */
+            if (item.answer?.photo) {
+                appendSummaryPhoto(card, item.answer.photo);
+            }
+
+            /*
+             * Fault
+             */
+            if (item.answer?.error) {
+                const fault = item.answer.error;
+
+                const faultBox = document.createElement("div");
+
+                faultBox.classList.add("summary-fault");
+
+                const faultTitle = document.createElement("strong");
+
+                faultTitle.textContent = "Vika";
+
+                faultBox.appendChild(faultTitle);
+
+                /*
+                 * Description
+                 */
+                if (fault.description) {
+                    const description = document.createElement("p");
+
+                    description.textContent = `Kuvaus: ${fault.description}`;
+
+                    faultBox.appendChild(description);
+                }
+
+                /*
+                 * Priority
+                 */
+                if (fault.priority) {
+                    const priority = document.createElement("p");
+
+                    priority.textContent = `Prioriteetti: ${
+                        getPriorityLabel(fault.priority)
+                    }`;
+
+                    faultBox.appendChild(priority);
+                }
+
+                card.appendChild(faultBox);
+
+                /*
+                 * Fault photo
+                 */
+                if (fault.photo) {
+                    appendSummaryPhoto(
+                        card,
+                        fault.photo,
+                        "Kuva viasta"
+                    );
+                }
+            }
+
+            answersContainer.appendChild(card);
+        });
     }
 
     /*
      * Confirmation checkbox
      */
-    const confirmation =
-        modal.querySelector(
-            "#summary-confirmation"
-        );
+    const confirmation = modal.querySelector("#summary-confirmation");
 
     /*
      * Submit button
      */
-    const submitButton =
-        modal.querySelector(
-            "#summary-submit"
-        );
+    const submitButton = modal.querySelector("#summary-submit");
 
     if (confirmation) {
         confirmation.checked = false;
 
         confirmation.onchange = () => {
             if (submitButton) {
-                submitButton.disabled =
-                    !confirmation.checked;
+                submitButton.disabled = !confirmation.checked;
             }
         };
     }
@@ -1375,16 +996,11 @@ if (vehicleDetails) {
         submitButton.disabled = true;
 
         submitButton.onclick = () => {
-            if (
-                !confirmation ||
-                !confirmation.checked
-            ) {
+            if (!confirmation || !confirmation.checked) {
                 return;
             }
 
-            submitInspection(
-                inspectionResult
-            );
+            submitInspection(inspectionResult);
         };
     }
 
@@ -1404,9 +1020,7 @@ function formatSummaryAnswer(answer) {
         answer.answer !== null &&
         answer.answer !== ""
     ) {
-        return String(
-            answer.answer
-        );
+        return String(answer.answer);
     }
 
     if (
@@ -1414,19 +1028,12 @@ function formatSummaryAnswer(answer) {
         answer.value !== null &&
         answer.value !== ""
     ) {
-        return String(
-            answer.value
-        );
+        return String(answer.value);
     }
 
     return "Ei vastausta";
 }
-
-function appendSummaryPhoto(
-    container,
-    file,
-    title = "Kuva"
-) {
+function appendSummaryPhoto(container, file, title = "Kuva") {
     if (!file) {
         return;
     }
@@ -1438,47 +1045,27 @@ function appendSummaryPhoto(
         return;
     }
 
-    const wrapper =
-        document.createElement(
-            "div"
-        );
+    const wrapper = document.createElement("div");
 
-    wrapper.classList.add(
-        "summary-photo"
-    );
+    wrapper.classList.add("summary-photo");
 
-    const label =
-        document.createElement(
-            "p"
-        );
+    const label = document.createElement("p");
 
     label.textContent = title;
 
-    const image =
-        document.createElement(
-            "img"
-        );
+    const image = document.createElement("img");
 
     image.alt = title;
 
-    image.classList.add(
-        "summary-photo-image"
-    );
+    image.classList.add("summary-photo-image");
 
-    const objectUrl =
-        URL.createObjectURL(file);
+    const objectUrl = URL.createObjectURL(file);
 
     image.src = objectUrl;
 
-    image.addEventListener(
-        "click",
-        () => {
-            window.open(
-                objectUrl,
-                "_blank"
-            );
-        }
-    );
+    image.addEventListener("click", () => {
+        window.open(objectUrl, "_blank");
+    });
 
     wrapper.appendChild(label);
     wrapper.appendChild(image);
@@ -1494,87 +1081,54 @@ function getPriorityLabel(priority) {
         critical: "Kriittinen"
     };
 
-    return (
-        labels[priority] ||
-        priority ||
-        "Ei määritetty"
-    );
+    return labels[priority] || priority || "Ei määritetty";
 }
 
 function setupBackButton() {
-    const backButton =
-        document.querySelector(
-            ".back-button"
-        );
+    const backButton = document.querySelector(".back-button");
 
     if (!backButton) {
         return;
     }
 
-    const params =
-        new URLSearchParams(
-            window.location.search
-        );
+    const params = new URLSearchParams(window.location.search);
 
-    const vehicleId =
-        params.get("id");
+    const vehicleId = params.get("id");
 
     backButton.onclick = () => {
         if (vehicleId) {
-            window.location.href =
-                `index.html?id=${encodeURIComponent(
-                    vehicleId
-                )}`;
+            window.location.href = `index.html?id=${encodeURIComponent(vehicleId)}`;
         } else {
             window.history.back();
         }
     };
 }
 
-async function submitInspection(
-    inspectionResult
-) {
-    console.log(
-        "Submitting inspection:",
-        inspectionResult
-    );
-    alert(
-        "Tarkastus on vahvistettu!"
-    );
+async function submitInspection(inspectionResult) {
+    console.log("Submitting inspection:", inspectionResult);
+    alert("Tarkastus on vahvistettu!");
 
     closeSummaryModal();
 }
-function setupSummaryModal() {
 
-    const closeButton =
-        document.getElementById(
-            "summary-close"
-        );
+function setupSummaryModal() {
+    const closeButton = document.getElementById("summary-close");
 
     if (closeButton) {
-
-        closeButton.onclick =
-            closeSummaryModal;
+        closeButton.onclick = closeSummaryModal;
     }
 }
 
 function closeSummaryModal() {
-
-    const modal =
-        document.getElementById(
-            "summaryModal"
-        );
+    const modal = document.getElementById("summaryModal");
 
     if (modal) {
-
-        modal.classList.remove(
-            "show"
-        );
+        modal.classList.remove("show");
     }
 }
+
 function renderKilometerInput(container) {
-    const wrapper =
-        document.createElement("div");
+    const wrapper = document.createElement("div");
 
     wrapper.className = "kilometer-input-wrapper";
 
@@ -1605,14 +1159,11 @@ function renderKilometerInput(container) {
 
     container.appendChild(wrapper);
 
-    const input =
-        document.getElementById("kilometerInput");
+    const input = document.getElementById("kilometerInput");
 
     input.addEventListener("input", () => {
         answers[currentQuestionIndex].answer =
-            input.value
-                ? Number(input.value)
-                : null;
+            input.value ? Number(input.value) : null;
     });
 }
 
@@ -1621,8 +1172,7 @@ function getPreviousKilometers() {
 }
 
 function renderFuelGauge(container) {
-    const wrapper =
-        document.createElement("div");
+    const wrapper = document.createElement("div");
 
     wrapper.className = "fuel-gauge-wrapper";
 
@@ -1685,67 +1235,44 @@ function renderFuelGauge(container) {
 
     updateFuelGauge(50);
 
-    const slider =
-        document.getElementById("fuelSlider");
+    const slider = document.getElementById("fuelSlider");
 
     slider.addEventListener("input", () => {
-        const value =
-            Number(slider.value);
+        const value = Number(slider.value);
 
         updateFuelGauge(value);
 
-        answers[currentQuestionIndex].answer =
-            value;
+        answers[currentQuestionIndex].answer = value;
     });
 
     answers[currentQuestionIndex].answer = 50;
 }
 
 function updateFuelGauge(value) {
-    const gaugeValue =
-        document.getElementById("fuelGaugeValue");
+    const gaugeValue = document.getElementById("fuelGaugeValue");
+    const sliderValue = document.getElementById("fuelSliderValue");
+    const gaugeFill = document.getElementById("fuelGaugeFill");
 
-    const sliderValue =
-        document.getElementById("fuelSliderValue");
-
-    const gaugeFill =
-        document.getElementById("fuelGaugeFill");
-
-    if (!gaugeValue ||
-        !sliderValue ||
-        !gaugeFill) {
+    if (!gaugeValue || !sliderValue || !gaugeFill) {
         return;
     }
 
-    gaugeValue.textContent =
-        `${value}%`;
+    gaugeValue.textContent = `${value}%`;
+    sliderValue.textContent = `${value} %`;
 
-    sliderValue.textContent =
-        `${value} %`;
+    const length = gaugeFill.getTotalLength();
+    const progress = length * (value / 100);
 
-    const length =
-        gaugeFill.getTotalLength();
-
-    const progress =
-        length * (value / 100);
-
-    gaugeFill.style.strokeDasharray =
-        `${progress} ${length}`;
+    gaugeFill.style.strokeDasharray = `${progress} ${length}`;
 }
 
 function showFireworks() {
-    const container =
-        document.createElement("div");
+    const container = document.createElement("div");
 
-    container.className =
-        "fireworks-container";
+    container.className = "fireworks-container";
+    container.style.pointerEvents = "none";
 
-    container.style.pointerEvents =
-        "none";
-
-    document.body.appendChild(
-        container
-    );
+    document.body.appendChild(container);
 
     // Create large central fireworks
     for (let i = 0; i < 6; i++) {
@@ -1759,75 +1286,43 @@ function showFireworks() {
     }, 5000);
 }
 
-
 function createFireworkBurst(container) {
-    const burst =
-        document.createElement("div");
+    const burst = document.createElement("div");
 
-    burst.className =
-        "firework-burst";
+    burst.className = "firework-burst";
 
     // Keep fireworks around the center of the screen
-    const x =
-        35 + Math.random() * 30;
+    const x = 35 + Math.random() * 30;
+    const y = 25 + Math.random() * 30;
 
-    const y =
-        25 + Math.random() * 30;
+    burst.style.left = `${x}vw`;
+    burst.style.top = `${y}vh`;
 
-    burst.style.left =
-        `${x}vw`;
-
-    burst.style.top =
-        `${y}vh`;
-
-    container.appendChild(
-        burst
-    );
+    container.appendChild(burst);
 
     // Create many particles
     const particleCount = 48;
 
-    for (
-        let i = 0;
-        i < particleCount;
-        i++
-    ) {
-        const particle =
-            document.createElement("span");
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement("span");
 
-        particle.className =
-            "firework-particle";
+        particle.className = "firework-particle";
 
-        const angle =
-            (360 / particleCount) * i;
+        const angle = (360 / particleCount) * i;
 
         // Large explosion radius
-        const distance =
-            180 + Math.random() * 220;
+        const distance = 180 + Math.random() * 220;
 
         // Large particles
-        const size =
-            7 + Math.random() * 5;
+        const size = 7 + Math.random() * 5;
 
-        particle.style.setProperty(
-            "--angle",
-            `${angle}deg`
-        );
+        particle.style.setProperty("--angle", `${angle}deg`);
+        particle.style.setProperty("--distance", `${distance}px`);
 
-        particle.style.setProperty(
-            "--distance",
-            `${distance}px`
-        );
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
 
-        particle.style.width =
-            `${size}px`;
-
-        particle.style.height =
-            `${size}px`;
-
-        burst.appendChild(
-            particle
-        );
+        burst.appendChild(particle);
     }
 
     setTimeout(() => {
@@ -1836,54 +1331,30 @@ function createFireworkBurst(container) {
 }
 
 function createFirework(container) {
-    const firework =
-        document.createElement("div");
+    const firework = document.createElement("div");
 
-    firework.className =
-        "firework";
+    firework.className = "firework";
 
-    firework.style.left =
-        `${20 + Math.random() * 60}%`;
+    firework.style.left = `${20 + Math.random() * 60}%`;
+    firework.style.top = `${15 + Math.random() * 40}%`;
 
-    firework.style.top =
-        `${15 + Math.random() * 40}%`;
-
-    container.appendChild(
-        firework
-    );
+    container.appendChild(firework);
 
     for (let i = 0; i < 24; i++) {
-        const particle =
-            document.createElement("span");
+        const particle = document.createElement("span");
 
-        particle.className =
-            "firework-particle";
+        particle.className = "firework-particle";
 
-        const angle =
-            (Math.PI * 2 * i) / 24;
+        const angle = (Math.PI * 2 * i) / 24;
+        const distance = 60 + Math.random() * 80;
 
-        const distance =
-            60 + Math.random() * 80;
+        const x = Math.cos(angle) * distance;
+        const y = Math.sin(angle) * distance;
 
-        const x =
-            Math.cos(angle) * distance;
+        particle.style.setProperty("--x", `${x}px`);
+        particle.style.setProperty("--y", `${y}px`);
 
-        const y =
-            Math.sin(angle) * distance;
-
-        particle.style.setProperty(
-            "--x",
-            `${x}px`
-        );
-
-        particle.style.setProperty(
-            "--y",
-            `${y}px`
-        );
-
-        firework.appendChild(
-            particle
-        );
+        firework.appendChild(particle);
     }
 
     setTimeout(() => {
@@ -1892,10 +1363,7 @@ function createFirework(container) {
 }
 
 function showErrorMessage(message) {
-    const container =
-        document.getElementById(
-            "questionContainer"
-        );
+    const container = document.getElementById("questionContainer");
 
     if (!container) {
         return;
@@ -1903,15 +1371,9 @@ function showErrorMessage(message) {
 
     container.innerHTML = "";
 
-    const error =
-        document.createElement(
-            "div"
-        );
+    const error = document.createElement("div");
 
-    error.classList.add(
-        "inspection-error"
-    );
-
+    error.classList.add("inspection-error");
     error.textContent = message;
 
     container.appendChild(error);

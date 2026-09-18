@@ -2,7 +2,7 @@
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: http://127.0.0.1:5501");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, Origin");
-session_start();
+//session_start();
 require "../../assets/config.php";
 
 $path = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
@@ -99,7 +99,7 @@ function getEntryDetails($conn, $table = "problems", $id)
 
     if ($table == "problems" && !is_null($return["id_checklists"])) {
         $checklistTable = getEntryDetails($conn, "checklists", $return["id_checklists"]);
-        if (gettype($checklistTable) == "array" && !$checkllistTable[0]) {
+        if (gettype($checklistTable) == "array" && !$checklistTable[0]) {
             heaDie($checklistTable[1]);
         }
         $return["checklist"] = json_decode($checklistTable, true);

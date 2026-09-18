@@ -1,9 +1,10 @@
 <?php
 header("Content-Type: application/json");
-//header("Access-Control-Allow-");
-header("Access-Control-Allow-Origin: http://127.0.0.1:5501");
+header("Allow: DELETE, PUT, PATCH");
+header("Access-Control-Allow-Methods: DELETE");
+header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, Origin");
-session_start();
+//session_start();
 require "../assets/config.php";
 
 if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
@@ -66,7 +67,7 @@ function getEntryDetails($conn, $table, $id)
     }
     $return = $stmt->get_result()->fetch_assoc();
     $stmt->close();
-    if (is_null($return)) {
+    if (is_null($return) && $table != $listOfTables[2]) {
         return [false, 404];
     }
     if ($table == $listOfTables[1]) {
@@ -78,6 +79,13 @@ function getEntryDetails($conn, $table, $id)
         }
         $return["km"] = $stmt->get_result()->fetch_assoc()["km"] ?? null;
     } elseif ($table == $listOfTables[2]) {
+        if (is_null($return)) {
+            $row = $conn->query("SELECT * FROM `files` WHERE id_files = 8")->fetch_assoc();
+            header("Content-Type: " . $row["type"]);
+            header("Content-Length: " . strlen($row["data"]));
+            echo $row["data"];
+            die();
+        }
         header("Content-Type: " . $return["type"]);
         header("Content-Length: " . strlen($return["data"]));
         echo $return["data"];
@@ -145,7 +153,7 @@ function createNewFile($conn, $file)
     $tempPath = $file["tmp_name"];
     $fileName = $file["name"];
     $fileType = $file["type"];
-    //logToConsole($tempPath . " " . $fileName);
+    logToConsole($file["tmp_name"] . " " . $tempPath . " " . $fileName);
 
     $fileContent = file_get_contents($tempPath);
 
@@ -180,14 +188,15 @@ function createNewVehicle(
     $type,
     $licensePlate,
     $code,
-    $lastMaintenance,
-    $blob = null,
+    $lastMaintenance = null,
+    $idFiles = null,
     $state = "available",
 ) {
+    logToConsole($lastMaintenance);
     $stmt = $conn->prepare(
         "INSERT INTO `vehicles`(`name`, `type`, `license_plate`, `code`, `last_maintenance`, `id_files`, `state`) VALUES (?, ?, ?, ?, ?, ?, ?)",
     );
-    $stmt->bind_param("sssssss", $name, $type, $licensePlate, $code, $lastMaintenance, $blob, $state);
+    $stmt->bind_param("sssssss", $name, $type, $licensePlate, $code, $lastMaintenance, $idFiles, $state);
     if (!$stmt->execute()) {
         return [false, 400];
     }
@@ -198,6 +207,7 @@ function createNewVehicle(
         "license_plate" => $licensePlate,
         "code" => $code,
         "last_maintenance" => $lastMaintenance,
+        "id_files" => $idFiles,
     ];
     return json_encode($result, JSON_NUMERIC_CHECK);
 }
@@ -208,19 +218,26 @@ function createNewVehicle(
  * @param string $username user name
  * @param string $email email of user
  * @param string $password password of user
+ * @param string $role user role
  * @return json|array[false, int, string|null] detail about new user | false on failure
  */
-function createNewUser($conn, $username, $email, $password)
+function createNewUser($conn, $username, $email, $password, $role)
 {
-    $stmt = $conn->prepare("INSERT INTO `users`(`username`, `email`, `password`) VALUES (?,?,?)");
-    $stmt->bind_param("sss", $username, $email, $password);
+    $stmt = $conn->prepare("INSERT INTO `users`(`username`, `email`, `password`, `role`) VALUES (?,?,?,?)");
+    $stmt->bind_param("ssss", $username, $email, $password, $role);
 
     if (!$stmt->execute()) {
         return [false, 400];
     }
 
     return json_encode(
-        ["new_id" => $conn->insert_id, "username" => $username, "email" => $email, "password" => $password],
+        [
+            "new_id" => $conn->insert_id,
+            "username" => $username,
+            "email" => $email,
+            "password" => $password,
+            "role" => $role,
+        ],
         JSON_NUMERIC_CHECK,
     );
 }
@@ -349,12 +366,22 @@ switch ($_SERVER["REQUEST_METHOD"]) {
                 $return = createNewChecklistItem($conn, $data["name"], $data["description"]);
                 break;
             case 1:
+                $return = createNewVehicle(
+                    $conn,
+                    $data["name"],
+                    $data["type"],
+                    $data["license_plate"],
+                    $data["code"],
+                    $data["last_maintenance"],
+                    $data["id_files"],
+                    $data["state"],
+                );
                 break;
             case 2:
                 $return = createNewFile($conn, $_FILES["file"]);
                 break;
             case 3:
-                $return = createNewUser($conn, $data["username"], $data["email"], $data["password"]);
+                $return = createNewUser($conn, $data["username"], $data["email"], $data["password"], $data["role"]);
                 break;
         }
         //logToConsole($return[0]);
@@ -393,8 +420,8 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             heaDie(400);
         }
     case "DELETE":
-        if (isset($data["id_checklists"])) {
-            $return = deleteChecklistItem($conn, $data["id_checklists"]);
+        if (isset($uri[1])) {
+            $return = deleteEntry($conn, $uri[0], $uri[1]);
             if (gettype($return) == "array" && !$return[0]) {
                 heaDie($return[1]);
             }

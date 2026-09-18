@@ -1,4 +1,7 @@
 <?php
+/**
+ * @var mysqli $conn
+ */
 // DB login info
 $servername = "10.1.17.108:3306";
 //$servername = "127.0.0.1:3306";
