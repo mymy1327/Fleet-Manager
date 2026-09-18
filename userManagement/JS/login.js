@@ -22,6 +22,7 @@ loginButton.addEventListener("click", () => {
   xhr.open("POST", "./login.php", true); //add path to requested file
   xhr.setRequestHeader("Content-Type", "application/json");
   xhr.onload = () => {
+    //Validate responce
     if (xhr.status != 200) {
       if (xhr.status == 503) {
         window.location.replace("../../errorPages/PHP/handleError.php?code=503&message=" + encodeURIComponent(JSON.parse(xhr.responseText)["message"]));
