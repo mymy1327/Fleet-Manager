@@ -139,6 +139,46 @@ create a file first
 <div id="demo12"></div>
 <input id="inspectionsId" placeholder="inspection id" />
 <button onclick="getInspectionDetails(document.getElementById('inspectionsId').value)">get inspection details</button
+><br />
+<div id="demo18"></div>
+<input id="inspectionsVehicleId" placeholder="vehicle id" />
+<input id="inspectionsPassed" type="checkbox" />passed
+<input id="inspectionsNote" placeholder="note" />
+<input id="inspectionsUserId" placeholder="user id" />
+<input id="inspectionsKm" placeholder="Km reading" />
+<div>
+    <input
+        id="inspectionsFuel"
+        type="range"
+        min="0"
+        max="100"
+        placeholder="fuel level 0% -> 100%"
+        onchange="document.getElementById('fuelMeter').innerText = this.value"
+    />
+    <div id="fuelMeter"></div>
+</div>
+<input id="inspectionsOilPic" placeholder="oil pic file id" />
+<select id="inspectionsType">
+    <option value="departure" selected>departure</option>
+    <option value="return">return</option>
+</select>
+<input id="inspectionsLink" placeholder="departure inspection id" />
+<button
+    onclick="
+        createInspection(
+            document.getElementById('inspectionsVehicleId').value,
+            document.getElementById('inspectionsPassed').checked ? 1 : 0,
+            document.getElementById('inspectionsNote').value,
+            document.getElementById('inspectionsUserId').value,
+            document.getElementById('inspectionsKm').value,
+            document.getElementById('inspectionsFuel').value,
+            document.getElementById('inspectionsType').value,
+            document.getElementById('inspectionsOilPic').value,
+            document.getElementById('inspectionsLink').value,
+        )
+    "
+>
+    get inspection details</button
 ><br /><br />
 <div id="demo13"></div>
 <input id="filterProblems" placeholder="filter by vehicle id" />
@@ -154,7 +194,8 @@ create a file first
 <button onclick="getChecklistItemDetails(2)">get checklist item details</button><br />
 -->
 <script>
-    const restapi = "http://10.1.17.4:5501";
+    const restapi = "https://developmenterasmus.kolojar.cz";
+    //const restapi = "http://127.0.0.1:5501";
 
     function getAllVehicles(code = null) {
         const xhr = new XMLHttpRequest();
@@ -328,6 +369,27 @@ create a file first
         xhr.onload = () => {
             // code work with response here (code: xhr.status, json response: xhr.responseText)
             document.getElementById("demo17").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send(JSON.stringify(data));
+    }
+
+    function createInspection(id_vehicles, passed, note, id_users, km, fuel, type, oil_picture, link = null) {
+        let data = {};
+        data.id_vehicles = id_vehicles;
+        data.passed = passed;
+        data.note = note;
+        data.id_users = id_users;
+        data.km = km;
+        data.fuel = fuel;
+        data.type = type;
+        data.oil_picture = oil_picture;
+        data.link = link;
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", restapi + "/api/inspections", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            // code work with response here (code: xhr.status, json response: xhr.responseText)
+            document.getElementById("demo18").innerHTML = xhr.status + "<br>" + xhr.responseText;
         };
         xhr.send(JSON.stringify(data));
     }

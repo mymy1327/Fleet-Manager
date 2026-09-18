@@ -1,4 +1,7 @@
 <?php
+/**
+ * @var mysqli $conn
+ */
 header("Content-Type: application/json");
 header("Allow: DELETE, PUT, PATCH");
 header("Access-Control-Allow-Methods: DELETE");
@@ -215,8 +218,8 @@ function createNewVehicle(
 /**
  * create new user
  * @param mysqli $conn connection to database
- * @param string $username user name
- * @param string $email email of user
+ * @param string $id_vehicle id of inspected vehicle
+ * @param string $passed
  * @param string $password password of user
  * @param string $role user role
  * @return json|array[false, int, string|null] detail about new user | false on failure
@@ -240,6 +243,79 @@ function createNewUser($conn, $username, $email, $password, $role)
         ],
         JSON_NUMERIC_CHECK,
     );
+}
+
+function createNewInspection(
+    $conn,
+    $id_vehicles,
+    $passed,
+    $note,
+    $id_users,
+    $km,
+    $fuel,
+    $oil_picture,
+    $type,
+    $link,
+) {
+    $stmt = $conn->prepare(
+        "INSERT INTO `inspections`(`id_vehicles`, `passed`, `note`, `id_users`, `km`, `fuel`, `oil_picture`, `type`, `link`) VALUES (?,?,?,?,?,?,?,?,?)",
+    );
+    $format = [
+        (int) $id_vehicles,
+        (int) $passed,
+        $note,
+        (int) $id_users,
+        (int) $km,
+        (int) $fuel,
+        (int) $oil_picture,
+        $type,
+        (int) $link ?? null,
+    ];
+    $stmt->bind_param(
+        "iisiiiisi",
+        $format[0],
+        $format[1],
+        $format[2],
+        $format[3],
+        $format[4],
+        $format[5],
+        $format[6],
+        $format[7],
+        $format[8],
+    );
+
+    if (!$stmt->execute()) {
+        return [false, 400];
+    }
+    $stmt->close();
+    $return = [
+        "new_id" => $conn->insert_id,
+        "passed" => $passed,
+        "note" => $note,
+        "date" => date("Y-m-d H:i:s"),
+        "id_users" => $id_users,
+        "km" => $km,
+        "fuel" => $fuel,
+        "oil_picture" => $oil_picture,
+        "type" => $type,
+        "link" => $link,
+    ];
+
+    if ($type == "return" && !is_null($link)) {
+        if (
+            !$conn->query("UPDATE `inspections` SET `link` = " . $return["new_id"] . " WHERE id_inspections = $link")
+        ) {
+            return [
+                false,
+                400,
+                json_encode([
+                    "error" => ["code" => "bad_request", "note" => "Could't set link for inspection id = $link"],
+                ]),
+            ];
+        }
+    }
+
+    return json_encode($return, JSON_NUMERIC_CHECK);
 }
 
 /**
@@ -383,6 +459,19 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             case 3:
                 $return = createNewUser($conn, $data["username"], $data["email"], $data["password"], $data["role"]);
                 break;
+            case 4:
+                $return = createNewInspection(
+                    $conn,
+                    $data["id_vehicles"],
+                    $data["passed"],
+                    $data["note"],
+                    $data["id_users"],
+                    $data["km"],
+                    $data["fuel"],
+                    $data["oil_picture"],
+                    $data["type"],
+                    $data["link"],
+                );
         }
         //logToConsole($return[0]);
         if (gettype($return) == "array" && !$return[0]) {
