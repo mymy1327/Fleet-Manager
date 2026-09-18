@@ -107,6 +107,12 @@ function getEntryDetails($conn, $table, $id)
     return json_encode($return, JSON_NUMERIC_CHECK);
 }
 
+/**
+ * return all checklist items for vehicle
+ * @param mysqli $conn connection to database
+ * @param int $id vehicle id
+ * @return array|false checklist items | false on failure
+ */
 function getAllChecklistItemsForVehicle($conn, $id)
 {
     $stmt = $conn->prepare(
@@ -181,6 +187,9 @@ function createNewFile($conn, $file)
  * @param string $licensePlate license plate of vehicle
  * @param string $code vehicle code
  * @param string $lastMaintenance date of last maintenance on vehicle in format YYYY-MM-DD
+ * @param string $lastMaintenanceKm
+ * @param string $nextMaintenance
+ * @param string $maintenanceIntervalKm
  * @param string|null $blob picture of vehicle in blob string
  * @param string|null $state state of vehicle (available, in_use, disabled)
  * @return json|array[false, int, string|null] details about new vehicle | false on failure
@@ -192,14 +201,34 @@ function createNewVehicle(
     $licensePlate,
     $code,
     $lastMaintenance = null,
+    $lastMaintenanceKm,
+    $nextMaintenance,
+    $maintenanceIntervalKm,
     $idFiles = null,
     $state = "available",
 ) {
     logToConsole($lastMaintenance);
     $stmt = $conn->prepare(
-        "INSERT INTO `vehicles`(`name`, `type`, `license_plate`, `code`, `last_maintenance`, `id_files`, `state`) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO `vehicles`(`name`, `type`, `license_plate`, `code`, `last_maintenance`, `last_maintenance_km`, `next_maintenance`, `maintenance_interval_km`, `id_files`, `state`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
     );
-    $stmt->bind_param("sssssss", $name, $type, $licensePlate, $code, $lastMaintenance, $idFiles, $state);
+
+    $int_id_files = (int) $idFiles;
+    $int_last_maintenance_km = (int) $lastMaintenanceKm;
+    $int_maintenance_interval_km = (int) $maintenanceIntervalKm;
+
+    $stmt->bind_param(
+        "sssssisiis",
+        $name,
+        $type,
+        $licensePlate,
+        $code,
+        $lastMaintenance,
+        $int_last_maintenance_km,
+        $nextMaintenance,
+        $int_maintenance_interval_km,
+        $int_id_files,
+        $state,
+    );
     if (!$stmt->execute()) {
         return [false, 400];
     }
@@ -210,7 +239,11 @@ function createNewVehicle(
         "license_plate" => $licensePlate,
         "code" => $code,
         "last_maintenance" => $lastMaintenance,
+        "last_maintenance_km" => $lastMaintenanceKm,
+        "next_maintenance" => $nextMaintenance,
+        "maintenance_interval_km" => $maintenanceIntervalKm,
         "id_files" => $idFiles,
+        "state" => $state,
     ];
     return json_encode($result, JSON_NUMERIC_CHECK);
 }
@@ -253,32 +286,30 @@ function createNewInspection($conn, $id_vehicles, $passed, $note, $id_users, $km
     $stmt = $conn->prepare(
         "INSERT INTO `inspections`(`id_vehicles`, `passed`, `note`, `id_users`, `km`, `fuel`, `oil_picture`, `type`, `link`) VALUES (?,?,?,?,?,?,?,?,?)",
     );
-    $format = [
-        (int) $id_vehicles,
-        (int) $passed,
-        $note,
-        (int) $id_users,
-        (int) $km,
-        (int) $fuel,
-        (int) $oil_picture,
-        $type,
-        (int) $link ?? null,
-    ];
+
+    $int_id_vehicles = (int) $id_vehicles;
+    $int_passed = (int) $passed;
+    $int_id_users = (int) $id_users;
+    $int_km = (int) $km;
+    $int_fuel = (int) $fuel;
+    $int_oil_picture = (int) $oil_picture;
+    $int_link = (int) $link ?? null;
 
     if ($type == "departure") {
-        $format[8] = null;
+        $int_link = null;
     }
+
     $stmt->bind_param(
         "iisiiiisi",
-        $format[0],
-        $format[1],
-        $format[2],
-        $format[3],
-        $format[4],
-        $format[5],
-        $format[6],
-        $format[7],
-        $format[8],
+        $int_id_vehicles,
+        $int_passed,
+        $note,
+        $int_id_users,
+        $int_km,
+        $int_fuel,
+        $int_oil_picture,
+        $type,
+        $int_link,
     );
 
     if (!$stmt->execute()) {
@@ -447,6 +478,9 @@ switch ($_SERVER["REQUEST_METHOD"]) {
                     $data["license_plate"],
                     $data["code"],
                     $data["last_maintenance"],
+                    $data["last_maintenance_km"],
+                    $data["next_maintenance"],
+                    $data["maintenance_interval_km"],
                     $data["id_files"],
                     $data["state"],
                 );

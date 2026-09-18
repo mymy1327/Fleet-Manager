@@ -117,7 +117,38 @@ function getEntryDetails($conn, $table = "problems", $id)
     return json_encode($return, JSON_NUMERIC_CHECK);
 }
 
-function createProblem($conn, $inspectionId, $checklistId, $note, $fileId, $state, $priority) {}
+/**
+ * create problem
+ */
+function createProblem($conn, $inspectionId, $checklistId, $note, $fileId, $priority)
+{
+    $stmt = $conn->prepare(
+        "INSERT INTO `problems`( `id_inspections`, `id_checklists`, `note`, `id_files`, `priority`) VALUES (?,?,?,?,?)",
+    );
+
+    $int_id_inspections = (int) $inspectionId;
+    $int_id_checklists = (int) $checklistId;
+    $int_id_files = (int) $fileId;
+
+    $stmt->bind_param("iisis", $int_id_inspections, $int_id_checklists, $note, $int_id_files, $priority);
+
+    if (!$stmt->execute()) {
+        return [false, 400];
+    }
+
+    return json_encode(
+        [
+            "new_id" => $conn->insert_id,
+            "id_inspections" => $inspectionId,
+            "id_checklists" => $inspectionId,
+            "note" => $note,
+            "id_files" => $fileId,
+            "priority" => $priority,
+            "state" => "open",
+        ],
+        JSON_NUMERIC_CHECK,
+    );
+}
 
 /**
  * delete problem
@@ -161,7 +192,14 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             heaDie(200, $return);
         }
     case "POST":
-        //logToConsole($return[0]);
+        $return = createProblem(
+            $conn,
+            $data["id_inspections"],
+            $data["id_checklists"],
+            $data["note"],
+            $data["id_files"],
+            $data["priority"],
+        );
         if (gettype($return) == "array" && !$return[0]) {
             heaDie($return[1]);
         }
