@@ -7,6 +7,9 @@ on:
 permissions:
   contents: read
 
+env:
+  GITHUB_TOKEN: ${{ github.token }}
+
 # Never run two sync operations for the same branch at the same time.
 # Different branches can still synchronize in parallel.
 concurrency:
