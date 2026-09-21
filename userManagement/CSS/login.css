@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Anta&display=swap');
 body {
     margin: 0;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     background-image: url("https://pub-9147a8a77c9a4d63a1142903a7f0e5ea.r2.dev/loginbackground.jpg");
     background-size:cover ;
     background-position: center;
@@ -39,6 +39,7 @@ body {
     letter-spacing: -5px;
 }
 .sub {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-size: 15px;
     color: #4d4d4d;
 }
@@ -64,10 +65,10 @@ body {
 .login-container input[type="password"] {
     width: 100%;
     height: 18px;
-
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     padding: 0;
 
-    color: white;
+    color: rgb(49, 48, 48);
     font-size: 17px;
 
     background: transparent;
