@@ -1,7 +1,13 @@
 <?php
 require_once __DIR__ . "/../errorPages/PHP/errorManager.php";
 $API = "https://developmenterasmus.kolojar.cz/api";
-function CheckAccessSession(array $roles)
+/**
+ * Checks if user id in session is possible to login
+ * @param array $roles Array of allowed roles
+ * @param bool $displayError If should render error page or not
+ * @return bool If access allowed
+ */
+function CheckAccessSession(array $roles, bool $displayError = true): bool
 {
     //Start session if needed
     if (session_status() != PHP_SESSION_ACTIVE) {
@@ -14,18 +20,26 @@ function CheckAccessSession(array $roles)
     }
 
     //Check access
-    $result = CheckAccess($_SESSION["login"], $roles);
+    $result = CheckAccess($_SESSION["login"], $roles, $displayError);
     if ($result === true) {
-        return;
+        return true;
     }
 
     //Deny on error
     if ($_SESSION["login"] == "-1") {
-        HandleError(401);
-        die();
+        if ($displayError) {
+            HandleError(401);
+            die();
+        } else {
+            return false;
+        }
     }
-    HandleError($result);
-    die();
+    if ($displayError) {
+        HandleError($result);
+        die();
+    } else {
+        return false;
+    }
 }
 
 function CheckAccess(int $user, array $roles): int|true
@@ -149,13 +163,13 @@ function HandleError(int $code, string|null $message = null, string|null $from =
     $url = PathToURL($path);
 
     //Chceck if from is null
-    if($from === null) {
-        $from = $_SERVER['REQUEST_URI'];
+    if ($from === null) {
+        $from = $_SERVER["REQUEST_URI"];
     }
 
     //Handle redirect
     if ($redirect === true) {
-        $url = "Location: " . $url . "?from=" . rawurlencode($from) . "&lang=" . rawurlencode($lang) ;
+        $url = "Location: " . $url . "?from=" . rawurlencode($from) . "&lang=" . rawurlencode($lang);
         if ($message !== null) {
             $url .= "&message=" . urlencode($message);
         }

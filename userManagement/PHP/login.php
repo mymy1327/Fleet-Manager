@@ -23,6 +23,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 if(!isset($data["next"])) {
                     if($user["role"] == "admin") {
                         $result["next"] = "./admin.php";
+                    } else if($user["role"] == "user") {
+                        $result["next"] = "../../userDashboard/PHP/index.php";
                     }
                 } else {
                     $result["next"] = $data["next"];
