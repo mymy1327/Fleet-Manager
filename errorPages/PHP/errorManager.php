@@ -72,6 +72,14 @@ function HandleErrorPageLocal(bool $redirect, int $code, string|null $message = 
         $buttons[] = $button;
     }
 
+    //Add back buttons
+    $button = [];
+    $button["libraryId"] = "back";
+    $buttons[] = $button;
+    $button = [];
+    $button["libraryId"] = "backTitle";
+    $buttons[] = $button;
+
     //Put buttons
     $i = 0;
     $buttonsHTML = "";

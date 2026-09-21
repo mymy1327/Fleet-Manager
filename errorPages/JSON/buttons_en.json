@@ -14,5 +14,13 @@
   "logout": {
     "text": "Logout",
     "action": "const from = '[FROM]'; let href = '/userManagement/PHP/logout.php'; if(from != '') {href+= '?next=' + from;}; window.location.href = href;"
+  },
+  "back": {
+    "text": "Back",
+    "action": "history.back()"
+  },
+  "backTitle": {
+    "text": "Back to title screen",
+    "link": "/"
   }
 }

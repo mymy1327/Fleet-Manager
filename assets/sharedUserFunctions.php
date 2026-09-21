@@ -74,7 +74,7 @@ function SendRequestToAPI(string $path, string $method = "GET", mixed $body = nu
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($curl, CURLOPT_CUSTOMREQUEST, strtoupper($method));
     curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($curl, CURLOPT_TIMEOUT, 5);
+    curl_setopt($curl, CURLOPT_TIMEOUT, 15);
 
     //Set payload
     if (!empty($payload)) {
