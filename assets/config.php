@@ -1,12 +1,7 @@
 <?php
 // DB login info
-<<<<<<< HEAD
-$servername = "127.0.0.1:3306";
-//$servername = "127.0.0.1:3306";
-=======
 //$servername = "10.1.17.108:3306";
 $servername = "127.0.0.1:3306";
->>>>>>> origin/main
 $username = "root";
 $password = "Erasmus+26-Server";
 $dbname = "fleet-manager";
