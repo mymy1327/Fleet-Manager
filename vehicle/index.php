@@ -5,7 +5,7 @@ require "../assets/sharedUserFunctions.php";
 $path = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 $uri = array_slice(explode("/", $path), 2);
 
-$response = SendRequestToAPI("/vehicles?code=btf1w72oywq");
+$response = SendRequestToAPI("/vehicles?code=" . $uri[0]);
 $id = $response[0]["id_vehicles"];
 $newUrl = "https://developmenterasmus.kolojar.cz/inspection-student-form/index.html?id=" . $id;
 //echo json_encode($response);
