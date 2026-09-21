@@ -173,7 +173,7 @@ function renderKilometers() {
         : "-";
 }
 
-function renderLastInspection() {
+async function renderLastInspection() {
     const name = document.querySelector(".last-inspection-name");
     const status = document.querySelector(".last-inspection-status");
     const date = document.querySelector(".last-inspection-date");
@@ -186,8 +186,9 @@ function renderLastInspection() {
     }
 
     const inspection = inspections[0];
+    const username = await getUsername(inspection.id_users);
 
-    if (name) name.textContent = inspection.user ?? "Tuntematon käyttäjä";
+    if (name) name.textContent = username ?? "-";
 
     if (status) {
         const passed = Number(inspection.passed) === 1;
@@ -212,7 +213,42 @@ function formatInspectionDate(date) {
 }
 
 //render all Inspections history
-function renderInspectionHistory() {
+const userCache = {};
+
+function getUsername(userId) {
+    if (!userId) return Promise.resolve("-");
+
+    if (userCache[userId]) {
+        return Promise.resolve(userCache[userId]);
+    }
+
+    return new Promise((resolve) => {
+        const xhr = new XMLHttpRequest();
+
+        xhr.open("GET", `${restapi}/api/users/${userId}`, true);
+
+        xhr.onload = () => {
+            if (xhr.status < 200 || xhr.status >= 300) {
+                resolve("-");
+                return;
+            }
+
+            try {
+                const data = JSON.parse(xhr.responseText);
+                const username = data.username ?? data.name ?? "-";
+
+                userCache[userId] = username;
+                resolve(username);
+            } catch {
+                resolve("-");
+            }
+        };
+
+        xhr.onerror = () => resolve("-");
+        xhr.send();
+    });
+}
+async function renderInspectionHistory() {
     const container = document.querySelector(".inspection-history");
     if (!container) return;
 
@@ -228,13 +264,17 @@ function renderInspectionHistory() {
         return;
     }
 
-    inspections.forEach(inspection => {
+    const recentInspections = inspections.slice(0, 5);
+
+    for (const inspection of recentInspections) {
         const passed = Number(inspection.passed) === 1;
+        const username = await getUsername(inspection.id_users);
+
         const card = document.createElement("div");
 
         card.className = "inspection-history-content";
         card.innerHTML = `
-            <p class="inspection-history-name">Käyttäjä ${inspection.user ?? "-"}</p>
+            <p class="inspection-history-name">${username}</p>
             <span class="inspection-history-status status-label ${passed ? "passed" : "failed"}">
                 ${passed ? "Hyväksytty" : "Hylätty"}
             </span>
@@ -244,7 +284,7 @@ function renderInspectionHistory() {
         `;
 
         container.appendChild(card);
-    });
+    }
 }
 
 function renderFaultCards(openFaults) {
