@@ -30,7 +30,6 @@ function getVehicle(vehicleId, onComplete = null) {
     xhr.setRequestHeader("Content-Type", "application/json");
 
     xhr.onload = () => {
-        console.log("Vehicle API:", xhr.status, xhr.responseText);
 
         if (xhr.status < 200 || xhr.status >= 300) {
             console.error("Vehicle API error:", xhr.status);
@@ -43,10 +42,6 @@ function getVehicle(vehicleId, onComplete = null) {
             vehicle = data;
             checklists = Array.isArray(data.checklist) ? data.checklist : [];
             previousKilometers = data.km ?? null;
-
-            console.log("Vehicle:", vehicle);
-            console.log("Checklists:", checklists);
-            console.log("Previous km:", previousKilometers);
 
             if (onComplete) onComplete();
         } catch (error) {
@@ -64,7 +59,6 @@ function getInspections(vehicleId, onComplete = null) {
     xhr.open("GET", restapi + "/api/inspections?id_vehicles=" + vehicleId, true);
 
     xhr.onload = () => {
-        console.log("Inspections:", xhr.status, xhr.responseText);
 
         if (xhr.status < 200 || xhr.status >= 300) {
             inspections = [];
@@ -243,21 +237,23 @@ function restoreCurrentAnswer() {
         return;
     }
 
-    if (
-        current.answer &&
-        current.answer !== "Report Faults"
-    ) {
-        const selected =
-            document.querySelector(
-                `.question-option[data-value="${CSS.escape(
-                    String(current.answer)
-                )}"]`
-            );
+    if (current.answer && current.answer !== "Report Faults") {
+    const selected = document.querySelector(
+        `.question-option[data-value="${CSS.escape(String(current.answer))}"]`
+    );
 
-        if (selected) {
-            selected.classList.add("selected");
-        }
+    if (selected) {
+        selected.classList.add("selected");
     }
+}
+
+    if (current.answer === "Report Faults" && current.kilometer != null) {
+    const kilometerInput = document.querySelector("#kilometerInput");
+
+    if (kilometerInput) {
+        kilometerInput.value = current.kilometer;
+    }
+}
 
 
 
@@ -514,7 +510,7 @@ function selectFault() {
 
     // If in Fault status, click again to cancel
     if (current.answer === "Report Faults") {
-        current.answer = current.kilometer ?? current.fuel ?? null;
+        current.answer = current.previousAnswer ?? null;
         current.error = null;
 
         document.querySelectorAll(".question-option").forEach(button => {
@@ -540,6 +536,7 @@ function selectFault() {
     }
 
     // Turn to fault status
+    current.previousAnswer = current.answer;
     current.answer = "Report Faults";
 
     if (!current.error) {
@@ -612,10 +609,8 @@ function setupFaultCamera() {
     }
 
     button.onclick = () => {
-        console.log("Fault camera button clicked");
 
         openCamera("fault", (picture) => {
-            console.log("Fault picture received:", picture);
 
             if (!answers[currentQuestionIndex].error) {
                 answers[currentQuestionIndex].error = {};
@@ -1002,7 +997,6 @@ function finishInspection() {
         )
     };
 
-    console.log("Inspection result:", inspectionResult);
 
     /*
      * Show fireworks when inspection reaches 100%
@@ -1306,13 +1300,6 @@ function setupBackButton() {
             window.history.back();
         }
     };
-}
-
-async function submitInspection(inspectionResult) {
-    console.log("Submitting inspection:", inspectionResult);
-    alert("Tarkastus on vahvistettu!");
-
-    closeSummaryModal();
 }
 
 function setupSummaryModal() {
@@ -1897,7 +1884,6 @@ function createFile(blob) {
 
             try {
                 const data = JSON.parse(xhr.responseText);
-                console.log("File created:", data);
                 resolve(data.new_id);
             } catch (error) {
                 reject(new Error("Invalid file response."));
@@ -1909,7 +1895,7 @@ function createFile(blob) {
     });
 }
 
-function createInspection(id_vehicles, passed, note, id_users, km, fuel, type, oil_picture, link = null) {
+function createInspection(id_vehicles, passed, note, id_users, km, fuel, type, oil_picture, link) {
     return new Promise((resolve, reject) => {
         const data = {
             id_vehicles,
@@ -1928,7 +1914,6 @@ function createInspection(id_vehicles, passed, note, id_users, km, fuel, type, o
         xhr.setRequestHeader("Content-Type", "application/json");
 
         xhr.onload = () => {
-            console.log("Inspection:", xhr.status, xhr.responseText);
 
             if (xhr.status < 200 || xhr.status >= 300) {
                 reject(new Error("Inspection creation failed: " + xhr.status));
@@ -1937,8 +1922,7 @@ function createInspection(id_vehicles, passed, note, id_users, km, fuel, type, o
 
             try {
                 const data = JSON.parse(xhr.responseText);
-                console.log("Created inspection:", data);
-                resolve(data.id_inspections);
+                resolve(data.new_id);
             } catch (error) {
                 reject(new Error("Invalid inspection response."));
             }
@@ -1949,7 +1933,7 @@ function createInspection(id_vehicles, passed, note, id_users, km, fuel, type, o
     });
 }
 
-function createProblem(inspectionId, checklistId, note, fileId, priority = "medium") {
+function createProblem(inspectionId, checklistId, note, fileId, priority) {
     return new Promise((resolve, reject) => {
         const data = {
             id_inspections: inspectionId,
@@ -1964,7 +1948,6 @@ function createProblem(inspectionId, checklistId, note, fileId, priority = "medi
         xhr.setRequestHeader("Content-Type", "application/json");
 
         xhr.onload = () => {
-            console.log("Problem:", xhr.status, xhr.responseText);
 
             if (xhr.status < 200 || xhr.status >= 300) {
                 reject(new Error("Problem creation failed: " + xhr.status));
@@ -1985,30 +1968,32 @@ function buildInspectionNote() {
     checklists.forEach((checklist, index) => {
         const answer = answers[index]?.answer;
 
-        if (answer === "Huono" || answer === "En tiedä") {
+        if (answer === "Huono" || answer === "En tiedä" || answer === "Report Faults") {
             notes.push(`${checklist.name} - ${answer}`);
         }
     });
     if (notes.length == 0) {
         return null;
     }
-    return notes.join("\n");
+    return notes.join(", ");
 }
 
 function getInspectionPassed() {
-    const excludedQuestions = [
-        "Polttoaineen määrä",
-        "Kilometrilukema"
-    ];
+    if (answers.some(answer => answer?.answer === "Report Faults")) {
+        return 0;
+    }
 
-    return answers
-        .filter(item => !excludedQuestions.includes(item.question))
-        .every(item => {
-            const answer = item?.answer;
-            return answer === "Hyvä" || answer === "Kunnossa";
-        })
-        ? 1
-        : 0;
+    return checklists.every((checklist, index) => {
+        if (
+            checklist.name === "Polttoaineen määrä" ||
+            checklist.name === "Kilometrilukema"
+        ) {
+            return true;
+        }
+
+        return answers[index]?.answer === "Hyvä" ||
+               answers[index]?.answer === "Kunnossa";
+    }) ? 1 : 0;
 }
 
 function validateInspectionAnswers() {
@@ -2026,7 +2011,36 @@ function validateInspectionAnswers() {
 }
 function getAnswerByChecklistName(name) {
     const index = checklists.findIndex(item => item.name === name);
-    return index === -1 ? null : answers[index]?.answer;
+    if (index === -1) return null;
+
+    const current = answers[index];
+
+    if (!current) return null;
+
+    if (name === "Kilometrilukema") {
+        return current.kilometer;
+    }
+
+    if (name === "Polttoaineen määrä") {
+        return current.fuel;
+    }
+
+    return current.answer;
+}
+function inspectionSubmitDate() {
+    return new Date()
+        .toISOString()
+        .slice(0, 19)
+        .replace("T", " ");
+}
+function getInspectionType() {
+    const previousInspection = document.getElementById("previousInspection");
+
+    if (previousInspection && previousInspection.innerHTML.trim() !== "") {
+        return "return";
+    }
+
+    return "departure";
 }
 async function submitInspection (inspectionResult) {
     if (!validateInspectionAnswers()) return;
@@ -2042,9 +2056,23 @@ async function submitInspection (inspectionResult) {
             alert("Käyttäjää ei löytynyt. Kirjaudu uudelleen.");
             return;
         }
-
+    const vehicleId = vehicle.id_vehicles;
     try {
-        const vehicleId = vehicle.id_vehicles;
+        const type = getInspectionType();
+        let link = null;
+
+        if (type === "return") {
+            const departure = inspections
+                .filter(item => item.type === "departure")
+                .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+
+            if (!departure) {
+                alert("Aikaisempaa lähtötarkastusta ei löytynyt.");
+                return;
+            }
+
+            link = departure.id_inspections;
+        }
         const km = getAnswerByChecklistName("Kilometrilukema") ?? vehicle.km;
         const fuel = getAnswerByChecklistName("Polttoaineen määrä") ?? 0;
         const note = buildInspectionNote();
@@ -2067,21 +2095,20 @@ async function submitInspection (inspectionResult) {
             userId,
             km,
             fuel,
-            "return",
+            type,
             oilPictureId,
-            null
+            link
         );
 
-        console.log("Inspection ID:", inspectionId);
 
         for (let i = 0; i < checklists.length; i++) {
-            const checklist = checklist[i];
+            const checklist = checklists[i];
             const answer = answers[i];
 
-            if (!answers?.error) continue;
+            if (!answer?.error) continue;
 
             if (!answer.error.photo) {
-                throw new Error('Kuvavika puuttuu: ${checklist.name}');
+                throw new Error(`Kuvavika puuttuu: ${checklist.name}`);
             }
 
             const fileId = await createFile(answer.error.photo);
@@ -2095,11 +2122,16 @@ async function submitInspection (inspectionResult) {
         }
 
         alert("Tarkastus lähetetty onnistuneesti.");
-        window.location.href = 'http://localhost/inspection-student-form/index.html?id=${vehicleId}';
+        window.location.href = `http://localhost/inspection-student-form/index.html?id=${vehicleId}`;
+
 
     } catch (error) {
         console.error("Inspection submission error:", error);
         alert("Tarkastuksen lähettäminen epäonnistui.");
+        if (vehicleId) {
+            window.location.href =
+                `http://localhost/inspection-student-form/index.html?id=${encodeURIComponent(vehicleId)}`;
+        }
 
         if (submitButton) {
             submitButton.disabled = false;

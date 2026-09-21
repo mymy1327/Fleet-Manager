@@ -17,6 +17,9 @@ async function main() {
   const item = JSON.parse(await itemResponce.text());
   document.getElementById("name").value = item.name;
   document.getElementById("description").value = item.description;
+  document.getElementById("name").disabled = false;
+  document.getElementById("description").disabled = false;
+  document.getElementById("btnSubmit").disabled = false;
 }
 
 //Submit button
