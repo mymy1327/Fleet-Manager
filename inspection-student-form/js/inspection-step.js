@@ -8,6 +8,8 @@ let currentQuestionIndex = 0;
 let answers = [];
 let previousKilometers = null;
 let previousInspection = null;
+let vehicleId = null;
+let vehicleCode = null;
 
 sessionStorage.getItem("login")
 
@@ -24,32 +26,99 @@ function escapeHTML(value) {
         .replace(/'/g, "&#039;");
 }
 
-function getVehicle(vehicleId, onComplete = null) {
+function getVehicle(code, onComplete = null) {
     const xhr = new XMLHttpRequest();
-    xhr.open("GET", restapi + "/api/vehicles/" + vehicleId, true);
+
+    xhr.open(
+        "GET",
+        restapi + "/api/vehicles?code=" + encodeURIComponent(code),
+        true
+    );
+
     xhr.setRequestHeader("Content-Type", "application/json");
 
     xhr.onload = () => {
-
         if (xhr.status < 200 || xhr.status >= 300) {
-            console.error("Vehicle API error:", xhr.status);
+            console.error("Vehicle code API error:", xhr.status);
             return;
         }
 
         try {
             const data = JSON.parse(xhr.responseText);
 
-            vehicle = data;
-            checklists = Array.isArray(data.checklist) ? data.checklist : [];
-            previousKilometers = data.km ?? null;
+            if (!Array.isArray(data) || !data.length) {
+                console.error("Vehicle not found.");
+                return;
+            }
 
-            if (onComplete) onComplete();
+            const basicVehicle = data[0];
+
+            if (!basicVehicle.id_vehicles) {
+                console.error("Vehicle ID not found.");
+                return;
+            }
+
+            vehicleId = basicVehicle.id_vehicles;
+
+            console.log("Vehicle ID:", vehicleId);
+
+            getVehicleById(vehicleId, onComplete);
+
         } catch (error) {
             console.error("JSON parse error:", error);
         }
     };
 
-    xhr.onerror = () => console.error("Vehicle API connection failed.");
+    xhr.onerror = () => {
+        console.error("Vehicle API connection failed.");
+    };
+
+    xhr.send();
+}
+function getVehicleById(id, onComplete = null) {
+    const xhr = new XMLHttpRequest();
+
+    xhr.open(
+        "GET",
+        restapi + "/api/vehicles/" + encodeURIComponent(id),
+        true
+    );
+
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onload = () => {
+        if (xhr.status < 200 || xhr.status >= 300) {
+            console.error("Vehicle ID API error:", xhr.status);
+            return;
+        }
+
+        try {
+            const data = JSON.parse(xhr.responseText);
+
+            console.log("Full vehicle:", data);
+
+            vehicle = data;
+            vehicleId = vehicle.id_vehicles;
+
+            checklists = Array.isArray(vehicle.checklist)
+                ? vehicle.checklist
+                : [];
+
+            previousKilometers = vehicle.km ?? null;
+
+            console.log("Checklists:", checklists);
+
+            if (onComplete) onComplete();
+
+        } catch (error) {
+            console.error("JSON parse error:", error);
+        }
+    };
+
+    xhr.onerror = () => {
+        console.error("Vehicle ID API connection failed.");
+    };
+
     xhr.send();
 }
 
@@ -129,34 +198,31 @@ function renderPreviousInspection(inspection) {
 // Initialize the inspection page
 document.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
-    const vehicleId = params.get("id");
+    const code = params.get("code");
 
-    if (!vehicleId) {
+    if (!code) {
         showErrorMessage("Ajoneuvon tunnistetta ei löytynyt.");
         return;
     }
 
-    getVehicle(vehicleId, () => {
+    vehicleCode = code;
+
+    getVehicle(code, () => {
         if (!vehicle || !checklists.length) {
             showErrorMessage("Ajoneuvon tietoja ei löytynyt.");
             return;
         }
 
         currentQuestionIndex = 0;
+
         answers = checklists.map(() => ({
-        answer: null,
-
-        // Keep original values
-        kilometer: null,
-        fuel: null,
-
-        // Photos
-        oilPhoto: null,
-        oilPhotoConfirmed: false,
-
-        // Fault
-        error: null
-    }));
+            answer: null,
+            kilometer: null,
+            fuel: null,
+            oilPhoto: null,
+            oilPhotoConfirmed: false,
+            error: null
+        }));
 
         renderVehicleInformation();
         renderProgress();
@@ -165,10 +231,10 @@ document.addEventListener("DOMContentLoaded", () => {
         setupNavigation();
         setupBackButton();
         setupSummaryModal();
-        getInspections(vehicleId);
+
+        getInspections(vehicle.id_vehicles);
     });
 });
-
 
 
 // Render vehicle information
@@ -1284,18 +1350,14 @@ function getPriorityLabel(priority) {
 
 function setupBackButton() {
     const backButton = document.querySelector(".back-button");
-
-    if (!backButton) {
-        return;
-    }
+    if (!backButton) return;
 
     const params = new URLSearchParams(window.location.search);
-
-    const vehicleId = params.get("id");
+    const code = params.get("code");
 
     backButton.onclick = () => {
-        if (vehicleId) {
-            window.location.href = `index.html?id=${encodeURIComponent(vehicleId)}`;
+        if (code) {
+            window.location.href = `index.html?code=${encodeURIComponent(code)}`;
         } else {
             window.history.back();
         }
@@ -1390,11 +1452,11 @@ function renderKilometerInput(container) {
 
         </div>
 
-        <div
-            id="kilometerFaultContainer"
-            class="fault-container"
-            style="display:none;"
-        ></div>
+            <div
+        id="faultContainer"
+        class="fault-container"
+        style="display:none;"
+    ></div>
     `;
 
     container.appendChild(wrapper);
@@ -2056,7 +2118,7 @@ async function submitInspection (inspectionResult) {
             alert("Käyttäjää ei löytynyt. Kirjaudu uudelleen.");
             return;
         }
-    const vehicleId = vehicle.id_vehicles;
+    const vehicleId = vehicle?.id_vehicles;
     try {
         const type = getInspectionType();
         let link = null;
@@ -2122,16 +2184,12 @@ async function submitInspection (inspectionResult) {
         }
 
         alert("Tarkastus lähetetty onnistuneesti.");
-        window.location.href = `http://localhost/inspection-student-form/index.html?id=${vehicleId}`;
+        window.location.href = `index.html?code=${encodeURIComponent(vehicleCode)}`;
 
 
     } catch (error) {
         console.error("Inspection submission error:", error);
         alert("Tarkastuksen lähettäminen epäonnistui.");
-        if (vehicleId) {
-            window.location.href =
-                `http://localhost/inspection-student-form/index.html?id=${encodeURIComponent(vehicleId)}`;
-        }
 
         if (submitButton) {
             submitButton.disabled = false;

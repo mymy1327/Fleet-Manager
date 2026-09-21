@@ -2,6 +2,7 @@ let restapi = " https://developmenterasmus.kolojar.cz";
 let vehicle = null;
 let inspections = [];
 let faults = [];
+let vehicleCode = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     loadVehicle();
@@ -9,15 +10,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function loadVehicle() {
     const params = new URLSearchParams(window.location.search);
-    const vehicleId = params.get("id");
+    const code = params.get("code");
 
-    if (!vehicleId) {
+    if (!code) {
         showVehicleError("Ajoneuvon tunnus puuttuu.");
         return;
     }
 
     const xhr = new XMLHttpRequest();
-    xhr.open("GET", restapi + "/api/vehicles/" + vehicleId, true);
+    xhr.open(
+        "GET",
+        restapi + "/api/vehicles?code=" + encodeURIComponent(code),
+        true
+    );
     xhr.setRequestHeader("Content-Type", "application/json");
 
     xhr.onload = () => {
@@ -29,17 +34,30 @@ function loadVehicle() {
         }
 
         try {
-            vehicle = JSON.parse(xhr.responseText);
+            const data = JSON.parse(xhr.responseText);
+
+            if (!Array.isArray(data) || !data.length) {
+                showVehicleError("Ajoneuvoa ei löytynyt.");
+                return;
+            }
+
+            vehicle = data[0];
+            vehicleCode = code;
+
             renderVehicle(vehicle);
             loadInspections(vehicle.id_vehicles);
             loadProblems(vehicle.id_vehicles);
+
         } catch (error) {
             console.error("Vehicle JSON error:", error);
             showVehicleError("Ajoneuvon tietoja ei voitu ladata.");
         }
     };
 
-    xhr.onerror = () => showVehicleError("Yhteys palvelimeen epäonnistui.");
+    xhr.onerror = () => {
+        showVehicleError("Yhteys palvelimeen epäonnistui.");
+    };
+
     xhr.send();
 }
 
@@ -91,7 +109,7 @@ function stateNotification(state) {
     }
 }
 
-function setupInspectionButton(state, vehicleId) {
+function setupInspectionButton(state) {
     const button = document.querySelector("#startInspection");
     if (!button) return;
 
@@ -101,7 +119,8 @@ function setupInspectionButton(state, vehicleId) {
             return;
         }
 
-        window.location.href = `inspection-step.html?id=${vehicleId}`;
+        window.location.href =
+            `inspection-step.html?code=${encodeURIComponent(vehicleCode)}`;
     };
 }
 
