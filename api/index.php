@@ -68,9 +68,10 @@ function getFullTable($conn, $table, $filterColumn, $filter)
  * @param mysqli $conn connection to database
  * @param string $table db table name
  * @param int $id row id
+ * @param bool $_rec true to stop recursion
  * @return json|array[false, int, string|null] entry details | false on failure
  */
-function getEntryDetails($conn, $table, $id)
+function getEntryDetails($conn, $table, $id, $_rec = false)
 {
     global $listOfTables;
     $stmt = $conn->prepare("SELECT * FROM `$table` WHERE id_$table = ?");
@@ -112,6 +113,17 @@ function getEntryDetails($conn, $table, $id)
                     getEntryDetails($conn, "checklists", $problem["id_checklists"]),
                     true,
                 );
+            }
+        }
+        if (!$_rec) {
+            $inspectionDetails = getEntryDetails($conn, "inspections", (int) $return["link"], true);
+            if (gettype($inspectionDetails) == "array" && !$inspectionDetails[0]) {
+                return $inspectionDetails;
+            }
+            if (!is_null($return["link"]) && $return["type"] == "departure") {
+                $return["return"] = json_decode($inspectionDetails, true);
+            } elseif (!is_null($return["link"])) {
+                $return["departure"] = json_decode($inspectionDetails, true);
             }
         }
     }
@@ -536,13 +548,13 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         if (!isset($uri[1])) {
             $return = getFullTable($conn, $uri[0], $filterColumn, $filter);
             if (gettype($return) == "array" && !$return[0]) {
-                heaDie($return[1]);
+                heaDie($return[1], $return[2] ?? null);
             }
             heaDie(200, $return);
         } else {
             $return = getEntryDetails($conn, $uri[0], $uri[1], $filterColumn, $filter);
             if (gettype($return) == "array" && !$return[0]) {
-                heaDie($return[1], $return[2]);
+                heaDie($return[1], $return[2] ?? null);
             }
             heaDie(200, $return);
         }
@@ -555,7 +567,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
                 if (isset($uri[1])) {
                     $return = addChecklistToVehicle($conn, $uri[1], $data["id_checklists"]);
                     if (gettype($return) == "array" && !$return[0]) {
-                        heaDie($return[1], $return[2]);
+                        heaDie($return[1], $return[2] ?? null);
                     }
                     heaDie(204);
                 } else {
@@ -596,7 +608,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         }
         //logToConsole($return[0]);
         if (gettype($return) == "array" && !$return[0]) {
-            heaDie($return[1], $return[2]);
+            heaDie($return[1], $return[2] ?? null);
         }
         heaDie(201, $return);
 
@@ -604,7 +616,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         if (isset($data["id_checklists"], $data["name"], $data["description"])) {
             $return = rewriteChecklistItem($conn, $data["id_checklists"], $data["name"], $data["description"]);
             if (gettype($return) == "array" && !$return[0]) {
-                heaDie($return[1], $return[2]);
+                heaDie($return[1], $return[2] ?? null);
             }
             heaDie(200, $return);
         } else {
@@ -623,7 +635,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
                 $data["description"],
             );
             if (gettype($return) == "array" && !$return[0]) {
-                heaDie($return[1], $return[2]);
+                heaDie($return[1], $return[2] ?? null);
             }
             heaDie(200, $return);
         } else {
@@ -639,7 +651,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
                 $return = deleteEntry($conn, $uri[0], $uri[1]);
             }
             if (gettype($return) == "array" && !$return[0]) {
-                heaDie($return[1], $return[2]);
+                heaDie($return[1], $return[2] ?? null);
             }
             if ($return) {
                 heaDie(204);
