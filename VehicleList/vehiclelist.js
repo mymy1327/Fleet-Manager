@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
 let carlist = document.getElementById("vehicle")
 
 const xhr = new XMLHttpRequest();
-const ip = ".."
+const ip = "../../../"
 function getAllInspections(changing, vehicleId = null) {
         const xhr = new XMLHttpRequest();
         xhr.open("GET", "/api/inspections?id_vehicles=" + vehicleId, true); // ?id_vehicles can be removed
