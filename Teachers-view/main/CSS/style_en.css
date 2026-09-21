@@ -351,10 +351,36 @@ button:disabled, button:hover:disabled {
     white-space: nowrap;
 }
 
-.vehicle-status.state {
-    --available: #0ba979;
-    --occupied: #f2a51b;
-    --notInUse: #ec6670;
+.vehicle-status[data-state="available"] {
+    /*
+    green incase people dont want colorblindness support
+    color: #0ba979;
+    border-color: #0ba979;
+    background: #e5f8f2;
+    */
+    color: #053157;
+    border-color: #1E88E5;
+    background: #9dd1ff;
+    
+}
+
+.vehicle-status[data-state="in_use"] {
+    /*
+    yellowincase people dont want colorblindness support
+    color: #a3a30a;
+    border-color: #a3a30a;
+    background: #ffffc9;
+    */
+    color: #a77e06;
+    border-color: #FFC107;
+    background: #fff1c6;
+    
+}
+
+.vehicle-status[data-state="disabled"] {
+    color: #808080;
+    border-color: #808080;
+    background: #e2e2e2;
 }
 
 .vehicle-type,

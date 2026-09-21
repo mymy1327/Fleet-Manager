@@ -27,7 +27,7 @@ function getAllInspections(changing, vehicleId = null) {
     }
 function getVehicleDetails(vehicleId) {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", `/api/vehicles`, true);
+        xhr.open("GET", `http://${ip}/api/vehicles`, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             
@@ -71,10 +71,6 @@ function getVehicleDetails(vehicleId) {
                 let vehiclestatus = document.createElement("span")
                 vehiclestatus.classList.add("vehicle-status")
                 vehiclestatus.textContent = intelligeble[x].state
-                // to be done 
-                if (intelligeble[x].state === "in_use"){
-                    vehiclestatus.classList = ("")
-                }
 
                 let vehicletype = document.createElement("p")
                 vehicletype.textContent = intelligeble[x].type
