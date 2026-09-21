@@ -1,3 +1,8 @@
+<?php
+require __DIR__ . "/../../assets/sharedUserFunctions.php";
+    CheckAccessSession(["teacher","admin"])
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,7 +29,7 @@
         </nav>
         <div class="header-actions">
             <button class="language-switch" type="button" data-language-switch>FI</button>
-            <button class="logout" type="button">↪&nbsp; Logout</button>
+            <a href='../../userManagement/PHP/logout.php'> <button class="logout" type="button">↪&nbsp; Logout</button></a>
         </div>
     </header>
     <main id="app" class="page">

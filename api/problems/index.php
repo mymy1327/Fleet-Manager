@@ -1,9 +1,18 @@
 <?php
+/**
+ * @var mysqli $conn
+ */
 header("Content-Type: application/json");
-header("Access-Control-Allow-Origin: http://127.0.0.1:5501");
+header("Allow: DELETE, PUT, PATCH");
+header("Access-Control-Allow-Methods: DELETE");
+header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, Origin");
 //session_start();
 require "../../assets/config.php";
+
+if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
+    heaDie(200);
+}
 
 $path = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 $uri = array_slice(explode("/", $path), 2);
@@ -108,6 +117,56 @@ function getEntryDetails($conn, $table = "problems", $id)
     return json_encode($return, JSON_NUMERIC_CHECK);
 }
 
+/**
+ * create problem
+ */
+function createProblem($conn, $inspectionId, $checklistId, $note, $fileId, $priority)
+{
+    $stmt = $conn->prepare(
+        "INSERT INTO `problems`( `id_inspections`, `id_checklists`, `note`, `id_files`, `priority`) VALUES (?,?,?,?,?)",
+    );
+
+    $int_id_inspections = (int) $inspectionId;
+    $int_id_checklists = (int) $checklistId;
+    $int_id_files = (int) $fileId;
+
+    $stmt->bind_param("iisis", $int_id_inspections, $int_id_checklists, $note, $int_id_files, $priority);
+
+    if (!$stmt->execute()) {
+        return [false, 400];
+    }
+
+    return json_encode(
+        [
+            "new_id" => $conn->insert_id,
+            "id_inspections" => $inspectionId,
+            "id_checklists" => $inspectionId,
+            "note" => $note,
+            "id_files" => $fileId,
+            "priority" => $priority,
+            "state" => "open",
+        ],
+        JSON_NUMERIC_CHECK,
+    );
+}
+
+/**
+ * delete problem
+ * @param mysqli $conn connection to database
+ * @param int $id problem id
+ * @return true|array[false, int, string|null] true on success | false on failure
+ */
+function deleteProblem($conn, $id)
+{
+    $stmt = $conn->prepare("DELETE FROM `problems` WHERE id_problems = ?");
+    $intId = (int) $id;
+    $stmt->bind_param("i", $intId);
+    if (!$stmt->execute()) {
+        return [false, 404];
+    }
+    return true;
+}
+
 switch ($_SERVER["REQUEST_METHOD"]) {
     case "GET":
         $filterColumn = null;
@@ -133,7 +192,14 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             heaDie(200, $return);
         }
     case "POST":
-        //logToConsole($return[0]);
+        $return = createProblem(
+            $conn,
+            $data["id_inspections"],
+            $data["id_checklists"],
+            $data["note"],
+            $data["id_files"],
+            $data["priority"],
+        );
         if (gettype($return) == "array" && !$return[0]) {
             heaDie($return[1]);
         }
@@ -168,18 +234,18 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         } else {
             heaDie(400);
         }
-    case "DELETE":
-        if (isset($data["id_checklists"])) {
-            $return = deleteChecklistItem($conn, $data["id_checklists"]);
-            if (gettype($return) == "array" && !$return[0]) {
-                heaDie($return[1]);
-            }
-            if ($return) {
-                heaDie(204);
-            }
-        } else {
-            heaDie(400);
+    /*case "DELETE":
+    if (isset($uri[1])) {
+        $return = deleteProblem($conn, $uri[1]);
+        if (gettype($return) == "array" && !$return[0]) {
+            heaDie($return[1]);
         }
+        if ($return) {
+            heaDie(204);
+        }
+    } else {
+        heaDie(400);
+        }*/
     default:
         heaDie(405);
 }

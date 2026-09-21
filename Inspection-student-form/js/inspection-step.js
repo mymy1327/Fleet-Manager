@@ -1,11 +1,15 @@
 // Global inspection data
-const restapi = "http://10.1.17.4:5501";
+const restapi = " https://developmenterasmus.kolojar.cz";
 let vehicle = null;
 let checklists = [];
+let inspections = [];
 let allQuestions = [];
 let currentQuestionIndex = 0;
 let answers = [];
 let previousKilometers = null;
+let previousInspection = null;
+
+sessionStorage.getItem("login")
 
 function escapeHTML(value) {
     if (value === null || value === undefined) {
@@ -54,6 +58,80 @@ function getVehicle(vehicleId, onComplete = null) {
     xhr.send();
 }
 
+//Get Inspection history base on the vehicleId to get the type of last Inspection
+function getInspections(vehicleId, onComplete = null) {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", restapi + "/api/inspections?id_vehicles=" + vehicleId, true);
+
+    xhr.onload = () => {
+        console.log("Inspections:", xhr.status, xhr.responseText);
+
+        if (xhr.status < 200 || xhr.status >= 300) {
+            inspections = [];
+            if (onComplete) onComplete();
+            return;
+        }
+
+        try {
+            inspections = JSON.parse(xhr.responseText);
+            inspections = Array.isArray(inspections) ? inspections : [];
+            inspections.sort((a, b) => new Date(b.date) - new Date(a.date));
+            const latest = inspections[0];
+
+            if (latest && latest.type === "departure") {
+                previousInspection = latest;
+                renderPreviousInspection(latest);
+            } else {
+                previousInspection = null;
+            }
+
+            if (onComplete) onComplete();
+        } catch (error) {
+            console.error("Inspection processing error:", error);
+            inspections = [];
+            if (onComplete) onComplete();
+        }
+    };
+
+    xhr.onerror = () => {
+        console.error("Inspection API connection failed.");
+        inspections = [];
+        if (onComplete) onComplete();
+    };
+
+    xhr.send();
+}
+function formatInspectionDate(date) {
+    if (!date) return "-";
+
+    const value = new Date(date);
+
+    if (Number.isNaN(value.getTime())) {
+        return date;
+    }
+
+    return value.toLocaleString("fi-FI", {
+        dateStyle: "short",
+        timeStyle: "short"
+    });
+}
+// Render the lastInspection info on the left
+function renderPreviousInspection(inspection) {
+    const container = document.getElementById("previousInspection");
+    if (!container) return;
+    container.style.display = "block";
+    container.innerHTML = `
+        <div class="previous-inspection-card">
+            <h3>Edellinen tarkastus</h3>
+            <span class="previous-inspection-status status-label ${Number(inspection.passed) === 1 ? "passed" : "failed"}">${Number(inspection.passed) === 1 ? "Hyväksytty" : "Hylätty"}</span>
+            <p><strong>Huomio:</strong> ${inspection.note || "-"}</p>
+            <p><strong>Päivä:</strong> ${formatInspectionDate(inspection.date)}</p>
+            <p><strong>Kilometrit:</strong> ${inspection.km ?? "-"} km</p>
+            <p><strong>Polttoaine:</strong> ${inspection.fuel ?? 0}%</p>
+        </div>
+    `;
+}
+
 // Initialize the inspection page
 document.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
@@ -72,10 +150,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
         currentQuestionIndex = 0;
         answers = checklists.map(() => ({
-            answer: null,
-            oilPhoto: null,
-            error: null
-        }));
+        answer: null,
+
+        // Keep original values
+        kilometer: null,
+        fuel: null,
+
+        // Photos
+        oilPhoto: null,
+        oilPhotoConfirmed: false,
+
+        // Fault
+        error: null
+    }));
 
         renderVehicleInformation();
         renderProgress();
@@ -84,6 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setupNavigation();
         setupBackButton();
         setupSummaryModal();
+        getInspections(vehicleId);
     });
 });
 
@@ -148,62 +236,146 @@ function renderQuestion() {
 }
 
 function restoreCurrentAnswer() {
-    const current = answers[currentQuestionIndex];
+    const current =
+        answers[currentQuestionIndex];
 
     if (!current) {
         return;
     }
 
+    if (
+        current.answer &&
+        current.answer !== "Report Faults"
+    ) {
+        const selected =
+            document.querySelector(
+                `.question-option[data-value="${CSS.escape(
+                    String(current.answer)
+                )}"]`
+            );
 
-    // Restore normal answer
-
-    if (current.answer) {
-    const selected = document.querySelector(`.question-option[data-value="${CSS.escape(current.answer)}"]`);
-
-        if (selected) {selected.classList.add("selected");}
+        if (selected) {
+            selected.classList.add("selected");
+        }
     }
 
 
-    // Restore fault form
 
-    if (current.answer === "Report Faults") {
-        const layout =document.querySelector(".question-layout");
+    if (current.oilPhoto) {
 
-        if (layout) {layout.classList.add("has-fault");}
+        const oilButton =
+            document.getElementById(
+                "oilPhotoButton"
+            );
+
+        if (oilButton) {
+
+            oilButton.classList.add(
+                "photo-selected"
+            );
+
+            oilButton.innerHTML = `
+                <span class="material-symbols-outlined">
+                    check_circle
+                </span>
+
+                Kuva otettu
+            `;
+        }
+
+        /*
+         * IMPORTANT:
+         * Restore actual image preview
+         */
+        showQuestionPhotoPreview(
+            "oilPhotoPreview",
+            current.oilPhoto
+        );
+    }
+
+
+    if (
+        current.answer === "Report Faults"
+    ) {
+
+        const layout =
+            document.querySelector(
+                ".question-layout"
+            );
+
+        if (layout) {
+            layout.classList.add(
+                "has-fault"
+            );
+        }
 
         renderFaultForm();
 
-        const description =document.getElementById("faultDescription");
+        /*Restore description*/
+        const description =
+            document.getElementById(
+                "faultDescription"
+            );
 
-        if (description && current.error) {
-                description.value =
+        if (
+            description &&
+            current.error
+        ) {
+            description.value =
                 current.error.description || "";
         }
 
-        const priority =current.error?.priority;
+        /*Restore priority*/
+        const priority =
+            current.error?.priority;
 
         if (priority) {
-            const priorityButton =document.querySelector(`[data-priority="${CSS.escape(priority)}"]`);
+
+            const priorityButton =
+                document.querySelector(
+                    `[data-priority="${CSS.escape(
+                        priority
+                    )}"]`
+                );
 
             if (priorityButton) {
-    priorityButton.classList.add("selected");
-}
-}
-}
+                priorityButton.classList.add(
+                    "selected"
+                );
+            }
+        }
 
-// Restore oil photo button
-if (current.oilPhoto) {
-    const oilButton = document.getElementById("oilPhotoButton");
-    if (oilButton) {
-        oilButton.classList.add("photo-selected");
-        oilButton.innerHTML = `
-            <span class="material-symbols-outlined">
-                check_circle
-            </span>
-            Kuva otettu
-        `;
+        /*Restore fault photo*/
+        if (
+            current.error?.photo
+        ) {
+
+            const faultButton =
+                document.getElementById(
+                    "faultPhotoButton"
+                );
+
+            if (faultButton) {
+
+                faultButton.classList.add(
+                    "photo-selected"
+                );
+
+                faultButton.innerHTML = `
+                    <span class="material-symbols-outlined">
+                        check_circle
+                    </span>
+
+                    Kuva valittu
+                `;
+            }
+
+            showQuestionPhotoPreview(
+                "faultPhotoPreview",
+                current.error.photo
+            );
+        }
     }
-}
 }
 
 function getQuestionIcon(questionName) {
@@ -238,19 +410,20 @@ function getQuestionIcon(questionName) {
 
 function renderAnswerOptions(checklist) {
     const container = document.getElementById("answerOptions");
+
     if (!container) return;
 
     container.innerHTML = "";
 
-    const questionName = checklist.name.toLowerCase();
+    const questionName = (checklist.name || "").toLowerCase();
 
-    // Render kilometer input
+    // Kilometer
     if (questionName === "kilometrilukema") {
         renderKilometerInput(container);
         return;
     }
 
-    // Render fuel gauge
+    // Fuel
     if (questionName === "polttoaineen määrä") {
         renderFuelGauge(container);
         return;
@@ -265,6 +438,7 @@ function renderAnswerOptions(checklist) {
 
     options.forEach(option => {
         const button = document.createElement("button");
+
         button.type = "button";
         button.className = "question-option";
         button.dataset.value = option;
@@ -277,8 +451,9 @@ function renderAnswerOptions(checklist) {
         container.appendChild(button);
     });
 
-    //Report faults if needed
+    // Report fault
     const faultButton = document.createElement("button");
+
     faultButton.type = "button";
     faultButton.className = "question-option report-fault";
     faultButton.dataset.value = "Report Faults";
@@ -337,6 +512,34 @@ function selectAnswer(value) {
 function selectFault() {
     const current = answers[currentQuestionIndex];
 
+    // If in Fault status, click again to cancel
+    if (current.answer === "Report Faults") {
+        current.answer = current.kilometer ?? current.fuel ?? null;
+        current.error = null;
+
+        document.querySelectorAll(".question-option").forEach(button => {
+            button.classList.remove("selected");
+        });
+
+        const layout = document.querySelector(".question-layout");
+
+        if (layout) {
+            layout.classList.remove("has-fault");
+        }
+
+        const faultContainer = document.getElementById("faultContainer");
+
+        if (faultContainer) {
+            faultContainer.style.display = "none";
+            faultContainer.innerHTML = "";
+        }
+
+        updateNavigationButtons();
+
+        return;
+    }
+
+    // Turn to fault status
     current.answer = "Report Faults";
 
     if (!current.error) {
@@ -495,16 +698,28 @@ function setupOilCamera() {
 }
 
 function showQuestionPhotoPreview(elementId, picture) {
-    const container = document.getElementById(elementId);
+    const container =
+        document.getElementById(elementId);
 
-    if (!container || !picture) return;
+    if (!container || !picture) {
+        return;
+    }
 
-    const imageUrl = URL.createObjectURL(picture);
+    const imageUrl =
+        getPhotoURL(picture);
 
     container.innerHTML = `
         <div class="question-photo-preview-content">
-            <img src="${imageUrl}" alt="Otettu kuva">
-            <span class="photo-success">Kuva valittu</span>
+
+            <img
+                src="${escapeHTML(imageUrl)}"
+                alt="Otettu kuva"
+            >
+
+            <span class="photo-success">
+                Kuva valittu
+            </span>
+
         </div>
     `;
 }
@@ -658,77 +873,81 @@ function nextQuestion() {
 
 function validateCurrentQuestion() {
     const checklist = checklists[currentQuestionIndex];
-    const answer = answers[currentQuestionIndex];
+    const current = answers[currentQuestionIndex];
 
-    if (!checklist) {
-        return false;
-    }
+    if (!checklist || !current) return false;
 
-    /*
-     * Every question requires an answer
-     */
-    const questionName = checklists[currentQuestionIndex].name.toLowerCase();
+    const name = (checklist.name || "").toLowerCase();
 
-    if (questionName === "kilometrilukema") {
-        const value = answers[currentQuestionIndex].answer;
+    // Kilometer validation
+    if (name === "kilometrilukema") {
+        const km = current.kilometer;
 
-        if (value === null || value === undefined || value === "" || Number(value) < 0) {
-            showValidationError("Syötä kilometrilukema.");
+        if (km === null || km === undefined || km === "") {
+            alert("Syötä kilometrilukema.");
             return false;
         }
+
+        if (Number(km) < Number(previousKilometers)) {
+            alert(`Kilometrilukema ei voi olla pienempi kuin edellinen lukema (${previousKilometers} km).`);
+            return false;
+        }
+
+        if (current.answer === "Report Faults") return validateFault(current);
 
         return true;
     }
 
-    if (questionName === "polttoaineen määrä") {
-        const value = answers[currentQuestionIndex].answer;
-
-        if (value === null || value === undefined) {
-            showValidationError("Valitse polttoaineen määrä.");
+    // Fuel validation
+    if (name === "polttoaineen määrä") {
+        if (current.fuel === null || current.fuel === undefined) {
+            alert("Valitse polttoaineen määrä.");
             return false;
         }
+
+        if (current.answer === "Report Faults") return validateFault(current);
 
         return true;
     }
 
-    if (!answer || !answer.answer) {
+    // General answer validation
+    if (!current.answer) {
         alert("Valitse vastaus ennen jatkamista.");
         return false;
     }
 
-    /*
-     * Oil question requires photo
-     */
-    const isOilQuestion = (checklist.name || "").toLowerCase().includes("öljy");
-
-    if (isOilQuestion && !answer.oilPhoto) {
+    // Oil photo validation
+    if (name.includes("öljy") && !current.oilPhoto) {
         alert("Ota kuva moottoriöljyn mittatikusta.");
         return false;
     }
 
-    /*
-     * Fault validation
-     */
-    if (answer.answer === "Report Faults" || answer.answer === "Ilmoita vika") {
-        if (!answer.error || !answer.error.photo) {
-            alert("Ota kuva viasta ennen jatkamista.");
-            return false;
-        }
-
-        if (!answer.error.description || answer.error.description.trim() === "") {
-            alert("Kuvaile vika ennen jatkamista.");
-            return false;
-        }
-
-        if (!answer.error.priority) {
-            alert("Valitse vian prioriteetti.");
-            return false;
-        }
+    // Fault validation
+    if (current.answer === "Report Faults") {
+        return validateFault(current);
     }
 
     return true;
 }
 
+function validateFault(current) {
+    if (!current.error?.photo) {
+        alert("Ota kuva viasta ennen jatkamista.");
+        return false;
+    }
+
+    if (!current.error.description?.trim()) {
+        alert("Kuvaile vika ennen jatkamista.");
+        return false;
+    }
+
+    if (!current.error.priority) {
+        alert("Valitse vian prioriteetti.");
+        return false;
+    }
+
+    return true;
+}
 function finishInspection() {
     if (!validateCurrentQuestion()) {
         return;
@@ -1033,44 +1252,29 @@ function formatSummaryAnswer(answer) {
 
     return "Ei vastausta";
 }
-function appendSummaryPhoto(container, file, title = "Kuva") {
-    if (!file) {
-        return;
-    }
+function appendSummaryPhoto(container, photo, label = "Kuva") {
+    if (!photo) return;
 
-    /*
-     * File object
-     */
-    if (!(file instanceof File)) {
-        return;
-    }
-
-    const wrapper = document.createElement("div");
-
-    wrapper.classList.add("summary-photo");
-
-    const label = document.createElement("p");
-
-    label.textContent = title;
+    const photoContainer = document.createElement("div");
+    photoContainer.className = "summary-photo-container";
 
     const image = document.createElement("img");
+    image.className = "summary-photo-image";
+    image.src = getPhotoURL(photo);
+    image.alt = label;
+    image.title = "Klikkaa nähdäksesi kuvan suurempana";
 
-    image.alt = title;
+    image.onclick = () => {
+        openPhotoViewer(photo);
+    };
 
-    image.classList.add("summary-photo-image");
+    const name = document.createElement("span");
+    name.className = "summary-photo-name";
+    name.textContent = label;
 
-    const objectUrl = URL.createObjectURL(file);
-
-    image.src = objectUrl;
-
-    image.addEventListener("click", () => {
-        window.open(objectUrl, "_blank");
-    });
-
-    wrapper.appendChild(label);
-    wrapper.appendChild(image);
-
-    container.appendChild(wrapper);
+    photoContainer.appendChild(image);
+    photoContainer.appendChild(name);
+    container.appendChild(photoContainer);
 }
 
 function getPriorityLabel(priority) {
@@ -1132,6 +1336,15 @@ function renderKilometerInput(container) {
 
     wrapper.className = "kilometer-input-wrapper";
 
+    const current =
+        answers[currentQuestionIndex];
+
+    const currentKm =
+        current?.kilometer ?? "";
+
+    const previousKm =
+        getPreviousKilometers();
+
     wrapper.innerHTML = `
         <label for="kilometerInput">
             Nykyinen kilometrilukema
@@ -1144,7 +1357,9 @@ function renderKilometerInput(container) {
                 min="0"
                 step="1"
                 placeholder="Syötä km"
+                value="${escapeHTML(currentKm)}"
             >
+
             <span>km</span>
         </div>
 
@@ -1153,20 +1368,188 @@ function renderKilometerInput(container) {
                 Edellisen tarkastuksen lukema
             </span>
 
-            <strong>${getPreviousKilometers()} km</strong>
+            <strong>
+                ${
+                    previousKm !== null &&
+                    previousKm !== undefined
+                        ? `${previousKm} km`
+                        : "-"
+                }
+            </strong>
         </div>
+
+        <div
+            id="kilometerComparison"
+            class="kilometer-comparison"
+        ></div>
+
+        <div class="kilometer-fault-section">
+
+            <p class="kilometer-fault-question">
+                Onko kilometrilukemassa tai ajoneuvossa ongelma?
+            </p>
+
+            <button
+                type="button"
+                class="question-option report-fault kilometer-report-fault"
+                id="kilometerFaultButton"
+            >
+                <span class="material-symbols-outlined">
+                    report_problem
+                </span>
+
+                Ilmoita vika
+            </button>
+
+        </div>
+
+        <div
+            id="kilometerFaultContainer"
+            class="fault-container"
+            style="display:none;"
+        ></div>
     `;
 
     container.appendChild(wrapper);
 
-    const input = document.getElementById("kilometerInput");
+    const input =
+        document.getElementById("kilometerInput");
 
+    if (!input) return;
+
+    /*
+     * Restore comparison
+     */
+    updateKilometerComparison();
+
+    /*
+     * Save kilometer
+     */
     input.addEventListener("input", () => {
-        answers[currentQuestionIndex].answer =
-            input.value ? Number(input.value) : null;
+
+        const value =
+            input.value.trim();
+
+        current.kilometer =
+            value === ""
+                ? null
+                : Number(value);
+
+        /*
+         * answer remains the kilometer
+         * unless fault is selected
+         */
+        if (
+            current.answer !== "Report Faults"
+        ) {
+            current.answer =
+                current.kilometer;
+        }
+
+        updateKilometerComparison();
+
+        updateNavigationButtons();
     });
+
+    /*
+     * Fault button
+     */
+    const faultButton =
+        document.getElementById(
+            "kilometerFaultButton"
+        );
+
+    if (faultButton) {
+        faultButton.addEventListener(
+            "click",
+            () => {
+                selectFault();
+            }
+        );
+    }
+
+    /*
+     * Restore existing fault
+     */
+    if (
+        current.answer === "Report Faults"
+    ) {
+        renderFaultForm();
+    }
 }
 
+function updateKilometerComparison() {
+    const input =
+        document.getElementById("kilometerInput");
+
+    const comparison =
+        document.getElementById("kilometerComparison");
+
+    if (!input || !comparison) {
+        return;
+    }
+
+    const value = input.value.trim();
+
+    if (value === "") {
+        comparison.innerHTML = "";
+        return;
+    }
+
+    const currentKm = Number(value);
+    const previousKm = Number(previousKilometers);
+
+    /*
+     * No previous kilometer available
+     */
+    if (
+        previousKilometers === null ||
+        previousKilometers === undefined ||
+        Number.isNaN(previousKm)
+    ) {
+        comparison.innerHTML = `
+            <div class="km-info">
+                Kilometrilukema tallennetaan.
+            </div>
+        `;
+
+        return;
+    }
+
+    const difference = currentKm - previousKm;
+
+    /*
+     * Current km is smaller than old km
+     */
+    if (difference < 0) {
+        comparison.innerHTML = `
+            <div class="km-warning">
+                <span class="material-symbols-outlined">
+                    warning
+                </span>
+
+                Kilometrilukema ei voi olla pienempi kuin
+                ${previousKm.toLocaleString("fi-FI")} km.
+            </div>
+        `;
+
+        return;
+    }
+
+    /*
+     * Correct kilometer
+     */
+    comparison.innerHTML = `
+        <div class="km-success">
+            <span class="material-symbols-outlined">
+                check_circle
+            </span>
+
+            +${difference.toLocaleString("fi-FI")} km
+            edellisestä tarkastuksesta
+        </div>
+    `;
+}
 function getPreviousKilometers() {
     return previousKilometers ?? "-";
 }
@@ -1176,12 +1559,29 @@ function renderFuelGauge(container) {
 
     wrapper.className = "fuel-gauge-wrapper";
 
+    const current =
+        answers[currentQuestionIndex];
+
+    /*
+     * Restore previous value
+     *
+     * If no previous value exists,
+     * default to 50.
+     */
+    const savedValue =
+        current?.fuel !== null &&
+        current?.fuel !== undefined
+            ? Number(current.fuel)
+            : 50;
+
     wrapper.innerHTML = `
         <div class="fuel-gauge">
+
             <svg
                 class="fuel-gauge-svg"
                 viewBox="0 0 200 120"
             >
+
                 <path
                     class="fuel-gauge-background"
                     d="M 20 100 A 80 80 0 0 1 180 100"
@@ -1200,8 +1600,9 @@ function renderFuelGauge(container) {
                     id="fuelGaugeValue"
                     class="fuel-gauge-value"
                 >
-                    50%
+                    ${savedValue}%
                 </text>
+
             </svg>
 
             <div class="fuel-gauge-icon">
@@ -1209,14 +1610,18 @@ function renderFuelGauge(container) {
                     local_gas_station
                 </span>
             </div>
+
         </div>
 
         <div class="fuel-slider-wrapper">
+
             <div class="fuel-slider-labels">
                 <span>0 %</span>
+
                 <strong id="fuelSliderValue">
-                    50 %
+                    ${savedValue} %
                 </strong>
+
                 <span>100 %</span>
             </div>
 
@@ -1225,27 +1630,84 @@ function renderFuelGauge(container) {
                 id="fuelSlider"
                 min="0"
                 max="100"
-                value="50"
+                value="${savedValue}"
                 step="1"
             >
+
+        </div>
+
+        <div class="fuel-fault-section">
+
+            <p class="fuel-fault-question">
+                Onko polttoainejärjestelmässä ongelma?
+            </p>
+
+            <button
+                type="button"
+                class="question-option report-fault"
+                id="fuelFaultButton"
+            >
+                <span class="material-symbols-outlined">
+                    report_problem
+                </span>
+
+                Ilmoita vika
+            </button>
+
         </div>
     `;
 
     container.appendChild(wrapper);
 
-    updateFuelGauge(50);
 
-    const slider = document.getElementById("fuelSlider");
+    if (
+        current.fuel === null ||
+        current.fuel === undefined
+    ) {
+        current.fuel = savedValue;
+        current.answer = savedValue;
+    }
 
-    slider.addEventListener("input", () => {
-        const value = Number(slider.value);
+    updateFuelGauge(savedValue);
 
-        updateFuelGauge(value);
+    const slider =
+        document.getElementById("fuelSlider");
 
-        answers[currentQuestionIndex].answer = value;
-    });
+    if (slider) {
 
-    answers[currentQuestionIndex].answer = 50;
+        slider.addEventListener("input", () => {
+
+            const value =
+                Number(slider.value);
+
+            current.fuel = value;
+            current.answer = value;
+
+            updateFuelGauge(value);
+
+            updateNavigationButtons();
+        });
+    }
+
+
+    const fuelFaultButton =
+        document.getElementById(
+            "fuelFaultButton"
+        );
+
+    if (fuelFaultButton) {
+
+        fuelFaultButton.addEventListener(
+            "click",
+            () => {
+                selectFault();
+            }
+        );
+    }
+
+    if (current.answer === "Report Faults") {
+        renderFaultForm();
+    }
 }
 
 function updateFuelGauge(value) {
@@ -1377,4 +1839,271 @@ function showErrorMessage(message) {
     error.textContent = message;
 
     container.appendChild(error);
+}
+function getPhotoURL(photo) {
+    if (!photo) {
+        return "";
+    }
+
+    if (
+        photo instanceof Blob ||
+        photo instanceof File
+    ) {
+        return URL.createObjectURL(photo);
+    }
+
+    return String(photo);
+}
+
+function openPhotoViewer(photo) {
+    if (!photo) return;
+
+    const viewer = document.getElementById("photoViewer");
+    const image = document.getElementById("photoViewerImage");
+    const closeButton = document.getElementById("photoViewerClose");
+
+    if (!viewer || !image) return;
+
+    image.src = getPhotoURL(photo);
+    viewer.classList.add("show");
+
+    closeButton.onclick = () => {
+        viewer.classList.remove("show");
+        image.src = "";
+    };
+
+    viewer.onclick = event => {
+        if (event.target === viewer) {
+            viewer.classList.remove("show");
+            image.src = "";
+        }
+    };
+}
+
+// SUBMIT PART //
+function createFile(blob) {
+    return new Promise((resolve, reject) => {
+        const formData = new FormData();
+        formData.append("file", blob, "inspection.jpg");
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", restapi + "/api/files", true);
+
+        xhr.onload = () => {
+            if (xhr.status < 200 || xhr.status >= 300) {
+                reject(new Error("File upload failed: " + xhr.status));
+                return;
+            }
+
+            try {
+                const data = JSON.parse(xhr.responseText);
+                console.log("File created:", data);
+                resolve(data.new_id);
+            } catch (error) {
+                reject(new Error("Invalid file response."));
+            }
+        };
+
+        xhr.onerror = () => reject(new Error("File upload connection failed."));
+        xhr.send(formData);
+    });
+}
+
+function createInspection(id_vehicles, passed, note, id_users, km, fuel, type, oil_picture, link = null) {
+    return new Promise((resolve, reject) => {
+        const data = {
+            id_vehicles,
+            passed,
+            note,
+            id_users,
+            km,
+            fuel,
+            type,
+            oil_picture,
+            link
+        };
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", restapi + "/api/inspections", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        xhr.onload = () => {
+            console.log("Inspection:", xhr.status, xhr.responseText);
+
+            if (xhr.status < 200 || xhr.status >= 300) {
+                reject(new Error("Inspection creation failed: " + xhr.status));
+                return;
+            }
+
+            try {
+                const data = JSON.parse(xhr.responseText);
+                console.log("Created inspection:", data);
+                resolve(data.id_inspections);
+            } catch (error) {
+                reject(new Error("Invalid inspection response."));
+            }
+        };
+
+        xhr.onerror = () => reject(new Error("Inspection connection failed."));
+        xhr.send(JSON.stringify(data));
+    });
+}
+
+function createProblem(inspectionId, checklistId, note, fileId, priority = "medium") {
+    return new Promise((resolve, reject) => {
+        const data = {
+            id_inspections: inspectionId,
+            id_checklists: checklistId,
+            note,
+            id_files: fileId,
+            priority
+        };
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", restapi + "/api/problems", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        xhr.onload = () => {
+            console.log("Problem:", xhr.status, xhr.responseText);
+
+            if (xhr.status < 200 || xhr.status >= 300) {
+                reject(new Error("Problem creation failed: " + xhr.status));
+                return;
+            }
+
+            resolve(JSON.parse(xhr.responseText));
+        };
+
+        xhr.onerror = () => reject(new Error("Problem connection failed."));
+        xhr.send(JSON.stringify(data));
+    });
+}
+
+function buildInspectionNote() {
+    const notes = [];
+
+    checklists.forEach((checklist, index) => {
+        const answer = answers[index]?.answer;
+
+        if (answer === "Huono" || answer === "En tiedä") {
+            notes.push(`${checklist.name} - ${answer}`);
+        }
+    });
+    if (notes.length == 0) {
+        return null;
+    }
+    return notes.join("\n");
+}
+
+function getInspectionPassed() {
+    const excludedQuestions = [
+        "Polttoaineen määrä",
+        "Kilometrilukema"
+    ];
+
+    return answers
+        .filter(item => !excludedQuestions.includes(item.question))
+        .every(item => {
+            const answer = item?.answer;
+            return answer === "Hyvä" || answer === "Kunnossa";
+        })
+        ? 1
+        : 0;
+}
+
+function validateInspectionAnswers() {
+    for (let i = 0; i < checklists.length; i++) {
+        if (!answers[i]?.answer) {
+            currentQuestionIndex = i;
+            renderQuestion();
+            updateNavigationButtons();
+            alert("Vastaa kaikkiin tarkastuskysymyksiin.");
+            return false;
+        }
+    }
+
+    return true;
+}
+function getAnswerByChecklistName(name) {
+    const index = checklists.findIndex(item => item.name === name);
+    return index === -1 ? null : answers[index]?.answer;
+}
+async function submitInspection (inspectionResult) {
+    if (!validateInspectionAnswers()) return;
+    const submitButton = document.getElementById("summary-submit");
+
+    if(submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = "Lähetetään...";
+    }
+    const userId = Number(sessionStorage.getItem("login"));
+
+        if(!userId) {
+            alert("Käyttäjää ei löytynyt. Kirjaudu uudelleen.");
+            return;
+        }
+
+    try {
+        const vehicleId = vehicle.id_vehicles;
+        const km = getAnswerByChecklistName("Kilometrilukema") ?? vehicle.km;
+        const fuel = getAnswerByChecklistName("Polttoaineen määrä") ?? 0;
+        const note = buildInspectionNote();
+        const passed = getInspectionPassed();
+
+        let oilPictureId = 0;
+
+        const oilIndex = checklists.findIndex (
+            checklist => checklist.name === "Moottoriöljyn taso"
+        );
+
+        if (oilIndex !== -1 && answers[oilIndex]?.oilPhoto) {
+            oilPictureId = await createFile(answers[oilIndex].oilPhoto);
+        }
+
+        const inspectionId = await createInspection(
+            vehicleId,
+            passed,
+            note,
+            userId,
+            km,
+            fuel,
+            "return",
+            oilPictureId,
+            null
+        );
+
+        console.log("Inspection ID:", inspectionId);
+
+        for (let i = 0; i < checklists.length; i++) {
+            const checklist = checklist[i];
+            const answer = answers[i];
+
+            if (!answers?.error) continue;
+
+            if (!answer.error.photo) {
+                throw new Error('Kuvavika puuttuu: ${checklist.name}');
+            }
+
+            const fileId = await createFile(answer.error.photo);
+            await createProblem(
+                inspectionId,
+                checklist.id_checklists,
+                answer.error.description || answer.answer,
+                fileId,
+                answer.error.priority || "medium"
+            );
+        }
+
+        alert("Tarkastus lähetetty onnistuneesti.");
+        window.location.href = 'http://localhost/inspection-student-form/index.html?id=${vehicleId}';
+
+    } catch (error) {
+        console.error("Inspection submission error:", error);
+        alert("Tarkastuksen lähettäminen epäonnistui.");
+
+        if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = "Lähetä tarkastus";
+        }
+    }
 }

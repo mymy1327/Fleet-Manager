@@ -2,14 +2,15 @@ const params = new URLSearchParams(window.location.search);
 async function main() {
   //Check if need to load
   if (!params.has("checklist")) {
-    return;
+    window.location.href = ("../../errorPages/PHP/handleError.php?code=400&message=" + encodeURIComponent("Missing checklist argument.") + "&from="+encodeURIComponent(window.location.href));
+    return
   }
 
   //Load item from API
   const itemResponce = await fetch("../../api/checklists/" + encodeURIComponent(params.get("checklist")));
   if (!itemResponce.ok) {
-    alert("Failed to load checklist item!");
-    return;
+    window.location.href = ("../../errorPages/PHP/handleError.php?code=" + itemResponce.status + "&message=" + encodeURIComponent(await itemResponce.text()) + "&from="+encodeURIComponent(window.location.href));
+    return
   }
 
   //Parse item
@@ -53,7 +54,7 @@ document.getElementById("btnSubmit").addEventListener("click", () => {
         xhr.onload = () => {
           //Handle request data
           if (xhr.status == 200 || xhr.status == 201) {
-            window.location.href = "../HTML/checklistManager.html";
+            window.location.href = "../PHP/checklistManager.php";
           } else {
             alert("Failed to save data: " + xhr.responceText);
           }
@@ -80,7 +81,7 @@ document.getElementById("btnSubmit").addEventListener("click", () => {
     xhr.onload = () => {
       //Handle request data
       if (xhr.status == 200 || xhr.status == 201) {
-        window.location.href = "../HTML/checklistManager.html";
+        window.location.href = "../PHP/checklistManager.php";
       } else {
         alert("Failed to save data: " + xhr.responceText);
       }

@@ -3,19 +3,20 @@ async function main() {
   const params = new URLSearchParams(window.location.search);
   if (params.has("id")) {
     //Get current edit user info
-    const userData = await fetch("./api.php");
+    const userData = await fetch("../../api/users/"+params.get("id"));
     if (userData.status != 200) {
       alert("Invalid user ID.");
-      window.location.href = "../HTML/admin.html";
+      window.location.href = "../PHP/admin.php";
       return;
     }
 
     //Parse JSON
     const data = await userData.json();
-    document.getElementById("name").value = data.name;
-    document.getElementById("email").value = data.name;
+    document.getElementById("name").value = data.username;
+    document.getElementById("email").value = data.email;
     document.querySelector('input[name="role"][value="' + data.role + '"]').checked = true;
     document.getElementById("submit").removeAttribute("disabled");
+    document.getElementById("changePassword").removeAttribute("disabled");
   }
 
   //Save button

@@ -1,3 +1,9 @@
+<?php
+require __DIR__ . "/../../assets/sharedUserFunctions.php";
+    CheckAccessSession(["admin"])
+?>
+
+
 <!doctype html>
 <html lang="en">
     <head>
@@ -18,7 +24,7 @@
             <nav class="main-nav" aria-label="Main navigation"></nav>
             <div class="header-actions">
                 <button class="language-switch" type="button" data-language-switch>FI</button>
-                <button class="logout" type="button">↪&nbsp; Logout</button>
+                <a href='./logout.php'> <button class="logout" type="button">↪&nbsp; Logout</button></a>
             </div>
         </header>
         <main id="app" class="page">
@@ -39,10 +45,10 @@
         <label for="roleStudent">Student</label><br />
         <input type="radio" name="role" value="Teacher" id="roleTeacher" />
         <label for="roleTeacher">Teacher</label><br />
-        <input type="button" value="Submit" id="save" class='button' />
+        <button id="save" class='button' disabled>Submit</button>
         <?php
         if (isset($_GET["id"])) {
-            echo "<button class='button' is='changePassword'>Change password</button>";
+            echo "<button class='button' is='changePassword' disabled>Change password</button>";
         }
         ?>
         </main>

@@ -1,28 +1,40 @@
 <?php
+/** @var string $API */
+require  __DIR__ . "/../../assets/sharedUserFunctions.php";
 session_start();
 $_SESSION["login"] = "";
-if (isset($_POST["username"], $_POST["password"])) {
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
     //Handle login - Get user info form API
-    $context = stream_context_create(["http" => ["ignore_errors" => true]]);
-    $body = file_get_contents("../../api/users", false, $context);
-    $users = json_decode($body);
+    $data = GetPOSTData();
+    $users = SendRequestToAPI("/users","GET");
+    if($users === false) {
+        GenerateAPIError(503,"API not available!");
+    }
+
+    //Find user
     foreach ($users as $user) {
-        if ($user["username"] == $_POST["username"]) {
-            $hash = password_hash($_POST["password"], PASSWORD_BCRYPT);
-            if ($user["password"] == $hash) {
+        if ($user["username"] == $data["username"]) {
+            //Verify password
+            if (password_verify($data["password"], $user["password"])) {
+                //Redirect to valid password
                 http_response_code(200);
-                $_SESSION["login"] = $user["id"];
-                echo "ok";
+                $_SESSION["login"] = $user["id_users"];
+                $result = [];
+                if(!isset($data["next"])) {
+                    if($user["role"] == "admin") {
+                        $result["next"] = "./admin.php";
+                    }
+                } else {
+                    $result["next"] = $data["next"];
+                }
+                $result["id"] = $user["id_users"];
+                echo (json_encode($result));
                 die();
             }
-            http_response_code(401);
-            echo "Invalid password!";
-            die();
+            GenerateAPIError(401,"Invalid password!");
         }
     }
-    http_response_code(404);
-    echo "User not found!";
-    die();
+    GenerateAPIError(404,"User not found!");
 } ?>
 
 <!DOCTYPE html>
