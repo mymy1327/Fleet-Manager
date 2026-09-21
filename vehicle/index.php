@@ -18,30 +18,8 @@ if (!$code) {
 
 $url = "https://developmenterasmus.kolojar.cz/api/vehicles?code=" . urlencode($code);
 
-$ch = curl_init($url);
-
-curl_setopt_array($ch, [
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_FOLLOWLOCATION => true,
-    CURLOPT_TIMEOUT => 30,
-]);
-
-$rawResponse = curl_exec($ch);
+$rawResponse = file_get_contents($url);
 echo "<br>" . $rawResponse;
-
-if ($rawResponse === false) {
-    http_response_code(500);
-    die("cURL error: " . curl_error($ch));
-}
-
-$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-curl_close($ch);
-
-if ($httpCode !== 200) {
-    http_response_code($httpCode);
-    die("API error: " . $rawResponse);
-}
 
 $response = json_decode($rawResponse, true);
 
