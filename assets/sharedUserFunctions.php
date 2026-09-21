@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . "/../errorPages/PHP/errorManager.php";
 $API = "https://developmenterasmus.kolojar.cz/api";
 function CheckAccessSession(array $roles)
 {
@@ -19,7 +20,7 @@ function CheckAccessSession(array $roles)
     }
 
     //Deny on error
-    if($_SESSION["login"] == "-1") {
+    if ($_SESSION["login"] == "-1") {
         HandleError(401);
         die();
     }
@@ -77,7 +78,7 @@ function SendRequestToAPI(string $path, string $method = "GET", mixed $body = nu
 
     //Set payload
     if (!empty($payload)) {
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
     }
 
     // Execute request
@@ -101,34 +102,36 @@ function SendRequestToAPI(string $path, string $method = "GET", mixed $body = nu
     }
 
     //Decode responce
-    return json_decode($response,true);
+    return json_decode($response, true);
 }
 
 /**
  * Gets POST data
  * @return mixed Values
  */
-function GetPOSTData(): mixed {
-    return json_decode(file_get_contents('php://input'), true);
+function GetPOSTData(): mixed
+{
+    return json_decode(file_get_contents("php://input"), true);
 }
 
 /**
  * Converts absolute path to URL on this server
  * @param string $path Path to file
  */
-function PathToURL(string $path) {
+function PathToURL(string $path)
+{
     //Convert slashes
-    $path = str_replace('\\', '/', $path);
+    $path = str_replace("\\", "/", $path);
 
     //Convert to relative path
-    $relativePath = str_replace(str_replace('\\', '/',$_SERVER['DOCUMENT_ROOT']), '', $path);
+    $relativePath = str_replace(str_replace("\\", "/", $_SERVER["DOCUMENT_ROOT"]), "", $path);
 
     // Get request info
-    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'];
+    $protocol = !empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] === "on" ? "https" : "http";
+    $host = $_SERVER["HTTP_HOST"];
 
     //Build URL
-    return $protocol . '://' . $host . $relativePath;
+    return $protocol . "://" . $host . $relativePath;
 }
 
 /**
@@ -136,10 +139,13 @@ function PathToURL(string $path) {
  * @param int $code HTTP error code
  * @param string|null $message Status message, set to null for none
  * @param string|null $from Overwrite source URL
+ * @param string $lang Language of page
+ * @param bool $redirect If should redirect
  */
-function HandleError(int $code, string|null $message = null, string|null $from = null) {
+function HandleError(int $code, string|null $message = null, string|null $from = null, string $lang = "en", bool $redirect = false)
+{
     //Get paths
-    $path = __DIR__ . "/../errorPages/PHP/" . $code . ".php";
+    $path = __DIR__ . "/../errorPages/PHP/handleError.php";
     $url = PathToURL($path);
 
     //Chceck if from is null
@@ -147,24 +153,17 @@ function HandleError(int $code, string|null $message = null, string|null $from =
         $from = $_SERVER['REQUEST_URI'];
     }
 
-    //Check if message not empty
-    if($message === "") {
-        $message = null;
-    }
-
-    //Check if path exists
-    if(file_exists($path)) {
-        $url = "Location: " . $url . "?from=" . rawurlencode($from);
-        if($message !== null) {
+    //Handle redirect
+    if ($redirect === true) {
+        $url = "Location: " . $url . "?from=" . rawurlencode($from) . "&lang=" . rawurlencode($lang) ;
+        if ($message !== null) {
             $url .= "&message=" . urlencode($message);
         }
         header($url);
         die();
+    } else {
+        HandleErrorPageLocal(false, $code, $message, $from, $lang);
     }
-
-    //Invalid error page
-    echo "<h1>Error: " . $code . "</h1>";
-    echo "<p>" . $message . "</p>";
 }
 
 /**
@@ -173,13 +172,14 @@ function HandleError(int $code, string|null $message = null, string|null $from =
  * @param string|null $message Status message, set to null for none
  * @return string Echoes responce as JSON
  */
-function GenerateAPIError(int $code, string|null $message = null) {
+function GenerateAPIError(int $code, string|null $message = null)
+{
     http_response_code($code);
     $responce = [];
     $responce["code"] = $code;
-    if($message !== null) {
+    if ($message !== null) {
         $responce["message"] = $message;
     }
-    echo (json_encode($responce));
+    echo json_encode($responce);
     die();
 }

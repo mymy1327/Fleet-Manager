@@ -50,7 +50,7 @@ require __DIR__ . "/../../assets/sharedUserFunctions.php";
                     <th>Actions</th>
                 </tr>
             </table>
-            <a href="../PHP/checklistItem.php"><button class="button">Add checklist item</button></a>
+            <a href="../PHP/checklistItem.php"><button class="button" disabled id='addItemButton'>Add checklist item</button></a>
         </main>
     </body>
     <script src="../JS/checklistManager.js"></script>

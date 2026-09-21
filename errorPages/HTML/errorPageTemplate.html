@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="[LANG]">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>[TITLE]</title>
+	<link rel="stylesheet" href="/Teachers-view/main/CSS/style_en.css" />
+	<link rel="stylesheet" href="/errorPages/CSS/style.css">
+</head>
+<body>
+    <main id="app" class="page">
+        <div class="page-heading">
+            <div>
+                <h1>[TITLE]</h1>
+                <p class="subtitle">[DESC]</p>
+            </div>
+        </div>
+    <p id="status" style="display: none;"><i>Status message: <span id="statusValue"></span></i></p>
+    [BUTTONS]
+    <script>
+      const status = "[STATUS]";
+      if(status != "") {
+        document.getElementById("status").style.display = "";
+        document.getElementById("statusValue").innerText = status;
+      }
+    </script>
+</body>
+</html>
