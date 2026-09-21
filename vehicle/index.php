@@ -7,7 +7,7 @@ $uri = array_slice(explode("/", $path), 2);
 
 $response = SendRequestToAPI("/vehicles?code=btf1w72oywq");
 $id = $response[0]["id_vehicles"];
-$newUrl = "http://127.0.0.1:5501/inspection-student-form/index.html?id=" . $id;
+$newUrl = "https://developmenterasmus.kolojar.cz/inspection-student-form/index.html?id=" . $id;
 //echo json_encode($response);
 //echo $uri[0] . " " . $id . " " . $newUrl;
 header("Location: $newUrl");
