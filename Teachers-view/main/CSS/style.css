@@ -1,4 +1,4 @@
-/* Color palette */
+/* Shared colors used by the dashboard and vehicle detail page. */
 :root {
     --blue: #2868cb;
     --blue-dark: #1554b5;
@@ -14,13 +14,14 @@
     --lightBlue: #3b86ff;
 }
 
-/* Base styles */
+/* Apply predictable sizing to every element and remove browser defaults. */
 * {
     box-sizing: border-box;
 }
 
 body {
     margin: 0;
+    /* Keep the compact dashboard readable at the scale used by the mockup. */
     zoom: 1.3;
     color: var(--text);
     background: var(--background);
@@ -29,26 +30,33 @@ body {
 
 button,
 a {
+    /* Make controls use the same typography as the rest of the page. */
     font: inherit;
 }
 
 a {
+    /* Links inherit the dashboard colors unless a component overrides them. */
     color: inherit;
     text-decoration: none;
 }
 
-/* Header and navigation */
+/* Header: brand on the left, navigation in the center, actions on the right. */
 .topbar {
     height: 45px;
     display: grid;
     align-items: center;
+    /* Equal flexible side columns keep the navigation centered. */
     grid-template-columns: minmax(150px, 1fr) auto minmax(150px, 1fr);
     padding: 0 max(24px, calc((100% - 830px) / 2));
     background: var(--surface);
     border-bottom: 1px solid var(--line);
+    /* Creates a stacking context for the detail-page header controls. */
+    position: relative;
+    z-index: 1;
 }
 
 .brand {
+    /* Align the logo and product name as one compact header item. */
     display: flex;
     align-items: center;
     gap: 8px;
@@ -57,6 +65,7 @@ a {
 }
 
 .brand-mark {
+    /* Blue square behind the fleet icon. */
     display: grid;
     place-items: center;
     width: 25px;
@@ -68,6 +77,7 @@ a {
 }
 
 .svg-icon {
+    /* Common dimensions for inline SVG icons. */
     display: block;
     width: 16px;
     height: 16px;
@@ -80,6 +90,7 @@ a {
 }
 
 .nav-icon {
+    /* Keeps a navigation icon aligned with its label. */
     display: inline-flex;
 }
 
@@ -93,13 +104,17 @@ a {
 }
 
 .main-nav {
+    /* The center navigation is a horizontal row of links. */
     display: flex;
     align-items: center;
     gap: 4px;
     grid-column: 2;
+    position: relative;
+    z-index: 1;
 }
 
 .main-nav a {
+    /* Give each navigation item a stable button-like hit area. */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -113,6 +128,22 @@ a {
     white-space: nowrap;
 }
 
+.nav-disabled {
+    /* Same visual shape as a navigation link for unavailable destinations. */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 30px;
+    gap: 7px;
+    padding: 6px 10px;
+    border-radius: 9px;
+    color: #6d7788;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+/* Individual widths prevent labels from pushing the centered navigation around. */
 .main-nav a:nth-child(1) {
     width: 82px;
 }
@@ -137,13 +168,16 @@ a {
     font-size: 14px;
 }
 
-.main-nav a.active {
+.main-nav a.active,
+.nav-disabled.active {
+    /* Highlight the current section with the primary blue color. */
     color: #fff;
     background: var(--blue);
     box-shadow: 0 1px 3px #b9cbe8;
 }
 
 .logout {
+    /* Text-only logout control in the right side of the header. */
     width: 85px;
     padding: 0;
     border: 0;
@@ -156,15 +190,20 @@ a {
 }
 
 .header-actions {
+    /* Keep language and logout controls together at the right edge. */
     display: flex;
     align-items: center;
     gap: 12px;
     grid-column: 3;
     justify-self: end;
+    position: relative;
+    z-index: 2;
 }
 
 .language-switch {
+    /* Small language toggle; its z-index keeps it clickable on the detail page. */
     width: 24px;
+    min-width: 24px;
     padding: 0;
     border: 0;
     color: var(--blue);
@@ -172,15 +211,26 @@ a {
     font-size: 10px;
     font-weight: bold;
     cursor: pointer;
+    position: relative;
+    z-index: 3;
+    pointer-events: auto;
 }
 
-/* Page layout */
+.logout {
+    position: relative;
+    z-index: 3;
+    pointer-events: auto;
+}
+
+/* Main dashboard width, headings, and primary actions. */
 .page {
+    /* Constrain content while leaving equal space on both sides. */
     width: min(830px, calc(100% - 32px));
     margin: 22px auto;
 }
 
 .page-heading {
+    /* Put the page title on the left and its action/filter on the right. */
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -200,6 +250,7 @@ h1 {
 }
 
 .button {
+    /* Shared blue action button used by dashboard sections. */
     width: 145px;
     height: 32px;
     padding: 7px 15px;
@@ -224,13 +275,14 @@ button:disabled, button:hover:disabled {
 
 
 .cards {
+    /* Four equal summary cards on desktop. */
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 11px;
     margin-bottom: 22px;
 }
 
-/* teacher-main-page cards */
+/* Summary cards and their small status icons. */
 .card,
 .card-teacher-main-page,
 .panel {
@@ -241,12 +293,14 @@ button:disabled, button:hover:disabled {
 }
 
 .card-teacher-main-page {
+    /* Relative positioning lets the icon and label sit independently. */
     position: relative;
     min-height: 90px;
     padding: 15px;
 }
 
 .card-icon {
+    /* Colored icon tile in the upper-right corner of a summary card. */
     position: absolute;
     top: 15px;
     right: 15px;
@@ -276,6 +330,7 @@ button:disabled, button:hover:disabled {
 }
 
 .card-value {
+    /* Large number shown in a summary card. */
     display: block;
     margin-top: 25px;
     font-size: 20px;
@@ -283,6 +338,7 @@ button:disabled, button:hover:disabled {
 }
 
 .card-label {
+    /* Small descriptive label in the upper-left corner of a summary card. */
     position: absolute;
     top: 15px;
     left: 15px;
@@ -290,8 +346,9 @@ button:disabled, button:hover:disabled {
     font-size: 10px;
 }
 
-/* garage-cards */
+/* Garage list and vehicle cards. */
 .garage-list {
+    /* Vehicle cards form a four-column grid on wide screens. */
     display: grid;
     background: var(--garageListBackground);
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -302,6 +359,7 @@ button:disabled, button:hover:disabled {
 }
 
 .card-garage {
+    /* Container query units let each vehicle card scale with its own width. */
     container-type: inline-size;
     margin: 5% 5% 5%;
     overflow: hidden;
@@ -312,6 +370,7 @@ button:disabled, button:hover:disabled {
 }
 
 .Vehicle-image {
+    /* Vehicle photo fills the upper part of a garage card. */
     display: block;
     padding: 2%;
     border: 1px solid var(--line);
@@ -323,11 +382,13 @@ button:disabled, button:hover:disabled {
 }
 
 .vehicle-details {
+    /* Text area below a vehicle image. */
     position: relative;
     padding: 5cqi 8cqi 5cqi;
 }
 
 .vehicle-heading {
+    /* Vehicle name and status badge share one row. */
     display: flex;
     justify-content: space-between;
     gap: 5cqi;
@@ -340,6 +401,7 @@ button:disabled, button:hover:disabled {
 }
 
 .vehicle-status {
+    /* Compact pill showing the vehicle's current state. */
     width: 74px;
     height: 24px;
     text-align: center;
@@ -351,7 +413,7 @@ button:disabled, button:hover:disabled {
     white-space: nowrap;
 }
 
-.vehicle-status[data-state="available"] {
+.vehicle-status.available {
     /*
     green incase people dont want colorblindness support
     color: #0ba979;
@@ -364,7 +426,7 @@ button:disabled, button:hover:disabled {
     
 }
 
-.vehicle-status[data-state="in_use"] {
+.vehicle-status.in_use {
     /*
     yellowincase people dont want colorblindness support
     color: #a3a30a;
@@ -377,7 +439,7 @@ button:disabled, button:hover:disabled {
     
 }
 
-.vehicle-status[data-state="disabled"] {
+.vehicle-status.disabled {
     color: #808080;
     border-color: #808080;
     background: #e2e2e2;
@@ -386,6 +448,7 @@ button:disabled, button:hover:disabled {
 .vehicle-type,
 .vehicle-distance,
 .vehicle-code {
+    /* Secondary vehicle information uses smaller muted text. */
     margin: 6cqi 0 0;
     color: var(--lessImportantText);
     font-size: 6.8cqi;
@@ -397,6 +460,7 @@ button:disabled, button:hover:disabled {
 }
 
 .vehicle-license {
+    /* License plate is positioned inside the lower vehicle-card area. */
     position: absolute;
     right: 9cqi;
     bottom: 23cqi;
@@ -412,14 +476,16 @@ button:disabled, button:hover:disabled {
     color: var(--blue);
 }
 
-/* Panels and empty states */
+/* Dashboard panels, grids, and empty-state messages. */
 .grid-2 {
+    /* Two-column layout for recent activity and report panels. */
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
 }
 
 .panel {
+    /* White bordered surface used for dashboard content. */
     min-height: 122px;
     padding: 16px;
 }
@@ -429,6 +495,7 @@ button:disabled, button:hover:disabled {
 }
 
 .panel-title {
+    /* Panel heading with optional icon and right-aligned action link. */
     display: flex;
     align-items: center;
     gap: 7px;
@@ -448,6 +515,7 @@ button:disabled, button:hover:disabled {
 }
 
 .empty {
+    /* Centered placeholder space for sections without data yet. */
     visibility: hidden;
     display: grid;
     place-items: center;
@@ -470,13 +538,14 @@ button:disabled, button:hover:disabled {
     height: 50px;
 }
 
-/* Tables, filters, and status pills */
+/* Report tables, filters, and time-period controls. */
 .table-panel {
     min-height: 142px;
     margin-top: 16px;
 }
 
 .table {
+    /* Compact table for report history. */
     width: 100%;
     border-collapse: collapse;
     margin-top: 11px;
@@ -501,6 +570,7 @@ button:disabled, button:hover:disabled {
 }
 
 .filters {
+    /* Horizontal group for a label, select, or period buttons. */
     display: flex;
     align-items: center;
     gap: 7px;
@@ -509,6 +579,7 @@ button:disabled, button:hover:disabled {
 }
 
 .pill {
+    /* Rounded time-period selector used in reports. */
     display: inline-block;
     width: 60px;
     height: 28px;
@@ -543,7 +614,7 @@ button:disabled, button:hover:disabled {
     background: var(--lightBlue);
 }
 
-/* Buttons and form controls */
+/* Smaller panels and native-looking form controls. */
 .single-panel {
     min-height: 168px;
 }
@@ -553,6 +624,7 @@ button:disabled, button:hover:disabled {
 }
 
 .select {
+    /* Compact dropdown used by the faults filter. */
     width: 70px;
     height: 30px;
     padding: 7px 10px;
@@ -562,8 +634,9 @@ button:disabled, button:hover:disabled {
     background: white;
 }
 
-/* Responsive layout */
+/* Dashboard responsive layout for tablets and phones. */
 @media (max-width: 760px) {
+    /* Stack the header navigation and reduce multi-column content. */
     .topbar {
         height: auto;
         display: flex;
@@ -594,6 +667,7 @@ button:disabled, button:hover:disabled {
 }
 
 @media (max-width: 520px) {
+    /* Use one-column panels and tighter spacing on narrow phones. */
     .page {
         width: calc(100% - 24px);
         margin-top: 16px;
@@ -617,4 +691,343 @@ button:disabled, button:hover:disabled {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+}
+
+.vehicle-page-shell {
+    /* Wider shell used by the two-column selected-vehicle view. */
+    width: min(980px, calc(100% - 32px));
+    margin-top: 26px;
+}
+
+.vehicle-page-shell .vehicle-back,
+.vehicle-page-shell .inspection-tab,
+.vehicle-page-shell .qr-button,
+.vehicle-page-shell .qr-link a,
+.vehicle-page-shell .edit-vehicle-button,
+.vehicle-page-shell .nav-disabled {
+    /* These mockup controls are displayed but intentionally do nothing. */
+    pointer-events: none;
+    cursor: default;
+}
+
+.vehicle-detail-layout {
+    /* Vehicle information on the left, inspections on the right. */
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+}
+
+.vehicle-info-panel,
+.vehicle-inspection-panel {
+    /* Shared surface styling for both detail-page columns. */
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: 0 1px 1px #eef1f5;
+}
+
+.vehicle-info-panel {
+    padding: 14px 14px 18px;
+}
+
+.vehicle-card-head {
+    /* Vehicle name row with back arrow and status badge. */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 28px;
+    margin-bottom: 12px;
+}
+
+.vehicle-back {
+    /* Decorative back arrow kept visually consistent with the mockup. */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    color: #6d7788;
+    font-size: 22px;
+    line-height: 1;
+    text-decoration: none;
+}
+
+.vehicle-card-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.2;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.vehicle-state {
+    /* Status badge for the selected vehicle. */
+    margin-left: auto;
+    flex: 0 0 92px;
+    padding: 4px 5px;
+    border-radius: 999px;
+    border: 1px solid #d5e1f8;
+    background: #edf4ff;
+    color: #2d5ca7;
+    font-size: 10px;
+    font-weight: 700;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.vehicle-state.in_use {
+    border-color: #f6d98d;
+    background: #fff3cd;
+    color: #8d6b00;
+}
+
+.vehicle-state.available {
+    border-color: #9bd6b0;
+    background: #eafaf0;
+    color: #1d7f58;
+}
+
+.vehicle-state.disabled {
+    border-color: #d9dfe8;
+    background: #f1f3f7;
+    color: #667688;
+}
+
+.vehicle-image-box {
+    /* Fixed-height image area so the detail layout does not shift. */
+    display: grid;
+    place-items: center;
+    height: 170px;
+    margin-bottom: 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #efeff1;
+    overflow: hidden;
+}
+
+.vehicle-image-box img {
+    /* Crop a real vehicle image to fill the image area. */
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.vehicle-meta {
+    /* Vertical list of vehicle properties. */
+    display: grid;
+    gap: 8px;
+}
+
+.vehicle-info-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 24px;
+    margin-bottom: 8px;
+    color: var(--text);
+    font-size: 11px;
+}
+
+.edit-vehicle-button {
+    flex: 0 0 58px;
+    height: 24px;
+    overflow: hidden;
+    padding: 5px 9px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--blue);
+    background: var(--surface);
+    font-size: 10px;
+    cursor: default;
+    white-space: nowrap;
+}
+
+.meta-row {
+    /* Label above value keeps each property easy to scan. */
+    display: grid;
+    min-height: 31px;
+    gap: 3px;
+}
+
+.meta-label {
+    color: var(--lessImportantText);
+    font-size: 10px;
+}
+
+.meta-value {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.status-blocks {
+    /* Stack overdue inspection and maintenance warnings. */
+    display: grid;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.status-card {
+    /* Pale red warning surface for an overdue vehicle item. */
+    padding: 10px 12px 12px;
+    border: 1px solid #f0b8c0;
+    border-radius: 10px;
+    background: #fff5f6;
+}
+
+.status-top {
+    /* Warning title, icon, and state arranged in one row. */
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 8px;
+    color: #2f3a4a;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.status-top strong {
+    margin-left: auto;
+    color: #d85d6c;
+    font-size: 9px;
+}
+
+.status-icon {
+    color: #ea5d74;
+    font-size: 12px;
+}
+
+.status-row {
+    /* Warning dates aligned at opposite sides of the row. */
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: #7f8a9d;
+    font-size: 10px;
+}
+
+.status-row span:last-child {
+    color: #2c3b52;
+    font-weight: 600;
+}
+
+.qr-card {
+    /* Local student inspection link and code area. */
+    margin-top: 18px;
+    padding: 12px 12px 11px;
+    border: 1px solid #dfe7f4;
+    border-radius: 10px;
+    background: #f5f8ff;
+}
+
+.qr-title {
+    margin-bottom: 10px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.qr-code {
+    /* Emphasized vehicle code shown in the QR section. */
+    display: grid;
+    place-items: center;
+    min-height: 38px;
+    border-radius: 8px;
+    background: #edf3ff;
+    color: #214a86;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.qr-link {
+    /* Wrap long local inspection URLs without changing the card width. */
+    margin-top: 10px;
+    color: var(--lessImportantText);
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.qr-link a {
+    color: var(--blue);
+    word-break: break-all;
+}
+
+.qr-button {
+    /* Full-width mockup action below the QR information. */
+    width: 100%;
+    height: 32px;
+    margin-top: 12px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--blue);
+    color: white;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.vehicle-inspection-panel {
+    /* Right-hand inspection column with a stable minimum height. */
+    min-height: 320px;
+    padding: 12px 12px 14px;
+}
+
+.inspection-tabs {
+    /* Tab-like controls for the inspection panel. */
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.inspection-tab {
+    /* Individual inspection tab; behavior is intentionally disabled above. */
+    height: 30px;
+    padding: 0 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #f3f5f8;
+    color: #58667c;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.inspection-tab.is-active {
+    border-color: #bfd5f9;
+    background: #fff;
+    color: var(--blue);
+}
+
+.inspection-box {
+    /* Large empty inspection area beneath the tabs. */
+    display: grid;
+    place-items: center;
+    min-height: 220px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #f7f8f9;
+}
+
+.inspection-empty {
+    color: #7e8ca0;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+@media (max-width: 760px) {
+    /* Stack the selected-vehicle columns on smaller screens. */
+    .vehicle-detail-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .vehicle-page-shell {
+        width: calc(100% - 24px);
+    }
 }
