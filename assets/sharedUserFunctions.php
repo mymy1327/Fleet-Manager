@@ -219,7 +219,7 @@ function SendRequestToURL(string $url, string $method = "GET", mixed $body = nul
     $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
     curl_close($curl);
     if ($httpCode < 200 || $httpCode >= 300) {
-        error_log("API Error: HTTP status code " . $httpCode . " returned from " . $API . $path);
+        error_log("API Error: HTTP status code " . $httpCode . " returned from " . $url);
         return false;
     }
 
