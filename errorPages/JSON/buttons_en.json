@@ -9,10 +9,10 @@
   },
   "login": {
     "text": "Login",
-    "action": "const from = '[FROM]'; let href = '/userManagement/PHP/login.php'; if(from != '') {href+= '?next=' + from;}; window.location.replace(href);"
+    "action": "const from = '[FROM]'; let href = '/userManagement/PHP/login.php'; if(from != '') {href+= '?next=' + from;}; window.location.href = href;"
   },
   "logout": {
-    "text": "Login",
-    "action": "const from = '[FROM]'; let href = '/userManagement/PHP/logout.php'; if(from != '') {href+= '?next=' + from;}; window.location.replace(href);"
+    "text": "Logout",
+    "action": "const from = '[FROM]'; let href = '/userManagement/PHP/logout.php'; if(from != '') {href+= '?next=' + from;}; window.location.href = href;"
   }
 }

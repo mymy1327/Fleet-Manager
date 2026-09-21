@@ -9,7 +9,7 @@ require __DIR__ . "/../../assets/sharedUserFunctions.php";
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Checklist manager</title>
-        <link rel="stylesheet" href="../../Teachers-view/main/CSS/style_en.css" />
+        <link rel="stylesheet" href="../../Teachers-view/main/CSS/style.css" />
         <link rel="stylesheet" href="../CSS/style.css">
     </head>
     <body>
