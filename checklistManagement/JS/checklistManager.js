@@ -63,5 +63,8 @@ async function main() {
     deleteButton.classList.add("button")
     actions.appendChild(deleteButton)
   }
+
+  //Enable add button
+  document.getElementById("addItemButton").disabled = false;
 }
 main()

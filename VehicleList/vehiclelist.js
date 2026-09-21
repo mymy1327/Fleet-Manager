@@ -7,7 +7,7 @@ const ip = ".."
 
 function getVehicleDetails(vehicleId) {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", `/api/vehicles`, true);
+        xhr.open("GET", `http://${ip}/api/vehicles`, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             

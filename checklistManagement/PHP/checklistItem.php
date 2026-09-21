@@ -9,7 +9,7 @@ require __DIR__ . "/../../assets/sharedUserFunctions.php";
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Checklist item</title>
-    <link rel="stylesheet" href="../../Teachers-view/main/CSS/style_en.css" />
+    <link rel="stylesheet" href="../../Teachers-view/main/CSS/style.css" />
     <link rel="stylesheet" href="../CSS/style.css">
 </head>
 <body>
@@ -40,11 +40,11 @@ require __DIR__ . "/../../assets/sharedUserFunctions.php";
             </div>
         </div>
         <label for="name">Name:</label><br>
-        <input type="text" id="name" maxlength=255 name="name"><br>
+        <input type="text" id="name" maxlength=255 name="name" disabled><br>
         <label for="name">Description:</label><br>
-        <input type="textarea" id="description" maxlength=512 name="description"><br>
-        <button id="btnSubmit" class='button'>Submit</button>
-        <a href="../HTML/checklistManager.html"><button class="button">Exit without saving</button></a>
+        <input type="textarea" id="description" maxlength=512 name="description" disabled><br>
+        <button id="btnSubmit" class='button' disabled>Submit</button>
+        <a href="../PHP/checklistManager.php"><button class="button">Exit without saving</button></a>
     </main>
 </body>
 <script src="../JS/checklistItem.js"></script>
