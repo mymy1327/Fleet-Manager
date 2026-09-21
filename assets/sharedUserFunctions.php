@@ -1,5 +1,5 @@
 <?php
-$API = "http://127.0.0.1:5501/api";
+$API = "https://developmenterasmus.kolojar.cz/api";
 function CheckAccessSession(array $roles)
 {
     //Start session if needed
@@ -19,22 +19,25 @@ function CheckAccessSession(array $roles)
     }
 
     //Deny on error
-    http_response_code(401);
-    echo $result;
+    if($_SESSION["login"] == "-1") {
+        HandleError(401);
+        die();
+    }
+    HandleError($result);
     die();
 }
 
-function CheckAccess(int $user, array $roles): string|true
+function CheckAccess(int $user, array $roles): int|true
 {
     //Send request
     $response = SendRequestToAPI("/users/" . $user, "GET");
 
     //Process responce
     if ($response === false) {
-        return "Invalid user!";
+        return 404;
     }
     if (array_search($response["role"], $roles) === false) {
-        return "Access denied!";
+        return 403;
     }
     return true;
 }
@@ -107,4 +110,76 @@ function SendRequestToAPI(string $path, string $method = "GET", mixed $body = nu
  */
 function GetPOSTData(): mixed {
     return json_decode(file_get_contents('php://input'), true);
+}
+
+/**
+ * Converts absolute path to URL on this server
+ * @param string $path Path to file
+ */
+function PathToURL(string $path) {
+    //Convert slashes
+    $path = str_replace('\\', '/', $path);
+
+    //Convert to relative path
+    $relativePath = str_replace(str_replace('\\', '/',$_SERVER['DOCUMENT_ROOT']), '', $path);
+
+    // Get request info
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'];
+
+    //Build URL
+    return $protocol . '://' . $host . $relativePath;
+}
+
+/**
+ * Handles error using custom sides
+ * @param int $code HTTP error code
+ * @param string|null $message Status message, set to null for none
+ * @param string|null $from Overwrite source URL
+ */
+function HandleError(int $code, string|null $message = null, string|null $from = null) {
+    //Get paths
+    $path = __DIR__ . "/../errorPages/PHP/" . $code . ".php";
+    $url = PathToURL($path);
+
+    //Chceck if from is null
+    if($from === null) {
+        $from = $_SERVER['REQUEST_URI'];
+    }
+
+    //Check if message not empty
+    if($message === "") {
+        $message = null;
+    }
+
+    //Check if path exists
+    if(file_exists($path)) {
+        $url = "Location: " . $url . "?from=" . rawurlencode($from);
+        if($message !== null) {
+            $url .= "&message=" . urlencode($message);
+        }
+        header($url);
+        die();
+    }
+
+    //Invalid error page
+    echo "<h1>Error: " . $code . "</h1>";
+    echo "<p>" . $message . "</p>";
+}
+
+/**
+ * Generate error for API
+ * @param int $code HTTP error code
+ * @param string|null $message Status message, set to null for none
+ * @return string Echoes responce as JSON
+ */
+function GenerateAPIError(int $code, string|null $message = null) {
+    http_response_code($code);
+    $responce = [];
+    $responce["code"] = $code;
+    if($message !== null) {
+        $responce["message"] = $message;
+    }
+    echo (json_encode($responce));
+    die();
 }

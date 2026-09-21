@@ -8,13 +8,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $data = GetPOSTData();
     $users = SendRequestToAPI("/users","GET");
     if($users === false) {
-        echo "API not available!";
-        die();
+        GenerateAPIError(503,"API not available!");
     }
+
+    //Find user
     foreach ($users as $user) {
         if ($user["username"] == $data["username"]) {
-            $hash = password_hash($data["password"], PASSWORD_BCRYPT);
+            //Verify password
             if (password_verify($data["password"], $user["password"])) {
+                //Redirect to valid password
                 http_response_code(200);
                 $_SESSION["login"] = $user["id_users"];
                 $result = [];
@@ -25,17 +27,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 } else {
                     $result["next"] = $data["next"];
                 }
+                $result["id"] = $user["id_users"];
                 echo (json_encode($result));
                 die();
             }
-            http_response_code(401);
-            echo "Invalid password!";
-            die();
+            GenerateAPIError(401,"Invalid password!");
         }
     }
-    http_response_code(404);
-    echo "User not found!";
-    die();
+    GenerateAPIError(404,"User not found!");
 } ?>
 
 <!DOCTYPE html>

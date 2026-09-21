@@ -45,10 +45,10 @@ require __DIR__ . "/../../assets/sharedUserFunctions.php";
         <label for="roleStudent">Student</label><br />
         <input type="radio" name="role" value="Teacher" id="roleTeacher" />
         <label for="roleTeacher">Teacher</label><br />
-        <input type="button" value="Submit" id="save" class='button' />
+        <button id="save" class='button' disabled>Submit</button>
         <?php
         if (isset($_GET["id"])) {
-            echo "<button class='button' is='changePassword'>Change password</button>";
+            echo "<button class='button' is='changePassword' disabled>Change password</button>";
         }
         ?>
         </main>

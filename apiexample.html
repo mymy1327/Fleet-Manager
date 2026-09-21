@@ -42,6 +42,34 @@
 <input id="deleteVehicleId" placeholder="vehicle id" />
 <button onclick="deleteVehicle(document.getElementById('deleteVehicleId').value)">delete vehicle</button><br />
 <br />
+<div id="demo26"></div>
+<input id="vehicleChecklist" type="number" placeholder="vehicle id" />
+<input id="checklistVehicle" type="number" placeholder="checklist id" />
+<button
+    onclick="
+        insertVehicleChecklist(
+            document.getElementById('vehicleChecklist').value,
+            document.getElementById('checklistVehicle').value,
+        )
+    "
+>
+    insert checklist item to vehicle</button
+><br />
+<div id="demo27"></div>
+<input id="deleteVehicleChecklist" type="number" placeholder="vehicle id" />
+<input id="deleteChecklistVehicle" type="number" placeholder="checklist id" />
+<button
+    onclick="
+        removeVehicleChecklist(
+            document.getElementById('deleteVehicleChecklist').value,
+            document.getElementById('deleteChecklistVehicle').value,
+        )
+    "
+>
+    remove checklist item from vehicle</button
+><br />
+
+<br />
 <div id="demo3"></div>
 <input id="filterChecklists" placeholder="filter checklists by vehicle id" />
 <button onclick="getAllChecklistItems(document.getElementById('filterChecklists').value)">
@@ -332,6 +360,31 @@
         xhr.onload = () => {
             // work with response here (code: xhr.status, json response: xhr.responseText)
             document.getElementById("demo4").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send();
+    }
+
+    function insertVehicleChecklist(vehicleId, checklistId) {
+        let data = {};
+        data.id_checklists = checklistId;
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", restapi + "/api/vehicles/" + vehicleId, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            // code work with response here (code: xhr.status, json response: xhr.responseText)
+            document.getElementById("demo26").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send(JSON.stringify(data));
+    }
+
+    function removeVehicleChecklist(vehicleId, checklistId) {
+        let data = {};
+        const xhr = new XMLHttpRequest();
+        xhr.open("DELETE", restapi + "/api/vehicles/" + vehicleId+"/"+checklistId, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            // code work with response here (code: xhr.status, json response: xhr.responseText)
+            document.getElementById("demo27").innerHTML = xhr.status + "<br>" + xhr.responseText;
         };
         xhr.send();
     }

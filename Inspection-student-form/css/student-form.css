@@ -444,8 +444,8 @@ button:hover {
 /* Critical */
 .status-label.critical {
     background-color: rgba(120, 7, 7, 0.12);
-    color: #af0909;
-    border: 1px solid rgba(137, 41, 41, 0.25);
+    color: #ff0000;
+    border: 1px solid rgba(255, 0, 0, 0.806);
 }
 
 /* Passed */
