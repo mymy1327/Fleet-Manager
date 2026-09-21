@@ -260,17 +260,17 @@ button:disabled, button:hover:disabled {
     font-size: 14px;
 }
 
-.card-icon.green {
+.card-icon.available {
     color: var(--green);
-    background: #e8fbf4;
+    background: #4be237;
 }
 
-.card-icon.orange {
+.card-icon.occupied {
     color: var(--orange);
     background: #fff6e5;
 }
 
-.card-icon.red {
+.card-icon.notInUse {
     color: var(--red);
     background: #fff0f1;
 }
@@ -329,26 +329,58 @@ button:disabled, button:hover:disabled {
 
 .vehicle-heading {
     display: flex;
-    align-items: center;
     justify-content: space-between;
     gap: 5cqi;
 }
 
 .vehicle-model {
+    align-items: center;
     margin: 0;
     font-size: 10cqi;
 }
 
 .vehicle-status {
     width: 74px;
+    height: 24px;
     text-align: center;
     padding: 2cqi 5cqi;
     border: 1px solid #b9d4ff;
     border-radius: 12px;
-    color: var(--blue);
     background: #f3f8ff;
     font-size: 6.5cqi;
     white-space: nowrap;
+}
+
+.vehicle-status[data-state="available"] {
+    /*
+    green incase people dont want colorblindness support
+    color: #0ba979;
+    border-color: #0ba979;
+    background: #e5f8f2;
+    */
+    color: #053157;
+    border-color: #1E88E5;
+    background: #9dd1ff;
+    
+}
+
+.vehicle-status[data-state="in_use"] {
+    /*
+    yellowincase people dont want colorblindness support
+    color: #a3a30a;
+    border-color: #a3a30a;
+    background: #ffffc9;
+    */
+    color: #a77e06;
+    border-color: #FFC107;
+    background: #fff1c6;
+    
+}
+
+.vehicle-status[data-state="disabled"] {
+    color: #808080;
+    border-color: #808080;
+    background: #e2e2e2;
 }
 
 .vehicle-type,

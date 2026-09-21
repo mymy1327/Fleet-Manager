@@ -1,0 +1,18 @@
+{
+  "retryReload": {
+    "text": "Retry",
+    "action": "window.location.reload();"
+  },
+  "retryFrom": {
+    "text": "Retry",
+    "action": "window.location.replace(decodeURIComponent('[FROM]'));"
+  },
+  "login": {
+    "text": "Login",
+    "action": "const from = '[FROM]'; let href = '/userManagement/PHP/login.php'; if(from != '') {href+= '?next=' + from;}; window.location.href = href;"
+  },
+  "logout": {
+    "text": "Logout",
+    "action": "const from = '[FROM]'; let href = '/userManagement/PHP/logout.php'; if(from != '') {href+= '?next=' + from;}; window.location.href = href;"
+  }
+}
