@@ -4,40 +4,10 @@ require  __DIR__ . "/../../assets/sharedUserFunctions.php";
 session_start();
 $_SESSION["login"] = "";
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    //Handle login - Get user info form API
     $data = GetPOSTData();
-    $users = SendRequestToAPI("/users","GET");
-    if($users === false) {
-        GenerateAPIError(503,"API not available!");
-    }
-
-    //Find user
-    foreach ($users as $user) {
-        if ($user["username"] == $data["username"]) {
-            //Verify password
-            if (password_verify($data["password"], $user["password"])) {
-                //Redirect to valid password
-                http_response_code(200);
-                $_SESSION["login"] = $user["id_users"];
-                $result = [];
-                if(!isset($data["next"])) {
-                    if($user["role"] == "admin") {
-                        $result["next"] = "./admin.php";
-                    } else if($user["role"] == "user") {
-                        $result["next"] = "../../userDashboard/PHP/index.php";
-                    }
-                } else {
-                    $result["next"] = $data["next"];
-                }
-                $result["id"] = $user["id_users"];
-                echo (json_encode($result));
-                die();
-            }
-            GenerateAPIError(401,"Invalid password!");
-        }
-    }
-    GenerateAPIError(404,"User not found!");
-} ?>
+    echo (json_encode(HandleLogin($data["username"],$data["password"],$data["rememberMe"] == "true", isset($data["next"]) ? $data["next"] : null)));
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -70,6 +40,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <div class="show-password">
                 <input type="checkbox" name="passwordEye" id="passwordEye">
                 <label for="passwordEye">Show password</label>
+            </div>
+
+            <div class="show-password">
+                <input type="checkbox" name="rememberMe" id="rememberMe">
+                <label for="rememberMe">Remember me</label>
             </div>
 
             <button id="login" class="button">login</button>
