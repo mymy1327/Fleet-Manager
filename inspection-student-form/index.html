@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajoneuvon tarkastus</title>
+    <link rel="stylesheet" href="css/student-form.css">
+    <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+    rel="stylesheet">
+</head>
+<body>
+    <main class="inspection-page">
+        <!---Header--->
+        <header class="inspection-header">
+            <button class="back-button" type="button">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+
+            <h1>Ajoneuvon tarkastus</h1>
+        </header>
+
+        <!---Vehicle Information--->
+        <section class="vehicle-information">
+            <div class="vehicle-info">
+                <div class="vehicle-icon">
+                    <span class="material-symbols-outlined">local_shipping</span>
+                     <p class="form-icon"><strong> Fleet Manager</strong></p>
+                </div>
+                <h2 class="vehicle-name"></h2>
+                <p class="vehicle-type"></p>
+                <p class="vehicle-status"></p> <p class="vehicle-license"></p>
+                <!---progress bar--->
+            </div>
+
+            <!---Kilometers--->
+            <div class="vehicle-kilometers">
+                <div class="kilometers-icon">
+                    <span class="material-symbols-outlined">speed</span>
+                    <p class="kilometers-text">Kilometrit</p>
+                </div>
+                  <p class="kilometers-value"></p>
+            </div>
+
+            <!----Open faults-->
+            <div class="vehicle-faults">
+                <div class="faults-icon">
+                    <span class="material-symbols-outlined">report_problem</span>
+                     <p class="faults-text">Avoimet viat</p>
+                </div>
+                <p class="faults-value"></p>
+            </div>
+            <div class="vehicle-in-use">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <div class="in-use-content">
+                    <p class="in-use-text"></p>
+                    <p class="in-use-description"></p>
+                    </div>
+            </div>
+            <button class="start-inspection-button" type="button" id="startInspection">
+                <span class="material-symbols-outlined">assignment</span>
+                Aloita tarkastus</button>
+        </section>
+    </main>
+    <div class="faults-render">
+        <!---Faults will be rendered here--->
+    </div>
+    <div class="last-inspection">
+        <!---Last Inspection will be rendered here--->
+        <div class="last-inspection-icon">
+            <span class="material-symbols-outlined">history</span>
+            <p class="last-inspection-text">Viimeisin tarkastus</p>
+        </div>
+        <div class="last-inspection-content">
+            <p class="last-inspection-name"></p>
+            <span class="last-inspection-status"></span>
+            <p class="last-inspection-date"></p>
+        </div>
+    </div>
+    <div class="inspection-history">
+        <!---Inspection History will be rendered here--->
+    </div>
+</body>
+<script src="js/student-form.js"></script>
+</html>
