@@ -15,7 +15,7 @@ if (!$code) {
 ?>
 
 <script>
-const restapi = "http://127.0.0.1:5501";
+const restapi = "https://developmenterasmus.kolojar.cz";
 const code = "<?php echo $code; ?>";
 console.log(code);
 const xhr = new XMLHttpRequest();
