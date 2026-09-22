@@ -6,6 +6,7 @@ $_SESSION["login"] = "";
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $data = GetPOSTData();
     echo (json_encode(HandleLogin($data["username"],$data["password"],$data["rememberMe"] == "true", isset($data["next"]) ? $data["next"] : null)));
+    die();
 }
 ?>
 
