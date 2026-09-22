@@ -325,7 +325,8 @@ button:disabled, button:hover:disabled {
 .Vehicle-image {
     /* Vehicle photo fills the upper part of a garage card. */
     display: block;
-    padding: 2%;
+    padding: 0%;
+    padding: 0%;
     border: 1px solid var(--line);
     border-radius: 5px;
     background-color: var(--background);
@@ -337,28 +338,40 @@ button:disabled, button:hover:disabled {
 .vehicle-details {
     /* Text area below a vehicle image. */
     position: relative;
-    padding: 5cqi 8cqi 5cqi;
+    padding: 3cqi 3cqi 3cqi;
 }
 
 .vehicle-heading {
     /* Vehicle name and status badge share one row. */
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
     gap: 5cqi;
-    padding: 10px;
+    padding: 5px;
     border-bottom: 1px solid #0570fc;
+    overflow: hidden;
 }
 
 .vehicle-model {
-    align-items: center;
-    margin: 0;
-    font-size: 10cqi;
+  display: block;
+  white-space: whitespace-collapse;
+  width: max-content;
+  overflow: visible;
+}
+.vehicle-model .long {
+  animation: scroll 1.2s linear infinite;
+}
+
+@keyframes scroll {
+  0%   { transform: translateX(120%); }
+  100% { transform: translateX(-120%); }
 }
 
 .vehicle-status {
     /* Compact pill showing the vehicle's current state. */
-    width: 74px;
-    height: 24px;
+    flex-shrink: 0;
+    width: 44px;
+    height: 18px;
     text-align: center;
     padding: 2cqi 5cqi;
     border: 1px solid #b9d4ff;
@@ -366,6 +379,7 @@ button:disabled, button:hover:disabled {
     background: #f3f8ff;
     font-size: 6.5cqi;
     white-space: nowrap;
+    z-index: 1;
 }
 
 .vehicle-status.available {
@@ -625,10 +639,6 @@ button:disabled, button:hover:disabled {
     background: var(--vehicle-list-page-background);
 }
 
-.page {
-    
-}
-
 .vehicle-list-page .vehicle-list-main {
     width: min(var(--vehicle-list-content-width), calc(100% - 32px));
     margin: 22px auto;
@@ -651,6 +661,7 @@ button:disabled, button:hover:disabled {
 
 .vehicle-list-page .vehicle-list-section .vehicle-details {
     padding: 16px;
+    background-color: blue;
 }
 
 @media (max-width: 760px) {
@@ -675,7 +686,7 @@ button:disabled, button:hover:disabled {
     .page {
         width: calc(100% - 24px);
         margin-top: 16px;
-        zoom: 0.6;
+        zoom: 1;
     }
 
     .page-heading {
