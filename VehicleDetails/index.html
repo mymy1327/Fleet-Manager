@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fleet Manager</title>
-    <link rel="stylesheet" href="../Teachers-view/main/CSS/style.css">
+    <!--<link rel="stylesheet" href="../Teachers-view/main/CSS/style.css">-->
 </head>
 <body>
     <header class="topbar">
@@ -24,23 +24,23 @@
             <button class="logout" type="button">&#x21AA;&nbsp; Logout</button>
         </div>
     </header>
+<!-- CONNECTION TO THE MAIN INDEX CONTAINING ALL THE  BUTTON USABILITY-->
     <main id="app" class="page">
-        <section class="vehicle-page-shell">
-            <div id="vehicle-heading" class="vehicle-detail-heading"></div>
-            <div class="vehicle-detail-layout">
-                <aside id="vehicle" class="vehicle-info-panel" aria-live="polite"></aside>
-                <section class="vehicle-inspection-panel" aria-live="polite">
-                    <div class="inspection-tabs" role="tablist" aria-label="Vehicle inspection tabs">
-                        <button class="inspection-tab is-active" type="button" role="tab" aria-selected="true">Inspections (0)</button>
-                        <button class="inspection-tab" type="button" role="tab" aria-selected="false">Faults (0)</button>
-                        <button class="inspection-tab" type="button" role="tab" aria-selected="false">Inspection list</button>
-                    </div>
-                    <button class="button inspection-action" type="button">New inspection</button>
-                    <div class="inspection-box"><div class="inspection-empty">No inspections yet</div></div>
-                </section>
-            </div>
+        <section>
+            <!-- CARD SHOWING THE VEHICLE-->
+             <div id="vehicle">
+                
+             </div>
+            <section>
+            </section>
+            <!-- LATEST INSPECTIONS/PROBLEMS-->
+            <section>
+                hello
+                
+            </section>
         </section>
     </main>
     <script src="vehicledetails.js"></script>
+    <script src="qrcodegen.js"></script>
 </body>
 </html>
