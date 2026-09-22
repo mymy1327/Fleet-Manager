@@ -24,19 +24,29 @@ $data = json_decode(file_get_contents("php://input"), true);
  * returns all entries in table
  * @param mysqli $conn connection to database
  * @param string $table "problems" added for backward compatibility
- * @param string $filterColumn filtered column
- * @param string $filter filtering value
+ * @param string[] $filterColumn filtered column
+ * @param string[] $filter filtering value
  * @return json|array[false, int, string|null] list of entries | false on failure
  */
 function getFullTable($conn, $table = "problems", $filterColumn, $filter)
 {
     $table = $table ?? "problems";
     //logToConsole($filter);
-    if (isset($filterColumn)) {
-        $stmt = $conn->prepare("SELECT * FROM `$table` WHERE `$filterColumn` = ?");
-        $stmt->bind_param("s", $filter);
+    if (count($filterColumn) > 0) {
+        $quary = "SELECT * FROM `$table` WHERE";
+        $types = "";
+        for ($i = 0; $i < count($filterColumn); $i++) {
+            if ($i == 0) {
+                $quary .= " `$filterColumn[$i]` = ?";
+            } else {
+                $quary .= " AND `$filterColumn[$i]` = ?";
+            }
+            $types .= "s";
+        }
+        $stmt = $conn->prepare($quary);
+        $stmt->bind_param($types, ...$filter);
         if (!$stmt->execute()) {
-            return [false, 404];
+            return [404];
         }
         $return = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     } else {
@@ -265,14 +275,26 @@ function update($conn, $table = "problems", $problemId, $data, $checkList)
 
 switch ($_SERVER["REQUEST_METHOD"]) {
     case "GET":
-        $filterColumn = null;
-        $filter = null;
+        $filterColumn = [];
+        $filter = [];
         if (isset($_GET["id_vehicles"]) && !is_null($_GET["id_vehicles"]) && $_GET["id_vehicles"] != "") {
             $return = getProblemsByVehicleId($conn, $_GET["id_vehicles"]);
             if (gettype($return) == "array") {
                 heaDie($return[0], $return[1] ?? null);
             }
             heaDie(200, $return);
+        }
+        if (isset($_GET["priority"]) && !is_null($_GET["priority"]) && $_GET["priority"] != "") {
+            $filterColumn[] = "priority";
+            $filter[] = $_GET["priority"];
+        }
+        if (isset($_GET["state"]) && !is_null($_GET["state"]) && $_GET["state"] != "") {
+            $filterColumn[] = "state";
+            $filter[] = $_GET["state"];
+        }
+        if (isset($_GET["id_inspections"]) && !is_null($_GET["id_inspections"]) && $_GET["id_inspections"] != "") {
+            $filterColumn[] = "id_inspections";
+            $filter[] = $_GET["id_inspections"];
         }
         if (!isset($uri[1])) {
             $return = getFullTable($conn, null, $filterColumn, $filter);

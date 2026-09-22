@@ -26,25 +26,35 @@ $data = json_decode(file_get_contents("php://input"), true);
  * returns all entries in table
  * @param mysqli $conn connection to database
  * @param string $table db table name
- * @param string $filterColumn filtered column
- * @param string $filter filtering value
- * @return json|array[false, int, string|null] list of entries | false on failure
+ * @param string[] $filterColumn filtered column
+ * @param string[] $filter filtering value
+ * @return json|array[int, string|null] list of entries | array with error code on failure
  */
 function getFullTable($conn, $table, $filterColumn, $filter)
 {
     global $listOfTables;
     //logToConsole($filter);
-    if (isset($filterColumn)) {
-        $stmt = $conn->prepare("SELECT * FROM `$table` WHERE `$filterColumn` = ?");
-        $stmt->bind_param("s", $filter);
+    if (count($filterColumn) > 0) {
+        $quary = "SELECT * FROM `$table` WHERE";
+        $types = "";
+        for ($i = 0; $i < count($filterColumn); $i++) {
+            if ($i == 0) {
+                $quary .= " `$filterColumn[$i]` = ?";
+            } else {
+                $quary .= " AND `$filterColumn[$i]` = ?";
+            }
+            $types .= "s";
+        }
+        $stmt = $conn->prepare($quary);
+        $stmt->bind_param($types, ...$filter);
         if (!$stmt->execute()) {
-            return [false, 404];
+            return [404];
         }
         $return = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     } else {
         $result = $conn->query("SELECT * FROM `$table`");
         if (!$result) {
-            return [false, 404];
+            return [404];
         }
         $return = $result->fetch_all(MYSQLI_ASSOC);
     }
@@ -54,7 +64,7 @@ function getFullTable($conn, $table, $filterColumn, $filter)
             $stmt = $conn->prepare("SELECT km FROM `inspections` WHERE id_vehicles = ? ORDER BY date DESC LIMIT 1");
             $stmt->bind_param("i", $vehicle["id_vehicles"]);
             if (!$stmt->execute()) {
-                return [false, 404];
+                return [404];
             }
             $return[$key]["km"] = $stmt->get_result()->fetch_assoc()["km"] ?? null;
         }
@@ -69,7 +79,7 @@ function getFullTable($conn, $table, $filterColumn, $filter)
  * @param string $table db table name
  * @param int $id row id
  * @param bool $_rec true to stop recursion
- * @return json|array[false, int, string|null] entry details | false on failure
+ * @return json|array[int, string|null] entry details | array wit error code on failure
  */
 function getEntryDetails($conn, $table, $id, $_rec = false)
 {
@@ -78,19 +88,19 @@ function getEntryDetails($conn, $table, $id, $_rec = false)
     $intId = (int) $id;
     $stmt->bind_param("i", $intId);
     if (!$stmt->execute()) {
-        return [false, 404];
+        return [404];
     }
     $return = $stmt->get_result()->fetch_assoc();
     $stmt->close();
     if (is_null($return) && $table != $listOfTables[2]) {
-        return [false, 404];
+        return [404];
     }
     if ($table == $listOfTables[1]) {
         $return["checklist"] = getAllChecklistItemsForVehicle($conn, $intId);
         $stmt = $conn->prepare("SELECT km FROM `inspections` WHERE id_vehicles = ? ORDER BY date DESC LIMIT 1");
         $stmt->bind_param("i", $intId);
         if (!$stmt->execute()) {
-            return [false, 404];
+            return [404];
         }
         $return["km"] = $stmt->get_result()->fetch_assoc()["km"] ?? null;
     } elseif ($table == $listOfTables[2]) {
@@ -285,8 +295,7 @@ function createNewVehicle(
     $maintenanceIntervalKm,
     $idFiles = null,
     $state = "available",
-)
-{
+) {
     logToConsole($lastMaintenance);
     $stmt = $conn->prepare(
         "INSERT INTO `vehicles`(`name`, `type`, `license_plate`, `code`, `last_maintenance`, `last_maintenance_km`, `next_maintenance`, `maintenance_interval_km`, `id_files`, `state`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -453,15 +462,8 @@ function createNewInspection($conn, $id_vehicles, $passed, $note, $id_users, $km
 function updateWholeChecklist($conn, $checklistId, $name, $description)
 {
     $int_id_checklists = (int) $checklistId;
-    $stmt = $conn->prepare(
-        "UPDATE `checklists` SET `name`=?,`description`=? WHERE id_checklists = ?",
-    );
-    $stmt->bind_param(
-        "ssi",
-        $name,
-        $descriptions,
-        $int_id_checklists,
-    );
+    $stmt = $conn->prepare("UPDATE `checklists` SET `name`=?,`description`=? WHERE id_checklists = ?");
+    $stmt->bind_param("ssi", $name, $descriptions, $int_id_checklists);
 
     if (!$stmt->execute()) {
         return [400];
@@ -509,8 +511,7 @@ function updateWholeVehicle(
     $maintenanceIntervalKm,
     $idFiles,
     $state,
-)
-{
+) {
     $int_id_vehicles = (int) $vehicleId;
     $int_id_files = (int) $idFiles;
     $int_maintenance_interval_km = (int) $maintenanceIntervalKm;
@@ -561,17 +562,8 @@ function updateWholeVehicle(
 function updateWholeUser($conn, $userId, $username, $email, $password, $role)
 {
     $int_id_users = (int) $userId;
-    $stmt = $conn->prepare(
-        "UPDATE `users` SET `username`=?,`email`=?,`password`=?,`role`=? WHERE id_users = ?",
-    );
-    $stmt->bind_param(
-        "ssssi",
-        $username,
-        $email,
-        $password,
-        $role,
-        $int_id_users
-    );
+    $stmt = $conn->prepare("UPDATE `users` SET `username`=?,`email`=?,`password`=?,`role`=? WHERE id_users = ?");
+    $stmt->bind_param("ssssi", $username, $email, $password, $role, $int_id_users);
 
     if (!$stmt->execute()) {
         return [400];
@@ -658,7 +650,7 @@ function deleteEntry($conn, $table, $id)
     $intId = (int) $id;
     $stmt->bind_param("i", $intId);
     if (!$stmt->execute()) {
-        return [404, json_encode(["error"=>"Not Found", "message"=>"Entry $intId not found in $table."])];
+        return [404, json_encode(["error" => "Not Found", "message" => "Entry $intId not found in $table."])];
     }
     return true;
 }
@@ -672,34 +664,58 @@ if (
 
 switch ($_SERVER["REQUEST_METHOD"]) {
     case "GET":
-        $filterColumn = null;
-        $filter = null;
-        if (isset($_GET["id_vehicles"]) && !is_null($_GET["id_vehicles"]) && $_GET["id_vehicles"] != "" && in_array($uri[0], [$listOfTables[0], $listOfTables[4]])) {
-            $filterColumn = "id_vehicles";
-            $filter = $_GET["id_vehicles"];
+        $filterColumn = [];
+        $filter = [];
+        if (
+            isset($_GET["id_vehicles"]) &&
+            !is_null($_GET["id_vehicles"]) &&
+            $_GET["id_vehicles"] != "" &&
+            in_array($uri[0], [$listOfTables[0], $listOfTables[4]])
+        ) {
+            $filterColumn[] = "id_vehicles";
+            $filter[] = $_GET["id_vehicles"];
             if ($uri[0] == $listOfTables[0]) {
                 heaDie(200, json_encode(getAllChecklistItemsForVehicle($conn, $filter), JSON_NUMERIC_CHECK));
             }
-        } elseif (isset($_GET["code"]) && !is_null($_GET["code"]) && $_GET["code"] != "" && in_array($uri[0], [$listOfTables[1]])) {
-            $filterColumn = "code";
-            $filter = $_GET["code"];
-        } elseif (isset($_GET["id_users"]) && !is_null($_GET["id_users"]) && $_GET["id_users"] != "" && in_array($uri[0], [$listOfTables[4]])){
-            $filterColumn = "id_users";
-            $filter = $_GET["id_users"];
-        } elseif (isset($_GET["state"]) && !is_null($_GET["state"]) && $_GET["state"] != "" && in_array($uri[0], [$listOfTables[1]])){
-            $filterColumn = "state";
-            $filter = $_GET["state"];
         }
+        if (
+            isset($_GET["code"]) &&
+            !is_null($_GET["code"]) &&
+            $_GET["code"] != "" &&
+            in_array($uri[0], [$listOfTables[1]])
+        ) {
+            $filterColumn[] = "code";
+            $filter[] = $_GET["code"];
+        }
+        if (
+            isset($_GET["state"]) &&
+            !is_null($_GET["state"]) &&
+            $_GET["state"] != "" &&
+            in_array($uri[0], [$listOfTables[1]])
+        ) {
+            $filterColumn[] = "state";
+            $filter[] = $_GET["state"];
+        }
+        if (
+            isset($_GET["id_users"]) &&
+            !is_null($_GET["id_users"]) &&
+            $_GET["id_users"] != "" &&
+            in_array($uri[0], [$listOfTables[4]])
+        ) {
+            $filterColumn[] = "id_users";
+            $filter[] = $_GET["id_users"];
+        }
+
         if (!isset($uri[1])) {
             $return = getFullTable($conn, $uri[0], $filterColumn, $filter);
-            if (gettype($return) == "array" && !$return[0]) {
-                heaDie($return[1], $return[2] ?? null);
+            if (gettype($return) == "array") {
+                heaDie($return[0], $return[1] ?? null);
             }
             heaDie(200, $return);
         } else {
-            $return = getEntryDetails($conn, $uri[0], $uri[1], $filterColumn, $filter);
-            if (gettype($return) == "array" && !$return[0]) {
-                heaDie($return[1], $return[2] ?? null);
+            $return = getEntryDetails($conn, $uri[0], $uri[1]);
+            if (gettype($return) == "array") {
+                heaDie($return[0], $return[1] ?? null);
             }
             heaDie(200, $return);
         }
@@ -758,57 +774,69 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         heaDie(201, $return);
 
     case "PUT":
-    if (isset($uri[1])) {
-        switch (array_search($uri[0], $listOfTables)) {
-            case 0:
-                $return = updateWholeChecklist($conn, $uri[1], $data["name"], $data["description"]);
-                break;
-            case 1:
-                $return = updateWholeVehicle($conn, $uri[1], $data["name"], $data["type"], $data["license_plate"], $data["code"], $data["last_maintenance"], $data["last_maintenance_km"], $data["next_maintenance"], $data["maintenance_interval_km"], $data["id_files"], $data["state"]);
-                break;
-            case 3:
-                $return = updateWholeUser($conn, $uri[1], $data["username"], $data["email"], $data["password"], $data["role"]);
-                break;
-            default:
-                heaDie(400);
+        if (isset($uri[1])) {
+            switch (array_search($uri[0], $listOfTables)) {
+                case 0:
+                    $return = updateWholeChecklist($conn, $uri[1], $data["name"], $data["description"]);
+                    break;
+                case 1:
+                    $return = updateWholeVehicle(
+                        $conn,
+                        $uri[1],
+                        $data["name"],
+                        $data["type"],
+                        $data["license_plate"],
+                        $data["code"],
+                        $data["last_maintenance"],
+                        $data["last_maintenance_km"],
+                        $data["next_maintenance"],
+                        $data["maintenance_interval_km"],
+                        $data["id_files"],
+                        $data["state"],
+                    );
+                    break;
+                case 3:
+                    $return = updateWholeUser(
+                        $conn,
+                        $uri[1],
+                        $data["username"],
+                        $data["email"],
+                        $data["password"],
+                        $data["role"],
+                    );
+                    break;
+                default:
+                    heaDie(400);
+            }
+            if (gettype($return) == "array") {
+                heaDie($return[0], $return[1] ?? null);
+            }
+        } else {
+            heaDie(400, json_encode(["error" => "Bad Request", "message" => "No id provided."]));
         }
-        if (gettype($return) == "array") {
-            heaDie($return[0], $return[1] ?? null);
-        }
-    }else{
-        heaDie(400, json_encode(["error"=>"Bad Request", "message"=>"No id provided."]));
-    }
     case "PATCH":
         if (isset($uri[1])) {
             switch (array_search($uri[0], $listOfTables)) {
                 case 0:
-                $return = update($conn, $uri[0], $uri[1], $data, [
-                    "name",
-                    "description",
-                ]);
-                break;
-            case 1:
-                $return = update($conn, $uri[0], $uri[1], $data, [
-                    "name",
-                    "type",
-                    "license_plate",
-                    "code",
-                    "last_maintenance",
-                    "last_maintenance_km",
-                    "next_maintenance",
-                    "maintenance_interval_km",
-                    "id_files",
-                    "state",
-                ]);
-                break;
-            case 3:
-                $return = update($conn, $uri[0], $uri[1], $data, [
-                    "username",
-                    "email",
-                    "password",
-                    "role",
-                ]);
-                break;
+                    $return = update($conn, $uri[0], $uri[1], $data, ["name", "description"]);
+                    break;
+                case 1:
+                    $return = update($conn, $uri[0], $uri[1], $data, [
+                        "name",
+                        "type",
+                        "license_plate",
+                        "code",
+                        "last_maintenance",
+                        "last_maintenance_km",
+                        "next_maintenance",
+                        "maintenance_interval_km",
+                        "id_files",
+                        "state",
+                    ]);
+                    break;
+                case 3:
+                    $return = update($conn, $uri[0], $uri[1], $data, ["username", "email", "password", "role"]);
+                    break;
             }
             if (gettype($return) == "array") {
                 heaDie($return[0], $return[1] ?? null);

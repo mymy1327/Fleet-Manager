@@ -351,8 +351,11 @@
     create inspection</button
 ><br /><br />
 <div id="demo13"></div>
-<input id="filterProblems" placeholder="filter by vehicle id" />
-<button onclick="getAllProblems(document.getElementById('filterProblems').value)">get all problems</button><br />
+<input id="filterProblemsVehicle" placeholder="filter by vehicle id" />
+<input id="filterProblemsPriority" placeholder="filter by priority" />
+<input id="filterProblemsState" placeholder="filter by state" />
+<input id="filterProblemsInspection" placeholder="filter by inspection id" />
+<button onclick="getAllProblems(document.getElementById('filterProblemsVehicle').value,document.getElementById('filterProblemsPriority').value,document.getElementById('filterProblemsState').value,document.getElementById('filterProblemsInspection').value)">get all problems</button><br />
 <div id="demo14"></div>
 <input id="problemId" placeholder="problem id" />
 <button onclick="getProblemDetails(document.getElementById('problemId').value)">get problem details</button><br />
@@ -480,9 +483,9 @@
         xhr.send();
     }
 
-    function getAllProblems(vehicleId = null) {
+    function getAllProblems(vehicleId = null, priority = null, state = null, id_inspections = null) {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", restapi + "/api/problems?id_vehicles=" + vehicleId, true); // ?id_vehicles can be removed
+        xhr.open("GET", restapi + "/api/problems?id_vehicles=" + vehicleId + "&priority="+priority+"&state="+state+"&id_inspections="+id_inspections, true); // ?id_vehicles can be removed
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             // work with response here (code: xhr.status, json response: xhr.responseText)
