@@ -13,6 +13,7 @@ loginButton.addEventListener("click", () => {
   const data = {};
   data["username"] = document.getElementById("username").value
   data["password"] = document.getElementById("password").value
+  data["rememberMe"] = document.getElementById("rememberMe").checked ? "true" : "false"
   if(params.has("next")) {
     data["next"] = params.get("next")
   }

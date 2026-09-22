@@ -573,35 +573,24 @@ function selectAnswer(value) {
 
 function selectFault() {
     const current = answers[currentQuestionIndex];
+    const checklist = checklists[currentQuestionIndex];
+    const isOilQuestion = (checklist?.name || "").toLowerCase().includes("öljy");
 
-    // If in Fault status, click again to cancel
+    // If in report fault, click again => cancel
     if (current.answer === "Report Faults") {
         current.answer = current.previousAnswer ?? null;
         current.error = null;
 
-        document.querySelectorAll(".question-option").forEach(button => {
-            button.classList.remove("selected");
-        });
-
-        const layout = document.querySelector(".question-layout");
-
-        if (layout) {
-            layout.classList.remove("has-fault");
+        // If turn back to normal, will ask to take picture of the oil stick
+        if (isOilQuestion) {
+            current.oilPhoto = null;
+            current.oilPhotoConfirmed = false;
         }
 
-        const faultContainer = document.getElementById("faultContainer");
-
-        if (faultContainer) {
-            faultContainer.style.display = "none";
-            faultContainer.innerHTML = "";
-        }
-
-        updateNavigationButtons();
-
+        renderQuestion();
         return;
     }
 
-    // Turn to fault status
     current.previousAnswer = current.answer;
     current.answer = "Report Faults";
 
@@ -613,25 +602,12 @@ function selectFault() {
         };
     }
 
-    document.querySelectorAll(".question-option").forEach(button => {
-        button.classList.remove("selected");
-    });
-
-    const faultButton = document.querySelector(
-        '.question-option[data-value="Report Faults"]'
-    );
-
-    if (faultButton) {
-        faultButton.classList.add("selected");
+    if (isOilQuestion) {
+        current.oilPhoto = null;
+        current.oilPhotoConfirmed = false;
     }
 
-    const layout = document.querySelector(".question-layout");
-
-    if (layout) {
-        layout.classList.add("has-fault");
-    }
-
-    renderFaultForm();
+    renderQuestion();
     updateNavigationButtons();
 }
 
@@ -977,8 +953,12 @@ function validateCurrentQuestion() {
         return false;
     }
 
-    // Oil photo validation
-    if (name.includes("öljy") && !current.oilPhoto) {
+        // Oil photo is required only in normal Oil mode.
+    if (
+        name.includes("öljy") &&
+        current.answer !== "Report Faults" &&
+        !current.oilPhoto
+    ) {
         alert("Ota kuva moottoriöljyn mittatikusta.");
         return false;
     }
@@ -2146,8 +2126,17 @@ async function submitInspection (inspectionResult) {
             checklist => checklist.name === "Moottoriöljyn taso"
         );
 
-        if (oilIndex !== -1 && answers[oilIndex]?.oilPhoto) {
-            oilPictureId = await createFile(answers[oilIndex].oilPhoto);
+        if (oilIndex !== -1 ) {
+            const oilAnswer = answers[oilIndex];
+
+                const oilPhoto =
+            oilAnswer?.answer === "Report Faults"
+                ? oilAnswer?.error?.photo
+                : oilAnswer?.oilPhoto;
+
+        if (oilPhoto) {
+            oilPictureId = await createFile(oilPhoto);
+    }
         }
 
         const inspectionId = await createInspection(
@@ -2173,7 +2162,16 @@ async function submitInspection (inspectionResult) {
                 throw new Error(`Kuvavika puuttuu: ${checklist.name}`);
             }
 
-            const fileId = await createFile(answer.error.photo);
+            let fileId;
+
+            const isOilChecklist =(checklist.name || "").toLowerCase().includes("öljy");
+
+            if (isOilChecklist && answer.answer === "Report Faults") {
+                fileId = oilPictureId;
+            } else {
+                fileId = await createFile(answer.error.photo);
+            }
+
             await createProblem(
                 inspectionId,
                 checklist.id_checklists,
