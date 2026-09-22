@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fleet Manager</title>
+    <link rel="stylesheet" href="../CSS/style.css">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="#home" aria-label="Fleet Manager home">
+            <span class="brand-mark" aria-hidden="true">&#x26DF;</span>
+            <strong>Fleet Manager</strong>
+        </a>
+        <nav class="main-nav" aria-label="Main navigation">
+            <a href="#home" data-view="home"><span>&#x2317;</span>Home</a>
+            <a href="#fleet" data-view="fleet"><span class="nav-icon" aria-hidden="true">&#x26DF;</span>Fleet</a>
+            <a href="#inspections" data-view="inspections"><span>&#x1F5B9;</span>Inspections</a>
+            <a href="#faults" data-view="faults"><span>&#x25B3;</span>Faults</a>
+            <a href="#reports" data-view="reports"><span>&#x25A5;</span>Reports</a>
+        </nav>
+        <div class="header-actions">
+            <button class="language-switch" type="button" data-language-switch>EN</button>
+            <button class="logout" type="button">&#x21AA;&nbsp; Logout</button>
+        </div>
+    </header>
+
+    <main id="app" class="page">
+        <section data-view-content="home">
+            <div class="page-heading"><div><h1>Home</h1><p class="subtitle">Overview of the fleet and recent events</p></div></div>
+            <div class="cards">
+                <article class="card-teacher-main-page"><span class="card-icon" aria-hidden="true">&#x26DF;</span><strong class="card-value">0</strong><span class="card-label">Total vehicles</span></article>
+                <article class="card-teacher-main-page"><span class="card-icon green">&#x2713;</span><strong class="card-value">0</strong><span class="card-label">Available</span></article>
+                <article class="card-teacher-main-page"><span class="card-icon">&#x1F5B9;</span><strong class="card-value">0</strong><span class="card-label">Total inspections</span></article>
+                <article class="card-teacher-main-page"><span class="card-icon green">&#x25B3;</span><strong class="card-value">0</strong><span class="card-label">Open faults</span></article>
+            </div>
+            <div class="grid-2">
+                <section class="panel large"><h2 class="panel-title">Recent inspections<a class="panel-action" href="#inspections">View all</a></h2><div class="empty">No inspections yet</div></section>
+                <section class="panel large"><h2 class="panel-title">Open faults<a class="panel-action" href="#faults">View all</a></h2><div class="empty">No open faults - all good!</div></section>
+            </div>
+        </section>
+
+        <section data-view-content="fleet" hidden>
+            <div class="page-heading"><div><h1>Garage</h1><p class="subtitle">Manage your fleet</p></div><button class="button" type="button">&#xFF0B;&nbsp; Add vehicle</button></div>
+            <section id="car" class="garage-list">
+                <div class="empty"><span class="empty-icon" aria-hidden="true">&#x26DF;</span>No vehicles yet. Add the first one!</div>
+            </section>
+        </section>
+
+        <section class="vehicle-page-shell" data-view-content="vehicle" hidden>
+            <div class="vehicle-detail-layout">
+                <aside id="vehicle-info" class="vehicle-info-panel" aria-live="polite"></aside>
+                <section class="vehicle-inspection-panel" aria-live="polite">
+                    <div class="inspection-tabs" role="tablist" aria-label="Vehicle inspection tabs">
+                        <button class="inspection-tab is-active" type="button" role="tab" aria-selected="true">Inspections (0)</button>
+                        <button class="inspection-tab" type="button" role="tab" aria-selected="false">Faults (0)</button>
+                        <button class="inspection-tab" type="button" role="tab" aria-selected="false">List</button>
+                    </div>
+                    <div class="inspection-box"><div class="inspection-empty">No inspections yet</div></div>
+                </section>
+            </div>
+        </section>
+
+        <section data-view-content="inspections" hidden>
+            <div class="page-heading"><div><h1>Inspections</h1><p class="subtitle">All vehicle departure inspections</p></div><button class="button" type="button">&#xFF0B;&nbsp; New inspection</button></div>
+            <section class="panel single-panel"><div class="empty"><span class="empty-icon">&#x1F5B9;</span>No inspections yet</div></section>
+        </section>
+
+        <section data-view-content="faults" hidden>
+            <div class="page-heading"><div><h1>Fault reports</h1><p class="subtitle">Track and resolve fleet faults</p></div><div class="filters">&#x2315; <select class="select"><option>All</option></select></div></div>
+            <section class="panel single-panel"><div class="empty"><span class="empty-icon">&#x1F5B9;</span>No fault reports</div></section>
+        </section>
+
+        <section data-view-content="reports" hidden>
+            <div class="page-heading"><div><h1>Reports</h1><p class="subtitle">Fleet usage and inspection reports</p></div><div class="filters">Time period: <button class="pill" type="button">7 days</button><button class="pill active" type="button">30 days</button><button class="pill" type="button">90 days</button></div></div>
+            <div class="cards">
+                <article class="card-teacher-main-page"><span class="card-icon">&#x25A3;</span><strong class="card-value">0</strong><span class="card-label">Inspections</span></article>
+                <article class="card-teacher-main-page"><span class="card-icon green">&#x2713;</span><strong class="card-value">0</strong><span class="card-label">Approved</span></article>
+                <article class="card-teacher-main-page"><span class="card-icon orange">&#x1F5B9;</span><strong class="card-value">0</strong><span class="card-label">Fault reports</span></article>
+                <article class="card-teacher-main-page"><span class="card-icon red">&#x25B3;</span><strong class="card-value">0</strong><span class="card-label">Open faults</span></article>
+            </div>
+
+            <div class="grid-2">
+                <section class="panel large"><h2 class="panel-title"><span class="icon">&#x1F5B9;</span>Inspections per vehicle</h2><div class="empty">No inspections for the selected time period</div></section>
+                <section class="panel large"><h2 class="panel-title"><span class="icon">&#x2301;</span>Inspection results</h2><div class="empty">No inspections for the selected time period</div></section>
+                <section class="panel large"><h2 class="panel-title"><span class="icon">&#x1F5B9;</span>Faults per vehicle</h2><div class="empty">No faults for the selected time period</div></section>
+                <section class="panel large"><h2 class="panel-title"><span class="icon">&#x2667;</span>Most active students</h2><div class="empty">No inspections for the selected time period</div></section>
+            </div>
+            <section class="panel table-panel"><h2 class="panel-title"><span class="icon">&#x1F5B9;</span>Inspection history</h2><table class="table"><thead><tr><th>Date</th><th>Vehicle</th><th>Student</th><th>Odometer</th><th>Result</th></tr></thead><tbody><tr><td colspan="5">No inspections for the selected time period</td></tr></tbody></table></section>
+        </section>
+    </main>
+    <script src="../JS/app.js"></script>
+    <script src="../../../VehicleDetails/vehicledetails.js"></script>
+    <script src="../../../VehicleList/vehiclelist.js"></script>
+</body>
+</html>
