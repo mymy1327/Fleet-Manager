@@ -253,7 +253,7 @@
 .vehicle-btn-add:hover {
     background: #1554b5;
 }
-.image-preview {
+.image-preview.show {
     width: 100%;
     min-height: 120px;
 
@@ -269,6 +269,9 @@
     background: #f8f8f8;
 
     overflow: hidden;
+}
+.image-preview {
+    display: none;
 }
 
 

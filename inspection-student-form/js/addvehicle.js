@@ -51,10 +51,12 @@ function renderImage (vehicleFile) {
 
     if (!file) {
         imagePreview.innerHTML = "";
+        imagePreview.classList.remove("show");
         return;
     }
 
     const imageURL = URL.createObjectURL(file);
+    imagePreview.classList.add("show");
 
     imagePreview.innerHTML = `
         <img
