@@ -23,6 +23,7 @@ $data = json_decode(file_get_contents("php://input"), true);
 /**
  * returns all entries in table
  * @param mysqli $conn connection to database
+ * @param string $table "problems" added for backward compatibility
  * @param string $filterColumn filtered column
  * @param string $filter filtering value
  * @return json|array[false, int, string|null] list of entries | false on failure
@@ -38,7 +39,7 @@ function getFullTable($conn, $table = "problems", $filterColumn, $filter)
         }
         $return = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     } else {
-        $result = $conn->query("SELECT * FROM `problems`");
+        $result = $conn->query("SELECT * FROM `$table`");
         if (!$result) {
             return [false, 404];
         }
@@ -88,6 +89,7 @@ function getProblemsByVehicleId($conn, $filter)
 /**
  * return entry details
  * @param mysqli $conn connection to database
+ * @param string $table "problems" added for backward compatibility
  * @param int $id row id
  * @return json|array[false, int, string|null] entry details | false on failure
  */
@@ -119,6 +121,13 @@ function getEntryDetails($conn, $table = "problems", $id)
 
 /**
  * create problem
+ * @param mysqli $conn connection to database
+ * @param int $inspectionId id of inspection
+ * @param int $checklistId id of checklist
+ * @param string $note note about problem
+ * @param int $fileId id of problem photo
+ * @param string $priority [low | medium | high | critical] priority of problem
+ * @return json|array[false, int, string|null] entry details | false on failure
  */
 function createProblem($conn, $inspectionId, $checklistId, $note, $fileId, $priority)
 {
@@ -151,20 +160,106 @@ function createProblem($conn, $inspectionId, $checklistId, $note, $fileId, $prio
 }
 
 /**
- * delete problem
+ * PUT update problem
  * @param mysqli $conn connection to database
- * @param int $id problem id
- * @return true|array[false, int, string|null] true on success | false on failure
+ * @param int $problemId id of problem to update
+ * @param int $inspectionId new inspection id
+ * @param int $checklistId new checklist id
+ * @param string $note new note
+ * @param int $fileId new file id
+ * @param string $state [open | resolved] new state of problem
+ * @param string $priority [low | medium | high | critical] new priority of problem
+ * @return json|array[int, string|null] new entry details | array with error code on failure
  */
-function deleteProblem($conn, $id)
+function updateWholeProblem($conn, $problemId, $inspectionId, $checklistId, $note, $fileId, $state, $priority)
 {
-    $stmt = $conn->prepare("DELETE FROM `problems` WHERE id_problems = ?");
-    $intId = (int) $id;
-    $stmt->bind_param("i", $intId);
+    $int_id_problems = (int) $problemId;
+    $int_id_inspections = (int) $inspectionId;
+    $int_id_checklists = (int) $checklistId;
+    $int_id_files = (int) $fileId;
+    $stmt = $conn->prepare(
+        "UPDATE `problems` SET `id_inspections`=?,`id_checklists`=?,`note`=?,`id_files`=?,`state`=?,`priority`=? WHERE id_problems = ?",
+    );
+    $stmt->bind_param(
+        "iisissi",
+        $int_id_inspections,
+        $int_id_checklists,
+        $note,
+        $int_id_files,
+        $state,
+        $priority,
+        $int_id_problems,
+    );
+
     if (!$stmt->execute()) {
-        return [false, 404];
+        return [false, 400];
     }
-    return true;
+    $stmt->close();
+
+    $stmt = $conn->prepare("SELECT * FROM `problems` WHERE `id_problems` = ?");
+    $stmt->bind_param("i", $int_id_problems);
+
+    if (!$stmt->execute()) {
+        return [false, 400];
+    }
+
+    $return = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+    return json_encode($return, JSON_NUMERIC_CHECK);
+}
+
+/**
+ * PATCH update problem
+ * @param mysqli $conn connection to database
+ * @param string $table "problems" added for backward compatibility
+ * @param int $problemId id of problem to update
+ * @param string
+ */
+function update($conn, $table = "problems", $problemId, $data, $checkList)
+{
+    $table = $table ?? "problems";
+    $int_id_problems = (int) $problemId;
+
+    $quary = "UPDATE `$table` SET";
+    $values = [];
+    $types = "";
+    $first = true;
+    foreach ($data as $key => $value) {
+        if (!in_array($key, $checkList)) {
+            return [
+                400,
+                json_encode(["error" => "Bad Request", "message" => "$key was not found in table $table."]),
+            ];
+        }
+        if ($first) {
+            $quary .= " $key = ?";
+            $first = false;
+        } else {
+            $quary .= ", $key = ?";
+        }
+        $values[] = $value;
+        $types .= "s";
+    }
+    $values[] = $int_id_problems;
+    $quary .= " WHERE `id_$table` = ?";
+
+    $stmt = $conn->prepare($quary);
+    $stmt->bind_param($types . "i", ...$values);
+
+    if (!$stmt->execute()) {
+        return [400];
+    }
+    $stmt->close();
+    $stmt = $conn->prepare("SELECT * FROM `$table` WHERE `id_$table` = ?");
+    $stmt->bind_param("i", $int_id_problems);
+
+    if (!$stmt->execute()) {
+        return [false, 400];
+    }
+
+    $return = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+    return json_encode($return, JSON_NUMERIC_CHECK);
 }
 
 switch ($_SERVER["REQUEST_METHOD"]) {
@@ -173,24 +268,20 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         $filter = null;
         if (isset($_GET["id_vehicles"]) && !is_null($_GET["id_vehicles"]) && $_GET["id_vehicles"] != "") {
             $return = getProblemsByVehicleId($conn, $_GET["id_vehicles"]);
-            if (gettype($return) == "array" && !$return[0]) {
-                heaDie($return[1]);
+            if (gettype($return) == "array") {
+                heaDie($return[0], $return[1] ?? null);
             }
             heaDie(200, $return);
         }
         if (!isset($uri[1])) {
             $return = getFullTable($conn, null, $filterColumn, $filter);
-            if (gettype($return) == "array" && !$return[0]) {
-                heaDie($return[1]);
-            }
-            heaDie(200, $return);
         } else {
             $return = getEntryDetails($conn, null, $uri[1]);
-            if (gettype($return) == "array" && !$return[0]) {
-                heaDie($return[1]);
-            }
-            heaDie(200, $return);
         }
+        if (gettype($return) == "array") {
+            heaDie($return[0], $return[1] ?? null);
+        }
+        heaDie(200, $return);
     case "POST":
         $return = createProblem(
             $conn,
@@ -200,33 +291,51 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             $data["id_files"],
             $data["priority"],
         );
-        if (gettype($return) == "array" && !$return[0]) {
-            heaDie($return[1]);
+        if (gettype($return) == "array") {
+            heaDie($return[0], $return[1] ?? null);
         }
         heaDie(201, $return);
 
     case "PUT":
-        if (isset($data["id_checklists"], $data["name"], $data["description"])) {
-            $return = rewriteChecklistItem($conn, $data["id_checklists"], $data["name"], $data["description"]);
-            if (gettype($return) == "array" && !$return[0]) {
-                heaDie($return[1]);
+        if (
+            isset(
+                $data["id_inspections"],
+                $data["id_checklists"],
+                $data["note"],
+                $data["id_files"],
+                $data["state"],
+                $data["priority"],
+                $uri[1],
+            )
+        ) {
+            $return = updateWholeProblem(
+                $conn,
+                $uri[1],
+                $data["id_inspections"],
+                $data["id_checklists"],
+                $data["note"],
+                $data["id_files"],
+                $data["state"],
+                $data["priority"],
+            );
+            if (gettype($return) == "array") {
+                heaDie($return[0], $return[1] ?? null);
             }
             heaDie(200, $return);
         } else {
             heaDie(400);
         }
     case "PATCH":
-        if (
-            isset($data["id_checklists"], $data["column"]) &&
-            (isset($data["name"]) || isset($data["description"]))
-        ) {
-            $return = rewriteChecklistItemCell(
-                $conn,
-                $data["id_checklists"],
-                $data["column"],
-                $data["name"],
-                $data["description"],
-            );
+        if (isset($uri[1])) {
+            $return = update($conn, null, $uri[1], $data, [
+                "id_inspections",
+                "id_checklists",
+                "note",
+                "id_files",
+                "state",
+                "priority",
+            ]);
+
             if (gettype($return) == "array" && !$return[0]) {
                 heaDie($return[1]);
             }
@@ -234,18 +343,6 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         } else {
             heaDie(400);
         }
-    /*case "DELETE":
-    if (isset($uri[1])) {
-        $return = deleteProblem($conn, $uri[1]);
-        if (gettype($return) == "array" && !$return[0]) {
-            heaDie($return[1]);
-        }
-        if ($return) {
-            heaDie(204);
-        }
-    } else {
-        heaDie(400);
-        }*/
     default:
         heaDie(405);
 }

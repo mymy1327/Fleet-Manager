@@ -285,7 +285,8 @@ function createNewVehicle(
     $maintenanceIntervalKm,
     $idFiles = null,
     $state = "available",
-) {
+)
+{
     logToConsole($lastMaintenance);
     $stmt = $conn->prepare(
         "INSERT INTO `vehicles`(`name`, `type`, `license_plate`, `code`, `last_maintenance`, `last_maintenance_km`, `next_maintenance`, `maintenance_interval_km`, `id_files`, `state`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -311,6 +312,7 @@ function createNewVehicle(
     if (!$stmt->execute()) {
         return [false, 400];
     }
+
     $result = [
         "new_id" => $conn->insert_id,
         "name" => $name,
@@ -324,6 +326,7 @@ function createNewVehicle(
         "id_files" => $idFiles,
         "state" => $state,
     ];
+    addChecklistToVehicle($conn, $result["new_id"], 25);
     return json_encode($result, JSON_NUMERIC_CHECK);
 }
 
@@ -440,73 +443,206 @@ function createNewInspection($conn, $id_vehicles, $passed, $note, $id_users, $km
 }
 
 /**
- * rewrites checklist item
+ * PUT update checklist
  * @param mysqli $conn connection to database
- * @param int $id checklist id
- * @param string $name name of checklist item
- * @param string $description description of checklist item
- * @return json|array[false, int, string|null] old checklist item detail | false on failure
+ * @param int $checklistId id of checklist to update
+ * @param string $name new name
+ * @param string $description new description
+ * @return json|array[int, string|null] new entry details | array with error code on failure
  */
-function rewriteChecklistItem($conn, $id, $name, $description)
+function updateWholeChecklist($conn, $checklistId, $name, $description)
 {
-    //echo $name, " ", $description;
-    $stmt = $conn->prepare("SELECT name, description FROM `checklists` WHERE id_checklists = ?");
-    $checklistId = (int) $id;
-    $stmt->bind_param("i", $checklistId);
+    $int_id_checklists = (int) $checklistId;
+    $stmt = $conn->prepare(
+        "UPDATE `checklists` SET `name`=?,`description`=? WHERE id_checklists = ?",
+    );
+    $stmt->bind_param(
+        "ssi",
+        $name,
+        $descriptions,
+        $int_id_checklists,
+    );
+
     if (!$stmt->execute()) {
-        return [false, 404];
+        return [400];
     }
-    $result = $stmt->get_result()->fetch_assoc();
     $stmt->close();
-    $stmt = $conn->prepare("DELETE FROM `checklists` WHERE id_checklists = ?");
-    $stmt->bind_param("i", $checklistId);
+
+    $stmt = $conn->prepare("SELECT * FROM `checklists` WHERE `id_checklists` = ?");
+    $stmt->bind_param("i", $int_id_checklists);
+
     if (!$stmt->execute()) {
-        return [false, 409];
+        return [400];
     }
-    $stmt->close();
-    $stmt = $conn->prepare("INSERT INTO `checklists`(`name`, `description`) VALUES (?, ?)");
-    $stmt->bind_param("ss", $name, $description);
-    if (!$stmt->execute()) {
-        return [false, 409];
-    }
-    $result["new_id"] = $lastid = $conn->insert_id;
-    return json_encode($result);
+
+    $return = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+    return json_encode($return, JSON_NUMERIC_CHECK);
 }
 
 /**
- * rewrites checklist item cell
+ * PUT update vehicle
  * @param mysqli $conn connection to database
- * @param int $id checklist id
- * @param string $column name of column to be rewriten
- * @param string $name name of checklist item
- * @param string $description description of checklist item
- * @return json|array[false, int, string|null] old checklist item detail | false on failure
+ * @param int $vehicleId id of vehicle to update
+ * @param string $name new name of vehicle
+ * @param string $type new type of vehicle
+ * @param string $licensePlate new license plate of vehicle
+ * @param string $code new vehicle code
+ * @param string $lastMaintenance  new date of last maintenance on vehicle in format YYYY-MM-DD
+ * @param string $lastMaintenanceKm new km reading when last maintenance
+ * @param string $nextMaintenance new next maintenance date in format YYYY-MM-DD
+ * @param string $maintenanceIntervalKm new interval between maintenances
+ * @param string $idFiles new picture of vehicle
+ * @param string $state[available | in_use | disabled] state of vehicle
+ * @return json|array[int, string|null] details about new vehicle | array with error code on failure
  */
-function rewriteChecklistItemCell($conn, $id, $column, $name, $description)
+function updateWholeVehicle(
+    $conn,
+    $vehicleId,
+    $name,
+    $type,
+    $licensePlate,
+    $code,
+    $lastMaintenance,
+    $lastMaintenanceKm,
+    $nextMaintenance,
+    $maintenanceIntervalKm,
+    $idFiles,
+    $state,
+)
 {
-    //echo $column," ",$column !=="name";
-    if ($column == "name") {
-        $value = $name;
-    } elseif ($column == "description") {
-        $value = $description;
-    } else {
-        return [false, 415];
+    $int_id_vehicles = (int) $vehicleId;
+    $int_id_files = (int) $idFiles;
+    $int_maintenance_interval_km = (int) $maintenanceIntervalKm;
+    $stmt = $conn->prepare(
+        "UPDATE `vehicles` SET `name`=?,`type`=?,`license_plate`=?,`code`=?,`last_maintenance`=?,`last_maintenance_km`=?,`next_maintenance`=?,`maintenance_interval_km`=?,`id_files`=?,`state`=? WHERE id_vehicles = ?",
+    );
+    $stmt->bind_param(
+        "sssssssiisi",
+        $name,
+        $type,
+        $licensePlate,
+        $code,
+        $lastMaintenance,
+        $lastMaintenanceKm,
+        $nextMaintenance,
+        $int_maintenance_interval_km,
+        $int_id_files,
+        $state,
+        $int_id_vehicles,
+    );
+
+    if (!$stmt->execute()) {
+        return [400];
     }
-    $stmt = $conn->prepare("SELECT `$column` FROM `checklists` WHERE id_checklists = ?");
-    $checklistId = (int) $id;
-    $stmt->bind_param("i", $checklistId);
+    $stmt->close();
+
+    $stmt = $conn->prepare("SELECT * FROM `vehicles` WHERE `id_vehicles` = ?");
+    $stmt->bind_param("i", $int_id_vehicles);
+
+    if (!$stmt->execute()) {
+        return [400];
+    }
+
+    $return = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+    return json_encode($return, JSON_NUMERIC_CHECK);
+}
+
+/**
+ * PUT update user
+ * @param mysqli $conn connection to database
+ * @param int $userId id of user to update
+ * @param string $username new username
+ * @param string $email new email
+ * @param string $role new user role
+ * @return json|array[int, string|null] new entry details | array with error code on failure
+ */
+function updateWholeUser($conn, $userId, $username, $email, $password, $role)
+{
+    $int_id_users = (int) $userId;
+    $stmt = $conn->prepare(
+        "UPDATE `users` SET `username`=?,`email`=?,`password`=?,`role`=? WHERE id_users = ?",
+    );
+    $stmt->bind_param(
+        "ssssi",
+        $username,
+        $email,
+        $password,
+        $role,
+        $int_id_users
+    );
+
+    if (!$stmt->execute()) {
+        return [400];
+    }
+    $stmt->close();
+
+    $stmt = $conn->prepare("SELECT * FROM `users` WHERE `id_users` = ?");
+    $stmt->bind_param("i", $int_id_users);
+
+    if (!$stmt->execute()) {
+        return [400];
+    }
+
+    $return = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+    return json_encode($return, JSON_NUMERIC_CHECK);
+}
+
+/**
+ * PATCH update entry
+ * @param mysqli $conn connection to database
+ * @param string $table patent table of entry
+ * @param int $id id of entry to update
+ * @param array $data array of fields and values to updata
+ * @param array $checkList array of acceptable fields
+ * @return json|array[int, string|null] updated entry details | array with error code on failure
+ */
+function update($conn, $table, $id, $data, $checkList)
+{
+    $int_id = (int) $id;
+
+    $quary = "UPDATE `$table` SET";
+    $values = [];
+    $types = "";
+    $first = true;
+    foreach ($data as $key => $value) {
+        if (!in_array($key, $checkList)) {
+            return [
+                400,
+                json_encode(["error" => "Bad Request", "message" => "$key was not found in table $table."]),
+            ];
+        }
+        if ($first) {
+            $quary .= " $key = ?";
+            $first = false;
+        } else {
+            $quary .= ", $key = ?";
+        }
+        $values[] = $value;
+        $types .= "s";
+    }
+    $values[] = $int_id;
+    $quary .= " WHERE `id_$table` = ?";
+
+    $stmt = $conn->prepare($quary);
+    $stmt->bind_param($types . "i", ...$values);
+
+    if (!$stmt->execute()) {
+        return [400];
+    }
+    $stmt->close();
+    $stmt = $conn->prepare("SELECT * FROM `$table` WHERE `id_$table` = ?");
+    $stmt->bind_param("i", $int_id);
+
     if (!$stmt->execute()) {
         return [false, 400];
     }
 
-    $result = json_encode($stmt->get_result()->fetch_assoc());
-    $stmt->close();
-    $stmt = $conn->prepare("UPDATE `checklists` SET `$column` = ? WHERE `id_checklists` = ?");
-    $stmt->bind_param("si", $value, $checklistId);
-    if (!$stmt->execute()) {
-        return [false, 409];
-    }
-    return $result;
+    $return = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+    return json_encode($return, JSON_NUMERIC_CHECK);
 }
 
 /**
@@ -514,7 +650,7 @@ function rewriteChecklistItemCell($conn, $id, $column, $name, $description)
  * @param mysqli $conn connection to database
  * @param string $table db table name
  * @param int $id entry id
- * @return true|array[false, int, string|null] true on success | false on failure
+ * @return true|array[int, string|null] true on success | array with error code on failure
  */
 function deleteEntry($conn, $table, $id)
 {
@@ -522,13 +658,16 @@ function deleteEntry($conn, $table, $id)
     $intId = (int) $id;
     $stmt->bind_param("i", $intId);
     if (!$stmt->execute()) {
-        return [false, 404];
+        return [404, json_encode(["error"=>"Not Found", "message"=>"Entry $intId not found in $table."])];
     }
     return true;
 }
 
-if (!in_array($uri[0], $listOfTables)) {
-    heaDie(404, json_encode(["error" => ["code" => "not_found", "table" => $uri[0]]], JSON_NUMERIC_CHECK));
+if (
+    !in_array($uri[0], $listOfTables) ||
+    ($uri[0] == $listOfTables[2] && $uri[1] == 8 && $_SERVER["REQUEST_METHOD"] != "GET") //prevent deletion of laughing cat
+) {
+    heaDie(404, json_encode(["error" => "not_found", "message" => $uri[0]], JSON_NUMERIC_CHECK));
 }
 
 switch ($_SERVER["REQUEST_METHOD"]) {
@@ -613,29 +752,60 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         heaDie(201, $return);
 
     case "PUT":
-        if (isset($data["id_checklists"], $data["name"], $data["description"])) {
-            $return = rewriteChecklistItem($conn, $data["id_checklists"], $data["name"], $data["description"]);
-            if (gettype($return) == "array" && !$return[0]) {
-                heaDie($return[1], $return[2] ?? null);
-            }
-            heaDie(200, $return);
-        } else {
-            heaDie(400);
+    if (isset($uri[1])) {
+        switch (array_search($uri[0], $listOfTables)) {
+            case 0:
+                $return = updateWholeChecklist($conn, $uri[1], $data["name"], $data["description"]);
+                break;
+            case 1:
+                $return = updateWholeVehicle($conn, $uri[1], $data["name"], $data["type"], $data["license_plate"], $data["code"], $data["last_maintenance"], $data["last_maintenance_km"], $data["next_maintenance"], $data["maintenance_interval_km"], $data["id_files"], $data["state"]);
+                break;
+            case 3:
+                $return = updateWholeUser($conn, $uri[1], $data["username"], $data["email"], $data["password"], $data["role"]);
+                break;
+            default:
+                heaDie(400);
         }
+        if (gettype($return) == "array") {
+            heaDie($return[0], $return[1] ?? null);
+        }
+    }else{
+        heaDie(400, json_encode(["error"=>"Bad Request", "message"=>"No id provided."]));
+    }
     case "PATCH":
-        if (
-            isset($data["id_checklists"], $data["column"]) &&
-            (isset($data["name"]) || isset($data["description"]))
-        ) {
-            $return = rewriteChecklistItemCell(
-                $conn,
-                $data["id_checklists"],
-                $data["column"],
-                $data["name"],
-                $data["description"],
-            );
-            if (gettype($return) == "array" && !$return[0]) {
-                heaDie($return[1], $return[2] ?? null);
+        if (isset($uri[1])) {
+            switch (array_search($uri[0], $listOfTables)) {
+                case 0:
+                $return = update($conn, $uri[0], $uri[1], $data, [
+                    "name",
+                    "description",
+                ]);
+                break;
+            case 1:
+                $return = update($conn, $uri[0], $uri[1], $data, [
+                    "name",
+                    "type",
+                    "license_plate",
+                    "code",
+                    "last_maintenance",
+                    "last_maintenance_km",
+                    "next_maintenance",
+                    "maintenance_interval_km",
+                    "id_files",
+                    "state",
+                ]);
+                break;
+            case 3:
+                $return = update($conn, $uri[0], $uri[1], $data, [
+                    "username",
+                    "email",
+                    "password",
+                    "role",
+                ]);
+                break;
+            }
+            if (gettype($return) == "array") {
+                heaDie($return[0], $return[1] ?? null);
             }
             heaDie(200, $return);
         } else {
@@ -643,6 +813,10 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         }
     case "DELETE":
         if (isset($uri[1])) {
+            if ($uri[0] == $listOfTables[0] && $uri[1] == 25) {
+                //prevent deletion of oil checklist (mandatory item)
+                heaDie(400, ["error" => "Bad Request", "message" => "Can't delete this checklist item."]);
+            }
             if (isset($uri[2])) {
                 if ($uri[0] == $listOfTables[1]) {
                     $return = removeChecklistFromVehicle($conn, $uri[1], $uri[2]);
@@ -650,8 +824,8 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             } else {
                 $return = deleteEntry($conn, $uri[0], $uri[1]);
             }
-            if (gettype($return) == "array" && !$return[0]) {
-                heaDie($return[1], $return[2] ?? null);
+            if (gettype($return) == "array") {
+                heaDie($return[0], $return[1] ?? null);
             }
             if ($return) {
                 heaDie(204);
