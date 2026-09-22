@@ -43,7 +43,7 @@ if ($currentHour >= 16) {
         AND i.`date` = latest.latest_date
     SET `state`='available'
     WHERE DATE(i.`date`) < CURDATE() 
-    AND `state` = 'in_use'")
+    AND `state` = 'in_use'");
 }
 
 /**
