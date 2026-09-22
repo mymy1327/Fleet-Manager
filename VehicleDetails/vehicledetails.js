@@ -1,99 +1,104 @@
 let carlist = document.getElementById("vehicle")
 let bob = new URLSearchParams(document.location.search)
 let name = bob.get("code")
-console.log(name)
+
 function getVehicleDetails(getcode) {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", `/api/vehicles?code=` + getcode, true);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.onload = () => {
-            console.log(`/api/vehicles`)
-            console.log(xhr.status)
-            console.log(1)
-            console.log(xhr.responseText)
-            intelligeble = JSON.parse(xhr.responseText)
-            console.log(intelligeble)
-            const placeforit = document.getElementById("vehicle");
-            let neededfr = ""
-            for (x in intelligeble){
-                // create id
-                let newId = /item-${i+1}/;
-                //create div
-                
-                //Article to be inside of
-                let newArticle = document.createElement("article")
-                newArticle.classList.add("card-garage");
-                newArticle.id = newId;
-                //set the imagebox
-                let picturebox = document.createElement("div")
-                picturebox.textContent = "heloeheohloerlherholershol"
-                picturebox.classList.add("panel")
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", `/api/vehicles?code=` + getcode, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.onload = () => {
 
-                //set the image
-                let picture = document.createElement("img")
-                picture.src = `/api/files/${(parseInt(intelligeble[x].id_files))}`;
-                picture.classList.add("Vehicle-image")
-                //set the div for everything else
-                let vehicledetails = document.createElement("div")
-                vehicledetails.classList.add("vehicle-details")
-                
-                let vehicleheading = document.createElement("div")
-                vehicleheading.classList.add("vehicle-heading")
-                let vehiclemodel = document.createElement("h2")
-                vehiclemodel.classList.add("vehicle-model")
-                vehiclemodel.textContent = intelligeble[x].name
-                let vehiclestatus = document.createElement("span")
-                vehiclestatus.classList.add("vehicle-status")
-                vehiclestatus.textContent = intelligeble[x].state
+        // debug
+        console.log(xhr.status)
+        console.log(xhr.responseText)
+        intelligeble = JSON.parse(xhr.responseText)
+        console.log(intelligeble)
+        //debug
+            
+        // the id location where the card element is placed
+        const placeforit = document.getElementById("vehicle");
+            
+        // defining a variable to set the amount of cards in one column (and rows)
+        let neededfr = ""
+            
+        // create unique id to be safe
+        for (x in intelligeble){
+            let newId = /item-${i+1}/;
+            //create div
+            
+            //Entire card element
+            let newArticle = document.createElement("article")
+            newArticle.classList.add("card-garage");
+            newArticle.id = newId;
 
-                let vehicletype = document.createElement("p")
-                vehicletype.textContent = intelligeble[x].type
-                vehicletype.classList.add("vehicle-type")
-                //set the type
-                let vehicledistance = document.createElement("p")
-                vehicledistance.classList.add("vehicle-distance")
-                vehicledistance.textContent = "no"
+            let picture = document.createElement("img")
+            picture.src = `/api/files/${(parseInt(intelligeble[x].id_files))}`;
+            picture.classList.add("Vehicle-image")
+            
+            let vehicledetails = document.createElement("div")
+            vehicledetails.classList.add("vehicle-details")
+            
+            let vehicleheading = document.createElement("div")
+            vehicleheading.classList.add("vehicle-heading")
+            
+            let vehiclemodel = document.createElement("h2")
+            vehiclemodel.classList.add("vehicle-model")
+            vehiclemodel.textContent = intelligeble[x].name
+            
+            let vehiclestatus = document.createElement("span")
+            vehiclestatus.classList.add("vehicle-status")
+            vehiclestatus.textContent = intelligeble[x].state
 
-                let vehiclelicense = document.createElement("span")
-                vehiclelicense.classList.add("vehicle-license")
-                vehiclelicense.textContent = intelligeble[x].license_plate
-                
-                let vehiclecode = document.createElement("p")
-                vehiclecode.classList.add("vehicle-code")
-                vehiclecode.textContent = intelligeble[x].code
+            let vehicletype = document.createElement("p")
+            vehicletype.textContent = intelligeble[x].type
+            vehicletype.classList.add("vehicle-type")
+            
+            let vehicledistance = document.createElement("p")
+            vehicledistance.classList.add("vehicle-distance")
+            vehicledistance.textContent = "no"
 
-                let visualisedvehiclecode = document.createElement("p")
-                vehiclecode.classList.add("vehicle-code")
-                console.log(parseInt(intelligeble[x].id_vehicles))
-                console.log(`https://developmenterasmus.kolojar.cz/inspection-student-form/index.html?id=${intelligeble[x].code}`)
-                visualizeqr(`https://developmenterasmus.kolojar.cz/vehicle/${intelligeble[x].code}`, visualisedvehiclecode)
+            let vehiclelicense = document.createElement("span")
+            vehiclelicense.classList.add("vehicle-license")
+            vehiclelicense.textContent = intelligeble[x].license_plate
                 
-                //append in div
+            let vehiclecode = document.createElement("p")
+            vehiclecode.classList.add("vehicle-code")
+            vehiclecode.textContent = intelligeble[x].code
+
+            let visualisedvehiclecode = document.createElement("p")
+            vehiclecode.classList.add("vehicle-code")
+            console.log(parseInt(intelligeble[x].id_vehicles))
+            console.log(`https://developmenterasmus.kolojar.cz/inspection-student-form/index.html?id=${intelligeble[x].code}`)
+            visualizeqr(`https://developmenterasmus.kolojar.cz/vehicle/${intelligeble[x].code}`, visualisedvehiclecode)
+            //End of Card element
+
+            //Appending
+            newArticle.appendChild(picture)
+            newArticle.appendChild(vehicledetails)
+            vehicledetails.appendChild(vehicleheading)
+            vehicleheading.appendChild(vehiclemodel)
+            vehicleheading.appendChild(vehiclestatus)
+            vehicledetails.appendChild(vehicletype)
+            vehicledetails.appendChild(vehicledistance)
+            vehicledetails.appendChild(vehiclelicense)
+            vehicledetails.appendChild(vehiclecode)
+            vehicledetails.appendChild(visualisedvehiclecode)
+            // "placeforit" being the id that it is placed upon
+            placeforit.appendChild(newArticle)
+            //Appending
                 
-                newArticle.appendChild(picture)
-                newArticle.appendChild(vehicledetails)
-                vehicledetails.appendChild(vehicleheading)
-                vehicleheading.appendChild(vehiclemodel)
-                vehicleheading.appendChild(vehiclestatus)
-                vehicledetails.appendChild(vehicletype)
-                vehicledetails.appendChild(vehicledistance)
-                vehicledetails.appendChild(vehiclelicense)
-                vehicledetails.appendChild(vehiclecode)
-                vehicledetails.appendChild(visualisedvehiclecode)
-                placeforit.appendChild(newArticle)
                 
+            // add an extra 1fr for every div created
+            neededfr += "1fr "
                 
-                // add an extra 1fr for every div created
-                neededfr += "1fr "
-                
-            }
-            vehicle.style.gridTemplateColumns = neededfr/2 
-            console.log(carlist.style.gridTemplateColumns)
-            vehicle.style.gridTemplateRows = neededfr/4
-            //document.getElementById("demo1").innerHTML = xhr.status + "<br>" + xhr.responseText;
-        };
-        xhr.send();
-    }
+        }
+        vehicle.style.gridTemplateColumns = neededfr/2 
+        console.log(carlist.style.gridTemplateColumns)
+        vehicle.style.gridTemplateRows = neededfr/4
+        //document.getElementById("demo1").innerHTML = xhr.status + "<br>" + xhr.responseText;
+    };
+    xhr.send();
+}
 getVehicleDetails(bob.get("code"))
 
 // QR CODE 

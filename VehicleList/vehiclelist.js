@@ -25,6 +25,7 @@ function getAllInspections(changing, vehicleId = null) {
         };
         xhr.send();
     }
+
 function getVehicleDetails(vehicleId) {
         const xhr = new XMLHttpRequest();
         xhr.open("GET", `http://${ip}/api/vehicles`, true);
@@ -62,9 +63,13 @@ function getVehicleDetails(vehicleId) {
 
                 let vehicleheading = document.createElement("div")
                 vehicleheading.classList.add("vehicle-heading")
+
                 let vehiclemodel = document.createElement("h2")
                 vehiclemodel.classList.add("vehicle-model")
                 vehiclemodel.textContent = intelligeble[x].name
+                if ((intelligeble[x].name).length > 10){
+                    vehiclemodel.classList.add("long")
+                }
                 let vehiclestatus = document.createElement("span")
                 vehiclestatus.classList.add(`vehicle-status`)
                 vehiclestatus.classList.add(`${intelligeble[x].state}`)
