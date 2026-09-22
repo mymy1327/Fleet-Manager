@@ -1,31 +1,177 @@
-function getVehicleDetails(vehicleId) {
+let carlist = document.getElementById("vehicle")
+let bob = new URLSearchParams(document.location.search)
+let name = bob.get("code")
+console.log(name)
+function getVehicleDetails(getcode) {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", `http://${ip}/api/vehicles?code=` + vehicleId, true);
+        xhr.open("GET", `/api/vehicles?code=` + getcode, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
-            // work with response here (code: xhr.status, json response: xhr.responseText)
+            console.log(`/api/vehicles`)
+            console.log(xhr.status)
+            console.log(1)
             console.log(xhr.responseText)
+            intelligeble = JSON.parse(xhr.responseText)
+            console.log(intelligeble)
+            const placeforit = document.getElementById("vehicle");
+            let neededfr = ""
+            for (x in intelligeble){
+                // create id
+                let newId = /item-${i+1}/;
+                //create div
+                
+                //Article to be inside of
+                let newArticle = document.createElement("article")
+                newArticle.classList.add("card-garage");
+                newArticle.id = newId;
+                //set the imagebox
+                let picturebox = document.createElement("div")
+                picturebox.textContent = "heloeheohloerlherholershol"
+                picturebox.classList.add("panel")
+
+                //set the image
+                let picture = document.createElement("img")
+                picture.src = `/api/files/${(parseInt(intelligeble[x].id_files))}`;
+                picture.classList.add("Vehicle-image")
+                //set the div for everything else
+                let vehicledetails = document.createElement("div")
+                vehicledetails.classList.add("vehicle-details")
+                
+                let vehicleheading = document.createElement("div")
+                vehicleheading.classList.add("vehicle-heading")
+                let vehiclemodel = document.createElement("h2")
+                vehiclemodel.classList.add("vehicle-model")
+                vehiclemodel.textContent = intelligeble[x].name
+                let vehiclestatus = document.createElement("span")
+                vehiclestatus.classList.add("vehicle-status")
+                vehiclestatus.textContent = intelligeble[x].state
+
+                let vehicletype = document.createElement("p")
+                vehicletype.textContent = intelligeble[x].type
+                vehicletype.classList.add("vehicle-type")
+                //set the type
+                let vehicledistance = document.createElement("p")
+                vehicledistance.classList.add("vehicle-distance")
+                vehicledistance.textContent = "no"
+
+                let vehiclelicense = document.createElement("span")
+                vehiclelicense.classList.add("vehicle-license")
+                vehiclelicense.textContent = intelligeble[x].license_plate
+                
+                let vehiclecode = document.createElement("p")
+                vehiclecode.classList.add("vehicle-code")
+                vehiclecode.textContent = intelligeble[x].code
+
+                let visualisedvehiclecode = document.createElement("p")
+                vehiclecode.classList.add("vehicle-code")
+                console.log(parseInt(intelligeble[x].id_vehicles))
+                console.log(`https://developmenterasmus.kolojar.cz/inspection-student-form/index.html?id=${intelligeble[x].code}`)
+                visualizeqr(`https://developmenterasmus.kolojar.cz/vehicle/${intelligeble[x].code}`, visualisedvehiclecode)
+                
+                //append in div
+                
+                newArticle.appendChild(picture)
+                newArticle.appendChild(vehicledetails)
+                vehicledetails.appendChild(vehicleheading)
+                vehicleheading.appendChild(vehiclemodel)
+                vehicleheading.appendChild(vehiclestatus)
+                vehicledetails.appendChild(vehicletype)
+                vehicledetails.appendChild(vehicledistance)
+                vehicledetails.appendChild(vehiclelicense)
+                vehicledetails.appendChild(vehiclecode)
+                vehicledetails.appendChild(visualisedvehiclecode)
+                placeforit.appendChild(newArticle)
+                
+                
+                // add an extra 1fr for every div created
+                neededfr += "1fr "
+                
+            }
+            vehicle.style.gridTemplateColumns = neededfr/2 
+            console.log(carlist.style.gridTemplateColumns)
+            vehicle.style.gridTemplateRows = neededfr/4
+            //document.getElementById("demo1").innerHTML = xhr.status + "<br>" + xhr.responseText;
         };
         xhr.send();
     }
-console.log("bre")
+getVehicleDetails(bob.get("code"))
 
-const navLinks = document.querySelectorAll("[data-view]");
-const viewSections = document.querySelectorAll("[data-view-content]");
+// QR CODE 
+
+/*
+ * QR Code generator output demo (TypeScript)
+ *
+ * Copyright (c) Project Nayuki. (MIT License)
+ * https://www.nayuki.io/page/qr-code-generator-library
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ * - The above copyright notice and this permission notice shall be included in
+ *   all copies or substantial portions of the Software.
+ * - The Software is provided "as is", without warranty of any kind, express or
+ *   implied, including but not limited to the warranties of merchantability,
+ *   fitness for a particular purpose and noninfringement. In no event shall the
+ *   authors or copyright holders be liable for any claim, damages or other
+ *   liability, whether in an action of contract, tort or otherwise, arising from,
+ *   out of or in connection with the Software or the use or other dealings in the
+ *   Software.
+ */
+
+function visualizeqr(code, changing) {
+        const text = code; // User-supplied Unicode text
+        const errCorLvl = qrcodegen.QrCode.Ecc.LOW; // Error correction level
+        const qr = qrcodegen.QrCode.encodeText(text, errCorLvl); // Make the QR Code symbol
+        drawCanvas(qr, 10, 4, "#FFFFFF", "#000000", appendCanvas("", changing)); // Draw it on screen
+    }
+    // Creates a variety of QR Codes that exercise different features of the library, and appends each one to the document.
+    
+   
+    function appendCanvas(caption, theonetochange) {
+        let result = document.createElement("canvas");
+        theonetochange.appendChild(result);
+        return result;
+    }
+    // Draws the given QR Code, with the given module scale and border modules, onto the given HTML
+    // canvas element. The canvas's width and height is resized to (qr.size + border * 2) * scale.
+    // The drawn image is purely dark and light, and fully opaque.
+    // The scale must be a positive integer and the border must be a non-negative integer.
+    function drawCanvas(qr, scale, border, lightColor, darkColor, canvas) {
+        if (scale <= 0 || border < 0)
+            throw new RangeError("Value out of range");
+        const width = (qr.size + border * 2) * scale;
+        canvas.width = width;
+        canvas.height = width;
+        let ctx = canvas.getContext("2d");
+        for (let y = -border; y < qr.size + border; y++) {
+            for (let x = -border; x < qr.size + border; x++) {
+                ctx.fillStyle = qr.getModule(x, y) ? darkColor : lightColor;
+                ctx.fillRect((x + border) * scale, (y + border) * scale, scale, scale);
+            }
+        }
+    }
+    function toUtf8ByteArray(str) {
+        str = encodeURI(str);
+        let result = [];
+        for (let i = 0; i < str.length; i++) {
+            if (str.charAt(i) != "%")
+                result.push(str.charCodeAt(i));
+            else {
+                result.push(parseInt(str.substring(i + 1, i + 3), 16));
+                i += 2;
+            }
+        }
+        return result;
+    }
+
+
 const languageSwitch = document.querySelector("[data-language-switch]");
 
-function render() {
-    const view = location.hash.slice(1) || "home";
-    const activeView = document.querySelector(`[data-view-content="${view}"]`) || document.querySelector('[data-view-content="home"]');
-    viewSections.forEach(section => { section.hidden = section !== activeView; });
-    navLinks.forEach(link => link.classList.toggle("active", link.dataset.view === activeView.dataset.viewContent));
-}
-
-window.addEventListener("hashchange", render);
 
 languageSwitch?.addEventListener("click", () => {
     const targetPage = location.pathname.endsWith("Index_fi.html") ? "Index_en.html" : "Index_fi.html";
     window.location.href = `${targetPage}${location.hash}`;
 });
-
-render();
