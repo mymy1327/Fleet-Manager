@@ -684,6 +684,10 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             $filterColumn = "code";
             $filter = $_GET["code"];
         }
+        elseif (isset($_GET["id_users"]) && !is_null($_GET["id_users"]) && $_GET["id_users"] != ""){
+            $filterColumn = "id_users";
+            $filter = $_GET["id_users"];
+        }
         if (!isset($uri[1])) {
             $return = getFullTable($conn, $uri[0], $filterColumn, $filter);
             if (gettype($return) == "array" && !$return[0]) {

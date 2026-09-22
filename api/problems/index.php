@@ -30,6 +30,7 @@ $data = json_decode(file_get_contents("php://input"), true);
  */
 function getFullTable($conn, $table = "problems", $filterColumn, $filter)
 {
+    $table = $table ?? "problems";
     //logToConsole($filter);
     if (isset($filterColumn)) {
         $stmt = $conn->prepare("SELECT * FROM `$table` WHERE `$filterColumn` = ?");
