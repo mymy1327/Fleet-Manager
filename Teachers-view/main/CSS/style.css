@@ -354,17 +354,9 @@ button:disabled, button:hover:disabled {
 
 .vehicle-model {
   display: block;
-  white-space: whitespace-collapse;
-  width: max-content;
-  overflow: visible;
-}
-.vehicle-model .long {
-  animation: scroll 1.2s linear infinite;
-}
-
-@keyframes scroll {
-  0%   { transform: translateX(120%); }
-  100% { transform: translateX(-120%); }
+  white-space: pre;
+  overflow: auto;
+  margin: 0;
 }
 
 .vehicle-status {
