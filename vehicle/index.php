@@ -12,19 +12,11 @@ if (!$code) {
     http_response_code(400);
     die("Missing vehicle code");
 }
+
+$newUrl = "https://developmenterasmus.kolojar.cz/inspection-student-form/index.html?code=".$code;
+header("Location: ".$newUrl);
+die();
 ?>
 
 <script>
-const restapi = "https://developmenterasmus.kolojar.cz";
-const code = "<?php echo $code; ?>";
-console.log(code);
-const xhr = new XMLHttpRequest();
-xhr.open("GET", restapi + "/api/vehicles?code=" + code, true);
-xhr.setRequestHeader("Content-Type", "application/json");
-xhr.onload = () => {
-    let id = JSON.parse(xhr.responseText)[0]["id_vehicles"];
-    window.location = "https://developmenterasmus.kolojar.cz/inspection-student-form/index.html?id=" + id;
-};
-xhr.send();
-
 </script>
