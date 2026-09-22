@@ -84,19 +84,9 @@ a {
     fill: currentColor;
 }
 
-.brand-mark .svg-icon {
-    width: 16px;
-    height: 16px;
-}
-
 .nav-icon {
     /* Keeps a navigation icon aligned with its label. */
     display: inline-flex;
-}
-
-.nav-icon .svg-icon {
-    width: 14px;
-    height: 14px;
 }
 
 .brand strong {
@@ -283,7 +273,6 @@ button:disabled, button:hover:disabled {
 }
 
 /* Summary cards and their small status icons. */
-.card,
 .card-teacher-main-page,
 .panel {
     background: var(--surface);
@@ -312,21 +301,6 @@ button:disabled, button:hover:disabled {
     color: var(--blue);
     background: #eaf2ff;
     font-size: 14px;
-}
-
-.card-icon.available {
-    color: var(--green);
-    background: #4be237;
-}
-
-.card-icon.occupied {
-    color: var(--orange);
-    background: #fff6e5;
-}
-
-.card-icon.notInUse {
-    color: var(--red);
-    background: #fff0f1;
 }
 
 .card-value {
@@ -377,7 +351,7 @@ button:disabled, button:hover:disabled {
     border-radius: 5px;
     background-color: var(--background);
     width: 100%;
-    height: 45%;
+    height: var(--vehicle-image-height, 45%);
     object-fit: cover;
 }
 
@@ -392,6 +366,8 @@ button:disabled, button:hover:disabled {
     display: flex;
     justify-content: space-between;
     gap: 5cqi;
+    padding: 10px;
+    border-bottom: 1px solid #0570fc;
 }
 
 .vehicle-model {
@@ -533,11 +509,6 @@ button:disabled, button:hover:disabled {
 }
 
 
-.empty-icon .svg-icon {
-    width: 50px;
-    height: 50px;
-}
-
 /* Report tables, filters, and time-period controls. */
 .table-panel {
     min-height: 142px;
@@ -666,11 +637,66 @@ button:disabled, button:hover:disabled {
     }
 }
 
+/* Standalone VehicleList page customization. These rules do not affect the dashboard pages. */
+.vehicle-list-page {
+    --vehicle-list-page-background: var(--background);
+    --vehicle-list-content-width: 1100px;
+    --vehicle-list-gap: 16px;
+    --vehicle-image-height: 180px;
+    background: var(--vehicle-list-page-background);
+}
+
+.page {
+    
+}
+
+.vehicle-list-page .vehicle-list-main {
+    width: min(var(--vehicle-list-content-width), calc(100% - 32px));
+    margin: 22px auto;
+}
+
+.vehicle-list-page .vehicle-list-section {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--vehicle-list-gap);
+    padding: var(--vehicle-list-gap);
+    background: var(--garageListBackground);
+}
+
+.vehicle-list-page .vehicle-list-section .card-garage {
+    margin: 0;
+}
+
+.vehicle-list-page .vehicle-list-section .Vehicle-image {
+    height: var(--vehicle-image-height);
+}
+
+.vehicle-list-page .vehicle-list-section .vehicle-details {
+    padding: 16px;
+}
+
+@media (max-width: 760px) {
+    .vehicle-list-page .vehicle-list-section {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 520px) {
+    .vehicle-list-page .vehicle-list-main {
+        width: calc(100% - 24px);
+        margin-top: 16px;
+    }
+
+    .vehicle-list-page .vehicle-list-section {
+        grid-template-columns: 1fr;
+    }
+}
+
 @media (max-width: 520px) {
     /* Use one-column panels and tighter spacing on narrow phones. */
     .page {
         width: calc(100% - 24px);
         margin-top: 16px;
+        zoom: 0.6;
     }
 
     .page-heading {
@@ -699,17 +725,60 @@ button:disabled, button:hover:disabled {
     margin-top: 26px;
 }
 
-.vehicle-page-shell .vehicle-back,
+.vehicle-detail-heading {
+    display: flex;
+    align-items: center;
+    min-height: 10px;
+    margin-bottom: 16px;
+}
+
+.vehicle-info-panel > .card-garage {
+    margin: 0;
+    border: 0;
+    box-shadow: none;
+}
+
+.vehicle-info-panel > .card-garage > a {
+    display: block;
+}
+
+.vehicle-info-panel .Vehicle-image {
+    height: 132px;
+    width: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+}
+
+.vehicle-info-panel .vehicle-details {
+    padding: 12px 0 0;
+}
+
+.vehicle-info-panel .vehicle-heading {
+    padding: 0 0 8px;
+    border-bottom: 0;
+}
+
+.vehicle-info-panel .vehicle-model {
+    font-size: 20px;
+}
+
+.vehicle-info-panel .vehicle-status {
+    width: 90px;
+    height: 28px;
+    padding: 3px 8px;
+    border-radius: 14px;
+    font-size: 15px;
+}
+
 .vehicle-page-shell .inspection-tab,
-.vehicle-page-shell .qr-button,
-.vehicle-page-shell .qr-link a,
-.vehicle-page-shell .edit-vehicle-button,
 .vehicle-page-shell .nav-disabled {
     /* These mockup controls are displayed but intentionally do nothing. */
     pointer-events: none;
     cursor: default;
 }
 
+/* main box for inspections tab */
 .vehicle-detail-layout {
     /* Vehicle information on the left, inspections on the right. */
     display: grid;
@@ -724,254 +793,13 @@ button:disabled, button:hover:disabled {
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: 12px;
-    box-shadow: 0 1px 1px #eef1f5;
+    box-shadow: 3px 3px 2px #00000036;
 }
 
+/* Info panel for vehicle details. */
 .vehicle-info-panel {
     padding: 14px 14px 18px;
-}
-
-.vehicle-card-head {
-    /* Vehicle name row with back arrow and status badge. */
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    height: 28px;
-    margin-bottom: 12px;
-}
-
-.vehicle-back {
-    /* Decorative back arrow kept visually consistent with the mockup. */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    color: #6d7788;
-    font-size: 22px;
-    line-height: 1;
-    text-decoration: none;
-}
-
-.vehicle-card-name {
-    flex: 1 1 auto;
-    min-width: 0;
-    overflow: hidden;
-    margin: 0;
-    font-size: 16px;
-    line-height: 1.2;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-.vehicle-state {
-    /* Status badge for the selected vehicle. */
-    margin-left: auto;
-    flex: 0 0 92px;
-    padding: 4px 5px;
-    border-radius: 999px;
-    border: 1px solid #d5e1f8;
-    background: #edf4ff;
-    color: #2d5ca7;
-    font-size: 10px;
-    font-weight: 700;
-    text-align: center;
-    white-space: nowrap;
-}
-
-.vehicle-state.in_use {
-    border-color: #f6d98d;
-    background: #fff3cd;
-    color: #8d6b00;
-}
-
-.vehicle-state.available {
-    border-color: #9bd6b0;
-    background: #eafaf0;
-    color: #1d7f58;
-}
-
-.vehicle-state.disabled {
-    border-color: #d9dfe8;
-    background: #f1f3f7;
-    color: #667688;
-}
-
-.vehicle-image-box {
-    /* Fixed-height image area so the detail layout does not shift. */
-    display: grid;
-    place-items: center;
-    height: 170px;
-    margin-bottom: 14px;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    background: #efeff1;
-    overflow: hidden;
-}
-
-.vehicle-image-box img {
-    /* Crop a real vehicle image to fill the image area. */
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.vehicle-meta {
-    /* Vertical list of vehicle properties. */
-    display: grid;
-    gap: 8px;
-}
-
-.vehicle-info-heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 24px;
-    margin-bottom: 8px;
-    color: var(--text);
-    font-size: 11px;
-}
-
-.edit-vehicle-button {
-    flex: 0 0 58px;
-    height: 24px;
-    overflow: hidden;
-    padding: 5px 9px;
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    color: var(--blue);
-    background: var(--surface);
-    font-size: 10px;
-    cursor: default;
-    white-space: nowrap;
-}
-
-.meta-row {
-    /* Label above value keeps each property easy to scan. */
-    display: grid;
-    min-height: 31px;
-    gap: 3px;
-}
-
-.meta-label {
-    color: var(--lessImportantText);
-    font-size: 10px;
-}
-
-.meta-value {
-    min-width: 0;
-    overflow: hidden;
-    color: var(--text);
-    font-size: 12px;
-    font-weight: 600;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-.status-blocks {
-    /* Stack overdue inspection and maintenance warnings. */
-    display: grid;
-    gap: 12px;
-    margin-top: 18px;
-}
-
-.status-card {
-    /* Pale red warning surface for an overdue vehicle item. */
-    padding: 10px 12px 12px;
-    border: 1px solid #f0b8c0;
-    border-radius: 10px;
-    background: #fff5f6;
-}
-
-.status-top {
-    /* Warning title, icon, and state arranged in one row. */
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    margin-bottom: 8px;
-    color: #2f3a4a;
-    font-size: 11px;
-    font-weight: 700;
-}
-
-.status-top strong {
-    margin-left: auto;
-    color: #d85d6c;
-    font-size: 9px;
-}
-
-.status-icon {
-    color: #ea5d74;
-    font-size: 12px;
-}
-
-.status-row {
-    /* Warning dates aligned at opposite sides of the row. */
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    color: #7f8a9d;
-    font-size: 10px;
-}
-
-.status-row span:last-child {
-    color: #2c3b52;
-    font-weight: 600;
-}
-
-.qr-card {
-    /* Local student inspection link and code area. */
-    margin-top: 18px;
-    padding: 12px 12px 11px;
-    border: 1px solid #dfe7f4;
-    border-radius: 10px;
-    background: #f5f8ff;
-}
-
-.qr-title {
-    margin-bottom: 10px;
-    font-size: 11px;
-    font-weight: 700;
-}
-
-.qr-code {
-    /* Emphasized vehicle code shown in the QR section. */
-    display: grid;
-    place-items: center;
-    min-height: 38px;
-    border-radius: 8px;
-    background: #edf3ff;
-    color: #214a86;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-}
-
-.qr-link {
-    /* Wrap long local inspection URLs without changing the card width. */
-    margin-top: 10px;
-    color: var(--lessImportantText);
-    font-size: 10px;
-    line-height: 1.5;
-}
-
-.qr-link a {
-    color: var(--blue);
-    word-break: break-all;
-}
-
-.qr-button {
-    /* Full-width mockup action below the QR information. */
-    width: 100%;
-    height: 32px;
-    margin-top: 12px;
-    border: 0;
-    border-radius: 8px;
-    background: var(--blue);
-    color: white;
-    font-size: 11px;
-    cursor: pointer;
+    box-shadow: 3px 3px 2px #00000036;
 }
 
 .vehicle-inspection-panel {
@@ -1009,7 +837,7 @@ button:disabled, button:hover:disabled {
     /* Large empty inspection area beneath the tabs. */
     display: grid;
     place-items: center;
-    min-height: 220px;
+    min-height: 259px;
     border: 1px solid var(--line);
     border-radius: 12px;
     background: #f7f8f9;
