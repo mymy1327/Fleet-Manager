@@ -277,7 +277,7 @@ function renderQuestion() {
             </div>
             ${description ? `<p class="question-description">${escapeHTML(description)}</p>` : ""}
             <div class="question-content">
-                ${isOilQuestion ? renderOilPhoto() : ""}
+                ${isOilQuestion && !hasFault ? renderOilPhoto() : ""}
                 <div id="answerOptions" class="question-options"></div>
             </div>
             <div id="faultContainer" class="fault-container" style="${hasFault ? "" : "display:none;"}"></div>
@@ -286,9 +286,9 @@ function renderQuestion() {
 
     renderAnswerOptions(checklist);
 
-    if (isOilQuestion) {
-        setupOilCamera();
-    }
+    if (isOilQuestion && !hasFault) {
+    setupOilCamera();
+}
 
     restoreCurrentAnswer();
     renderProgress();
