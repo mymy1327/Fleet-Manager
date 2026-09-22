@@ -30,8 +30,9 @@
     </p>
 
 <div id="demo1"></div>
-<input id="filterVehicles" placeholder="filter vehicles by code" />
-<button onclick="getAllVehicles(document.getElementById('filterVehicles').value)">get all vehicles</button><br />
+<input id="filterVehiclesCode" placeholder="filter vehicles by code" />
+<input id="filterVehiclesState" placeholder="filter vehicles by state" />
+<button onclick="getAllVehicles(document.getElementById('filterVehiclesCode').value, document.getElementById('filterVehiclesState').value)">get all vehicles</button><br />
 <div id="demo2"></div>
 <input id="vehicleId" placeholder="vehicle id" />
 <button onclick="getVehicleDetails(document.getElementById('vehicleId').value)">get vehicle details</button><br />
@@ -446,9 +447,9 @@
     const restapi = "https://developmenterasmus.kolojar.cz";
     //const restapi = "http://127.0.0.1:5501";
 
-    function getAllVehicles(code = null) {
+    function getAllVehicles(code = null, state = null) {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", restapi + "/api/vehicles?code=" + code, true); // ?code can be removed
+        xhr.open("GET", restapi + "/api/vehicles?code=" + code+"&state="+state, true); // ?code can be removed
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             // work with response here (code: xhr.status, json response: xhr.responseText)

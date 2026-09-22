@@ -674,19 +674,21 @@ switch ($_SERVER["REQUEST_METHOD"]) {
     case "GET":
         $filterColumn = null;
         $filter = null;
-        if (isset($_GET["id_vehicles"]) && !is_null($_GET["id_vehicles"]) && $_GET["id_vehicles"] != "") {
+        if (isset($_GET["id_vehicles"]) && !is_null($_GET["id_vehicles"]) && $_GET["id_vehicles"] != "" && in_array($uri[0], [$listOfTables[0], $listOfTables[4]])) {
             $filterColumn = "id_vehicles";
             $filter = $_GET["id_vehicles"];
             if ($uri[0] == $listOfTables[0]) {
                 heaDie(200, json_encode(getAllChecklistItemsForVehicle($conn, $filter), JSON_NUMERIC_CHECK));
             }
-        } elseif (isset($_GET["code"]) && !is_null($_GET["code"]) && $_GET["code"] != "") {
+        } elseif (isset($_GET["code"]) && !is_null($_GET["code"]) && $_GET["code"] != "" && in_array($uri[0], [$listOfTables[1]])) {
             $filterColumn = "code";
             $filter = $_GET["code"];
-        }
-        elseif (isset($_GET["id_users"]) && !is_null($_GET["id_users"]) && $_GET["id_users"] != ""){
+        } elseif (isset($_GET["id_users"]) && !is_null($_GET["id_users"]) && $_GET["id_users"] != "" && in_array($uri[0], [$listOfTables[4]])){
             $filterColumn = "id_users";
             $filter = $_GET["id_users"];
+        } elseif (isset($_GET["state"]) && !is_null($_GET["state"]) && $_GET["state"] != "" && in_array($uri[0], [$listOfTables[1]])){
+            $filterColumn = "state";
+            $filter = $_GET["state"];
         }
         if (!isset($uri[1])) {
             $return = getFullTable($conn, $uri[0], $filterColumn, $filter);
