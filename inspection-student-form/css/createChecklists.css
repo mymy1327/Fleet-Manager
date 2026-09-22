@@ -188,7 +188,7 @@
     border-radius: 20px;
     background: #eeeeee;
     color: #555;
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .checklist-list {
@@ -249,13 +249,13 @@
 .checklist-item-name {
     margin-bottom: 5px;
     color: #222;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
 }
 
 .checklist-item-description {
     color: #777;
-    font-size: 12px;
+    font-size: 14px;
     line-height: 1.4;
 }
 
@@ -265,7 +265,7 @@
     border-radius: 6px;
     background: #eeeeee;
     color: #333;
-    font-size: 12px;
+    font-size: 13px;
     cursor: pointer;
 }
 
@@ -340,12 +340,12 @@
 }
 
 .checklist-btn-submit {
-    background: #2f80ed;
+    background: #2868cb;
     color: #fff;
 }
 
 .checklist-btn-submit:hover {
-    background: #256dcc;
+    background: #1554b5;
 }
 
 @media (max-width: 700px) {
