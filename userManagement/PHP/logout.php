@@ -1,5 +1,21 @@
 <?php
 session_start();
+
+//Clear cookies
+setcookie('remember_me_username', '', [
+    'expires'  => time() - 30 * 24 * 3600,
+    'path'     => '/',
+    'secure'   => true,
+    'httponly' => true,
+    'samesite' => 'Lax',
+]);
+setcookie('remember_me_password', '', [
+    'expires'  => time() - 30 * 24 * 3600,
+    'path'     => '/',
+    'secure'   => true,
+    'httponly' => true,
+    'samesite' => 'Lax',
+]);
 $_SESSION["login"] = "";
 ?>
 

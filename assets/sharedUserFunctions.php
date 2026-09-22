@@ -1,7 +1,13 @@
 <?php
 require_once __DIR__ . "/../errorPages/PHP/errorManager.php";
 $API = "https://developmenterasmus.kolojar.cz/api";
-function CheckAccessSession(array $roles)
+/**
+ * Checks if user id in session is possible to login
+ * @param array $roles Array of allowed roles
+ * @param bool $displayError If should render error page or not
+ * @return bool If access allowed
+ */
+function CheckAccessSession(array $roles, bool $displayError = true): bool
 {
     //Start session if needed
     if (session_status() != PHP_SESSION_ACTIVE) {
@@ -9,23 +15,40 @@ function CheckAccessSession(array $roles)
     }
 
     //Set session value if needed
-    if (!isset($_SESSION["login"]) || $_SESSION["login"] == "") {
-        $_SESSION["login"] = "-1";
+    if (!isset($_SESSION["login"]) || $_SESSION["login"] == "" || $_SESSION["login"] == "-1") {
+        if (isset($_COOKIE["remember_me_username"]) && isset($_COOKIE["remember_me_password"])) {
+            $result = HandleLogin( $_COOKIE["remember_me_username"],$_COOKIE["remember_me_password"],true,null);
+            if($result["code"] === 200) {
+                $_SESSION["login"]  = $result["id"];
+            } else {
+                 $_SESSION["login"] = "-1";
+            }
+        } else {
+            $_SESSION["login"] = "-1";
+        }
     }
 
     //Check access
-    $result = CheckAccess($_SESSION["login"], $roles);
+    $result = CheckAccess($_SESSION["login"], $roles, $displayError);
     if ($result === true) {
-        return;
+        return true;
     }
 
     //Deny on error
     if ($_SESSION["login"] == "-1") {
-        HandleError(401);
-        die();
+        if ($displayError) {
+            HandleError(401);
+            die();
+        } else {
+            return false;
+        }
     }
-    HandleError($result);
-    die();
+    if ($displayError) {
+        HandleError($result);
+        die();
+    } else {
+        return false;
+    }
 }
 
 function CheckAccess(int $user, array $roles): int|true
@@ -44,17 +67,116 @@ function CheckAccess(int $user, array $roles): int|true
 }
 
 /**
- * Sends request to API
- * @param path Path at API URL
- * @param method HTTP Method
- * @param body Data for method body - will be converted to JSON
+ * Handles login of user
+ * @param string $username Username
+ * @param string $password Password
+ * @param bool $rememberMe Remember user
+ * @param string|null $next Next URL, can be null
+ * @param mixed Result of login
+ */
+function HandleLogin(string $username, string $password, bool $rememberMe, string|null $next): mixed {
+    //Handle login - Get user info form API
+    $users = SendRequestToAPI("/users","GET");
+    if($users === false) {
+        $result = [];
+        $result["code"] = 503;
+        $result["message"] = "API not available!";
+        return $result;
+    }
+
+    //Find user
+    foreach ($users as $user) {
+        if ($user["username"] == $username) {
+            //Verify password
+            if (password_verify($password, $user["password"])) {
+                //Remember me
+                if($rememberMe) {
+                setcookie('remember_me_username', $username, [
+                    'expires'  => time() + 30 * 24 * 3600,
+                    'path'     => '/',
+                    'secure'   => true,
+                    'httponly' => true,
+                    'samesite' => 'Lax',
+                ]);
+                setcookie('remember_me_password',$password, [
+                    'expires'  => time() + 30 * 24 * 3600,
+                    'path'     => '/',
+                    'secure'   => true,
+                    'httponly' => true,
+                    'samesite' => 'Lax',
+                ]);
+                }
+
+                //Redirect to valid password
+                $_SESSION["login"] = $user["id_users"];
+                $result = [];
+                if($next !== null) {
+                    if($user["role"] == "admin") {
+                        $result["next"] = "./admin.php";
+                    } else if($user["role"] == "user") {
+                        $result["next"] = "../../userDashboard/PHP/index.php";
+                    }
+                } else {
+                    $result["next"] = $next;
+                }
+                $result["id"] = $user["id_users"];
+                $result["code"] = 200;
+                $result["message"] = "";
+                return $result;
+            }
+            //Clear cookies
+            setcookie('remember_me_username', '', [
+                'expires'  => time() - 30 * 24 * 3600,
+                'path'     => '/',
+                'secure'   => true,
+                'httponly' => true,
+                'samesite' => 'Lax',
+            ]);
+            setcookie('remember_me_password', '', [
+                'expires'  => time() - 30 * 24 * 3600,
+                'path'     => '/',
+                'secure'   => true,
+                'httponly' => true,
+                'samesite' => 'Lax',
+            ]);
+            $result = [];
+            $result["code"] = 401;
+            $result["message"] = "Invalid password!";
+            return $result;
+        }
+    }
+    //Clear cookies
+    setcookie('remember_me_username', '', [
+        'expires'  => time() - 30 * 24 * 3600,
+        'path'     => '/',
+        'secure'   => true,
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+    setcookie('remember_me_password', '', [
+        'expires'  => time() - 30 * 24 * 3600,
+        'path'     => '/',
+        'secure'   => true,
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+    $result = [];
+    $result["code"] = 404;
+    $result["message"] = "User not found!";
+    return $result;
+}
+
+/**
+ * Sends request to URL
+ * @param string $url Target URL
+ * @param string $method HTTP Method
+ * @param mixed $body Data for method body - will be converted to JSON
  * @return false|mixed Returns false when error or JSON object as mixed on success
  */
-function SendRequestToAPI(string $path, string $method = "GET", mixed $body = null): mixed
+function SendRequestToURL(string $url, string $method = "GET", mixed $body = null): mixed
 {
     //Prepare cURL
-    global $API;
-    $curl = curl_init($API . $path);
+    $curl = curl_init($url);
 
     //Setup headers
     $headers = ["User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36", "Accept: application/json"];
@@ -97,12 +219,25 @@ function SendRequestToAPI(string $path, string $method = "GET", mixed $body = nu
     $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
     curl_close($curl);
     if ($httpCode < 200 || $httpCode >= 300) {
-        error_log("API Error: HTTP status code " . $httpCode . " returned from " . $API . $path);
+        error_log("API Error: HTTP status code " . $httpCode . " returned from " . $url);
         return false;
     }
 
     //Decode responce
     return json_decode($response, true);
+}
+
+/**
+ * Sends request to API
+ * @param string $path Path at API URL
+ * @param string $method HTTP Method
+ * @param string $body Data for method body - will be converted to JSON
+ * @return false|mixed Returns false when error or JSON object as mixed on success
+ */
+function SendRequestToAPI(string $path, string $method = "GET", mixed $body = null): mixed
+{
+    global $API;
+    return SendRequestToURL($API . $path,$method, $body);
 }
 
 /**
@@ -149,13 +284,13 @@ function HandleError(int $code, string|null $message = null, string|null $from =
     $url = PathToURL($path);
 
     //Chceck if from is null
-    if($from === null) {
-        $from = $_SERVER['REQUEST_URI'];
+    if ($from === null) {
+        $from = $_SERVER["REQUEST_URI"];
     }
 
     //Handle redirect
     if ($redirect === true) {
-        $url = "Location: " . $url . "?from=" . rawurlencode($from) . "&lang=" . rawurlencode($lang) ;
+        $url = "Location: " . $url . "?from=" . rawurlencode($from) . "&lang=" . rawurlencode($lang);
         if ($message !== null) {
             $url .= "&message=" . urlencode($message);
         }

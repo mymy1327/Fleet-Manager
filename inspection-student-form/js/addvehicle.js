@@ -40,6 +40,10 @@ document.addEventListener("keydown", (event) => {
     }
 
 });
+//Show image preview
+function imagePreview (file) {
+    
+}
 //Create functions
 function createFile(fileElement) {
 

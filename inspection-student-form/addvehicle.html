@@ -29,52 +29,24 @@
                         <label for="vehicleName">
                             Vehicle name
                         </label>
-                        <input
-                            type="text"
-                            id="vehicleName"
-                            name="name"
-                            placeholder="Enter vehicle name"
-                            required
-                        >
+                        <input type="text" id="vehicleName" name="name" placeholder="Enter vehicle name" required>
                     </div>
 
                     <div class="vehicle-form-group">
-                        <label for="vehicleType">
-                            Vehicle type
-                        </label>
-                        <input
-                            type="text"
-                            id="vehicleType"
-                            name="type"
-                            placeholder="Enter vehicle type"
-                            required
-                        >
+                        <label for="vehicleType">Vehicle type</label>
+                        <input type="text" id="vehicleType" name="type" placeholder="Enter vehicle type" required>
                     </div>
 
                     <div class="vehicle-form-group">
-                        <label for="licensePlate">
-                            License plate
-                        </label>
-                        <input
-                            type="text"
-                            id="licensePlate"
-                            name="license_plate"
-                            placeholder="Enter license plate"
-                            required
-                        >
+                        <label for="licensePlate">License plate</label>
+                        <input type="text" id="licensePlate" name="license_plate" placeholder="Enter license plate" required>
                     </div>
 
                     <div class="vehicle-form-group">
                         <label for="vehicleCode">
                             Vehicle code
                         </label>
-                        <input
-                            type="text"
-                            id="vehicleCode"
-                            name="code"
-                            placeholder="Enter vehicle code"
-                            required
-                        >
+                        <input type="text" id="vehicleCode" name="code" placeholder="Enter vehicle code" required>
                     </div>
 
                 </div>
@@ -88,51 +60,27 @@
                 <div class="vehicle-form-grid">
 
                     <div class="vehicle-form-group">
-                        <label for="lastMaintenance">
-                            Last maintenance
-                        </label>
-                        <input
-                            type="date"
-                            id="lastMaintenance"
-                            name="last_maintenance"
-                        >
+                        <label for="lastMaintenance">Last maintenance</label>
+                        <input type="date" id="lastMaintenance" name="last_maintenance">
                     </div>
 
                     <div class="vehicle-form-group">
-                        <label for="lastMaintenanceKm">
-                            Last maintenance (km)
-                        </label>
-                        <input
-                            type="number"
-                            id="lastMaintenanceKm"
-                            name="last_maintenance_km"
-                            placeholder="e.g. 125000"
-                            min="0"
-                        >
+                        <label for="lastMaintenanceKm">Last maintenance (km)</label>
+                        <input type="number" id="lastMaintenanceKm" name="last_maintenance_km" placeholder="e.g. 125000" min="0">
                     </div>
 
                     <div class="vehicle-form-group">
                         <label for="nextMaintenance">
                             Next maintenance
                         </label>
-                        <input
-                            type="date"
-                            id="nextMaintenance"
-                            name="next_maintenance"
-                        >
+                        <input type="date" id="nextMaintenance" name="next_maintenance">
                     </div>
 
                     <div class="vehicle-form-group">
                         <label for="maintenanceIntervalKm">
                             Maintenance interval (km)
                         </label>
-                        <input
-                            type="number"
-                            id="maintenanceIntervalKm"
-                            name="maintenance_interval_km"
-                            placeholder="e.g. 10000"
-                            min="0"
-                        >
+                        <input type="number" id="maintenanceIntervalKm" name="maintenance_interval_km" placeholder="e.g. 10000" min="0" >
                     </div>
 
                 </div>
@@ -144,15 +92,9 @@
                 <h3>Status</h3>
 
                 <div class="vehicle-form-group">
-                    <label for="vehicleState">
-                        State
-                    </label>
+                    <label for="vehicleState">State</label>
 
-                    <select
-                        id="vehicleState"
-                        name="state"
-                        required
-                    >
+                    <select id="vehicleState" name="state" required>
                         <option value="">Select state</option>
                         <option value="available">Available</option>
                         <option value="in use">In Use</option>
@@ -168,20 +110,11 @@
 
                 <div class="vehicle-form-group">
 
-                    <label for="vehicleFile">
-                        Vehicle image
-                    </label>
+                    <label for="vehicleFile">Vehicle image</label>
 
-                    <input
-                        type="file"
-                        id="vehicleFile"
-                        name="id_files"
-                        accept="image/*"
-                    >
-
-                    <small class="vehicle-file-info">
-                        Upload an image of the vehicle.
-                    </small>
+                    <input type="file" id="vehicleFile" name="id_files" accept="image/*">
+                    <div id="imagePreview" class="image-preview"></div>
+                    <small class="vehicle-file-info">Upload an image of the vehicle.</small>
 
                 </div>
             </div>
@@ -190,18 +123,11 @@
             <!-- Buttons -->
             <div class="vehicle-modal-actions">
 
-                <button
-                    type="button"
-                    class="vehicle-btn vehicle-btn-cancel"
-                    id="cancelVehicleButton"
-                >
+                <button type="button" class="vehicle-btn vehicle-btn-cancel" id="cancelVehicleButton">
                     Cancel
                 </button>
 
-                <button
-                    type="submit"
-                    class="vehicle-btn vehicle-btn-add"
-                >
+                <button type="submit" class="vehicle-btn vehicle-btn-add">
                     Add Vehicle
                 </button>
 
