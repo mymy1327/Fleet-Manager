@@ -47,5 +47,6 @@ require __DIR__ . "/../../assets/sharedUserFunctions.php";
         <a href="../PHP/checklistManager.php"><button class="button">Exit without saving</button></a>
     </main>
 </body>
+<script src='../../assets/apiCommunication.js'></script>
 <script src="../JS/checklistItem.js"></script>
 </html>
