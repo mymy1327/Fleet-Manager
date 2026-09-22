@@ -122,6 +122,8 @@ function takePicture() {
 function showCapturedPhoto(picture) {
     const result = document.getElementById("cameraResult");
     const imageUrl = URL.createObjectURL(picture);
+    const preview = document.querySelector(".camera-preview-wrapper");
+    const controls = document.querySelector(".camera-controls");
 
     result.classList.remove("hidden");
 
@@ -132,10 +134,14 @@ function showCapturedPhoto(picture) {
             <button type="button" id="usePhoto">Käytä kuvaa</button>
         </div>
     `;
+    if (preview) preview.style.display = "none";
+    if (controls) controls.style.display = "none";
 
     document.getElementById("retakePhoto").onclick = () => {
         result.classList.add("hidden");
         result.innerHTML = "";
+         if (preview) preview.style.display = "";
+        if (controls) controls.style.display = "";
         cameraStatus.textContent = "Ota uusi kuva.";
     };
 
