@@ -253,7 +253,36 @@
 .vehicle-btn-add:hover {
     background: #1554b5;
 }
+.image-preview {
+    width: 100%;
+    min-height: 120px;
 
+    margin-top: 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px dashed #cfcfcf;
+    border-radius: 8px;
+
+    background: #f8f8f8;
+
+    overflow: hidden;
+}
+
+
+.image-preview-content {
+    display: block;
+
+    width: 100%;
+    max-width: 350px;
+    max-height: 220px;
+
+    object-fit: contain;
+
+    border-radius: 6px;
+}
 
 @media (max-width: 600px) {
 

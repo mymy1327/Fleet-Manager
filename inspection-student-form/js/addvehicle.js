@@ -2,7 +2,7 @@ const addVehicleModal = document.getElementById("addVehicleModal");
 const closeVehicleModal = document.getElementById("closeVehicleModal");
 const cancelVehicleButton = document.getElementById("cancelVehicleButton");
 const addVehicleForm = document.getElementById("addVehicleForm");
-
+const imagePreview = document.getElementById("imagePreview");
 let restapi = "https://developmenterasmus.kolojar.cz";
 document.getElementById("addVehicleButton").addEventListener("click", openAddVehicleModal);
 // Open modal
@@ -41,8 +41,28 @@ document.addEventListener("keydown", (event) => {
 
 });
 //Show image preview
-function imagePreview (file) {
-    
+    const vehicleFile = document.getElementById("vehicleFile");
+
+        vehicleFile.addEventListener("change", () => {
+            renderImage(vehicleFile);
+        });
+function renderImage (vehicleFile) {
+    const file = vehicleFile.files[0];
+
+    if (!file) {
+        imagePreview.innerHTML = "";
+        return;
+    }
+
+    const imageURL = URL.createObjectURL(file);
+
+    imagePreview.innerHTML = `
+        <img
+            src="${imageURL}"
+            class="image-preview-content"
+            alt="Vehicle preview"
+        >
+    `;
 }
 //Create functions
 function createFile(fileElement) {
@@ -214,9 +234,6 @@ addVehicleForm.addEventListener("submit", async (event) => {
 
         const state =
             document.getElementById("vehicleState").value;
-
-        const vehicleFile =
-            document.getElementById("vehicleFile");
 
 
         let id_files = null;
