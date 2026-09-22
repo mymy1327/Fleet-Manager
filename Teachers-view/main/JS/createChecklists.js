@@ -34,6 +34,81 @@ const addChecklistForm = document.getElementById("addChecklistForm");
 const newChecklistName = document.getElementById("newChecklistName");
 const newChecklistDescription = document.getElementById("newChecklistDescription");
 
+let editingChecklist = null;
+
+const editChecklistModalElement = document.getElementById("editChecklistModal");
+const editChecklistModal = new bootstrap.Modal(editChecklistModalElement);
+const editChecklistForm = document.getElementById("editChecklistForm");
+const editChecklistName = document.getElementById("editChecklistName");
+const editChecklistDescription = document.getElementById("editChecklistDescription");
+
+function openEditChecklistModal(checklist) {
+    editingChecklist = checklist;
+
+    editChecklistName.value = checklist.name || "";
+    editChecklistDescription.value =
+        checklist.description || "";
+
+    editChecklistModal.show();
+}
+
+closeEditChecklistModal.addEventListener("click", () => {
+    editChecklistModal.style.display = "none";
+    editingChecklist = null;
+});
+
+cancelEditChecklistButton.addEventListener("click", () => {
+    editChecklistModal.style.display = "none";
+    editingChecklist = null;
+});
+
+editChecklistForm.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    if (!editingChecklist) return;
+
+    const name = editChecklistName.value.trim();
+    const description = editChecklistDescription.value.trim();
+
+    if (!name) return;
+
+    const saveButton =
+        document.getElementById("saveEditChecklistButton");
+
+    try {
+        saveButton.disabled = true;
+
+        await updateChecklist(
+            editingChecklist.id_checklists,
+            name,
+            description
+        );
+
+        editingChecklist.name = name;
+        editingChecklist.description = description;
+
+        const index = allChecklists.findIndex(
+            item =>
+                Number(item.id_checklists) ===
+                Number(editingChecklist.id_checklists)
+        );
+
+        if (index !== -1) {
+            allChecklists[index].name = name;
+            allChecklists[index].description = description;
+        }
+
+        renderChecklists();
+        editChecklistModal.hide();
+        editingChecklist = null;
+    } catch (error) {
+        console.error("Error updating checklist:", error);
+        alert(error.message);
+    } finally {
+        saveButton.disabled = false;
+    }
+});
+
 assignChecklistButton.addEventListener("click", () => {
     vehicleChecklistModal.style.display = "flex";
     loadVehicles();
@@ -218,6 +293,11 @@ function createChecklistElement(checklist) {
         draggedChecklist = null;
     });
 
+    item.addEventListener("dblclick", event => {
+    event.stopPropagation();
+    openEditChecklistModal(checklist);
+    });
+
     return item;
 }
 
@@ -298,12 +378,25 @@ submitChecklistButton.addEventListener("click", async () => {
         )
     );
 
-    const newChecklists = assignedChecklists.filter(
+    const currentIds = new Set(
+        assignedChecklists.map(
+            item => Number(item.id_checklists)
+        )
+    );
+
+    const checklistsToAdd = assignedChecklists.filter(
         item => !originalIds.has(Number(item.id_checklists))
     );
 
-    if (newChecklists.length === 0) {
-        alert("No new checklists to save");
+    const checklistsToRemove = originalAssignedChecklists.filter(
+        item => !currentIds.has(Number(item.id_checklists))
+    );
+
+    if (
+        checklistsToAdd.length === 0 &&
+        checklistsToRemove.length === 0
+    ) {
+        alert("No changes to save");
         return;
     }
 
@@ -311,8 +404,17 @@ submitChecklistButton.addEventListener("click", async () => {
         submitChecklistButton.disabled = true;
 
         await Promise.all(
-            newChecklists.map(checklist =>
+            checklistsToAdd.map(checklist =>
                 insertVehicleChecklist(
+                    selectedVehicleId,
+                    checklist.id_checklists
+                )
+            )
+        );
+
+        await Promise.all(
+            checklistsToRemove.map(checklist =>
+                removeVehicleChecklist(
                     selectedVehicleId,
                     checklist.id_checklists
                 )
@@ -321,9 +423,9 @@ submitChecklistButton.addEventListener("click", async () => {
 
         await loadVehicleChecklists(selectedVehicleId);
 
-        alert("All checklists saved successfully");
+        alert("Changes saved successfully");
     } catch (error) {
-        console.error("Error assigning checklists:", error);
+        console.error("Error saving checklist changes:", error);
         alert(error.message);
     } finally {
         submitChecklistButton.disabled = false;
@@ -417,4 +519,55 @@ function escapeHtml(value) {
     const div = document.createElement("div");
     div.textContent = value;
     return div.innerHTML;
+}
+async function removeVehicleChecklist(vehicleId, checklistId) {
+    const response = await fetch(
+        `${restapi}/api/vehicles/${vehicleId}/${checklistId}`,
+        {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }
+    );
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+            `Failed to remove checklist ${checklistId}: ${response.status} ${errorText}`
+        );
+    }
+
+    return true;
+}
+async function updateChecklist(checklistId, name, description) {
+    await patchChecklistColumn(checklistId, "name", name);
+    await patchChecklistColumn(checklistId, "description", description);
+    return true;
+}
+
+async function patchChecklistColumn(checklistId, column, value) {
+    const data = {
+        [column]: value,
+        id_checklists: checklistId,
+        column: column
+    };
+
+    const response = await fetch(
+        restapi + "/api/checklists",
+        {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        }
+    );
+
+    if (response.status !== 200 && response.status !== 201) {
+        const errorText = await response.text();
+        throw new Error(`${response.status}|${errorText}`);
+    }
+
+    return true;
 }
