@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="../CSS/style.css">
     <link rel="stylesheet" href="../CSS/addvehicle.css">
+    <link rel ="stylesheet" href="../CSS/createChecklists.css">
 </head>
 <body>
     <header class="topbar">
@@ -181,7 +182,146 @@
         </section>
 
         <section data-view-content="inspections" hidden>
-            <div class="page-heading"><div><h1>Inspections</h1><p class="subtitle">All vehicle departure inspections</p></div><button class="button" type="button">&#xFF0B;&nbsp; New inspection</button></div>
+            <div class="page-heading"><div><h1>Inspections</h1><p class="subtitle">All vehicle departure inspections</p></div>
+            <button class="button" id="assignChecklistButton" type="button">&#xFF0B;&nbsp; Assign Checklist
+            </button>
+            <div id="vehicleChecklistModal" class="checklist-modal">
+        <div class="checklist-modal-content">
+            <div class="checklist-modal-header">
+                <h2>Assign Checklists</h2>
+
+                <button type="button" class="checklist-modal-close" id="closeChecklistModal">&times;</button>
+            </div>
+            <div class="vehicle-selector">
+                <label for="vehicleSelect">Vehicle</label>
+                <select id="vehicleSelect"></select>
+            </div>
+
+            <div id="selectedVehicle" class="selected-vehicle">
+                <div class="selected-vehicle-image">
+                    <img id="selectedVehicleImage" src="" alt="Vehicle">
+                </div>
+
+                <div class="selected-vehicle-info">
+                    <h3 id="selectedVehicleName"></h3>
+                    <p>
+                        <span>License:</span>
+                        <strong id="selectedVehicleLicense"></strong>
+                    </p>
+                    <p>
+                        <span>Type:</span>
+                        <strong id="selectedVehicleType"></strong>
+                    </p>
+                </div>
+            </div>
+
+            <div class="checklist-lists">
+                <div class="checklist-list-container">
+                    <div class="checklist-list-header">
+                        <div>
+                            <h3>Assigned Checklists</h3>
+
+                            <span id="assignedChecklistCount">
+                                0
+                            </span>
+                        </div>
+                    </div>
+
+                    <div id="assignedChecklistList" class="checklist-list assigned-list">
+                        <div class="checklist-empty">
+                            Drag checklists here
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-list-container">
+                    <div class="checklist-list-header">
+                        <div>
+                            <h3>Available Checklists</h3>
+                            <span id="availableChecklistCount">0</span>
+                        </div>
+                        <button type="button" id="addChecklistButton" class="add-checklist-button">+ Add Checklist</button>
+                    </div>
+
+                    <div id="availableChecklistList" class="checklist-list available-list">
+                        <div class="checklist-empty">
+                            Loading checklists...
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="editChecklistModal" tabindex="-1" aria-labelledby="editChecklistModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editChecklistModalLabel">
+                    Edit Checklist
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editChecklistForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editChecklistName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="editChecklistName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editChecklistDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="editChecklistDescription" rows="5"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveEditChecklistButton" >Save</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+            <div class="checklist-modal-actions">
+                <button type="button" id="cancelChecklistButton" class="checklist-btn checklist-btn-cancel">
+                    Cancel
+                </button>
+
+                <button type="button" id="submitChecklistButton" class="checklist-btn checklist-btn-submit">
+                    Submit
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="addChecklistModal" class="checklist-modal checklist-modal-small">
+        <div class="checklist-modal-content">
+            <div class="checklist-modal-header">
+                <h2>Add Checklist</h2>
+
+                <button type="button" class="checklist-modal-close" id="closeAddChecklistModal">&times;</button>
+            </div>
+
+            <form id="addChecklistForm">
+                <div class="checklist-form-group">
+                    <label for="newChecklistName">Checklist name</label>
+
+                    <input type="text" id="newChecklistName" placeholder="Enter checklist name" required>
+                </div>
+
+                <div class="checklist-form-group">
+                    <label for="newChecklistDescription">Description</label>
+
+                    <textarea id="newChecklistDescription" placeholder="Enter checklist description" rows="5" required></textarea>
+                </div>
+
+                <div class="checklist-modal-actions">
+                    <button type="button" id="cancelAddChecklistButton" class="checklist-btn checklist-btn-cancel">Cancel</button>
+
+                    <button type="submit" class="checklist-btn checklist-btn-submit"> Add Checklist</button>
+                </div>
+            </form>
+        </div>
+    </div>
+        </div>
             <section class="panel single-panel"><div class="empty"><span class="empty-icon">&#x1F5B9;</span>No inspections yet</div></section>
         </section>
 
@@ -211,6 +351,7 @@
     <script src="../JS/app.js"></script>
     <script src="../../../VehicleList/vehiclelist.js"></script>
     <script src="../JS/addvehicle.js"></script>
+    <script src="../JS/createChecklists.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
 </html>
