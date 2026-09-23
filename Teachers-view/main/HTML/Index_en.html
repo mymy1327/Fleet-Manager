@@ -36,10 +36,10 @@
         <section data-view-content="home">
             <div class="page-heading"><div><h1>Home</h1><p class="subtitle">Overview of the fleet and recent events</p></div></div>
             <div class="cards">
-                <article class="card-teacher-main-page"><span class="card-icon" aria-hidden="true">&#x26DF;</span><strong class="card-value">0</strong><span class="card-label">Total vehicles</span></article>
-                <article class="card-teacher-main-page"><span class="card-icon green">&#x2713;</span><strong class="card-value">0</strong><span class="card-label">Available</span></article>
-                <article class="card-teacher-main-page"><span class="card-icon">&#x1F5B9;</span><strong class="card-value">0</strong><span class="card-label">Total inspections</span></article>
-                <article class="card-teacher-main-page"><span class="card-icon green">&#x25B3;</span><strong class="card-value">0</strong><span class="card-label">Open faults</span></article>
+                <article class="card-teacher-main-page"><span class="card-icon" aria-hidden="true">&#x26DF;</span><strong id="totalvehicles" class="card-value"></strong><span class="card-label">Total vehicles</span></article>
+                <article class="card-teacher-main-page"><span class="card-icon green">&#x2713;</span><strong id="totalavailable"class="card-value"></strong><span class="card-label">Available</span></article>
+                <article class="card-teacher-main-page"><span class="card-icon">&#x1F5B9;</span><strong id="totalinspections" class="card-value"></strong><span class="card-label">Total inspections</span></article>
+                <article class="card-teacher-main-page"><span class="card-icon green">&#x25B3;</span><strong id="totalfaults "class="card-value"></strong><span class="card-label">Open faults</span></article>
             </div>
             <div class="grid-2">
                 <section class="panel large"><h2 class="panel-title">Recent inspections<a class="panel-action" href="#inspections">View all</a></h2><div class="empty">No inspections yet</div></section>
