@@ -188,14 +188,35 @@ function renderResultChart(container, data) {
         return;
     }
 
+    const first = data[0]?.value || 0;
+    const firstPercent = (first / total) * 100;
+
     container.innerHTML = `
-        <div class="report-result-list">
-            ${data.map(item => `
-                <div class="report-result-item">
-                    <span class="report-result-value">${item.value}</span>
-                    <span class="report-result-label">${item.name}</span>
+        <div class="report-pie-chart">
+            <div class="report-pie"
+                 style="--first-percent:${firstPercent}%;">
+                <div class="report-pie-center">
+                    <strong>${total}</strong>
+                    <span>Yhteensä</span>
                 </div>
-            `).join("")}
+            </div>
+
+            <div class="report-pie-legend">
+                ${data.map((item, index) => {
+                    const percent = ((item.value / total) * 100).toFixed(0);
+
+                    return `
+                        <div class="report-pie-legend-item">
+                            <span class="report-pie-dot ${index === 0 ? "success" : "danger"}"></span>
+                            <div>
+                                <strong>${item.value}</strong>
+                                <span>${item.name}</span>
+                            </div>
+                            <b>${percent}%</b>
+                        </div>
+                    `;
+                }).join("")}
+            </div>
         </div>
     `;
 }
