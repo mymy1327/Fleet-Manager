@@ -267,7 +267,7 @@ function getUsername(userId) {
         xhr.send();
     });
 }
-async function renderInspectionHistory() {
+async function renderInspectionHistory(inspections) {
     const container = document.querySelector(".inspection-history");
     if (!container) return;
 
