@@ -80,7 +80,7 @@
     display: none;
     position: fixed;
     inset: 0;
-    z-index: 9999;
+    z-index: 999;
     padding: 20px;
     width: 100%;
     height: 100%;
@@ -125,7 +125,7 @@
     border-bottom: 1px solid #e5e5e5;
 }
 
-.checklist-modal-header h2 {
+.checklist-modal-header h2, .modal-title {
     margin: 0;
     color: #222;
     font-size: 22px;
@@ -208,8 +208,10 @@
 .selected-vehicle-info {
     min-width: 0;
 }
-
-.selected-vehicle-info h3 {
+.modal-content {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+.selected-vehicle-info h3, .form-label {
     margin: 0 0 10px;
     font-size: 20px;
 }
@@ -239,7 +241,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
     margin-bottom: 10px;
 }
 
@@ -251,9 +252,11 @@
 
 .checklist-list-header h3 {
     margin: 0;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     color: #333;
+    width: max-content;
+    height: fit-content;
 }
 
 .checklist-list-header span {
@@ -339,7 +342,8 @@
 }
 
 .add-checklist-button {
-    padding: 7px 11px;
+    width: fit-content;
+    padding: 3px 5px;
     border: none;
     border-radius: 6px;
     background: #eeeeee;
@@ -425,6 +429,89 @@
 
 .checklist-btn-submit:hover {
     background: #1554b5;
+}
+.checklist-item {
+    position: relative;
+}
+
+.checklist-item-content {
+    position: relative;
+    width: 100%;
+}
+
+.checklist-add-button {
+    display: none;
+}
+.checklist-remove-button {
+    display: none;
+}
+@media (max-width: 600px) {
+
+    .checklist-add-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+
+        width: 20px;
+        height: 20px;
+
+        border: none;
+        border-radius: 50%;
+
+        background: #2869cbc7;
+        color: white;
+
+        font-size: 24px;
+        line-height: 1;
+
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .checklist-add-button:active {
+        background: #1554b5;
+        transform: translateY(-50%) scale(0.95);
+    }
+
+    .checklist-item-content {
+        padding-right: 45px;
+    }
+
+    .checklist-item {
+        cursor: default;
+    }
+    .checklist-remove-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        border: none;
+        border-radius: 50%;
+        background: #e32822dc;
+        color: white;
+        font-size: 24px;
+        line-height: 1;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .checklist-remove-button:active {
+        transform: translateY(-50%) scale(0.95);
+    }
+
+    .checklist-item-content {
+        padding-right: 45px;
+    }
 }
 
 @media (max-width: 1400px) {

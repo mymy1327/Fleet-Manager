@@ -239,20 +239,20 @@ function renderChecklists() {
             `<div class="checklist-empty">No available checklists</div>`;
     }
 
-    assignedChecklists.forEach(checklist => {
+        assignedChecklists.forEach(checklist => {
         assignedChecklistList.appendChild(
-            createChecklistElement(checklist)
+            createChecklistElement(checklist, false)
         );
     });
 
     availableChecklists.forEach(checklist => {
         availableChecklistList.appendChild(
-            createChecklistElement(checklist)
+            createChecklistElement(checklist, true)
         );
     });
 }
 
-function createChecklistElement(checklist) {
+function createChecklistElement(checklist, isAvailable) {
     const item = document.createElement("div");
 
     item.className = "checklist-item";
@@ -260,11 +260,20 @@ function createChecklistElement(checklist) {
     item.dataset.id = checklist.id_checklists;
 
     item.innerHTML = `
-        <div class="checklist-item-name">
-            ${escapeHtml(checklist.name)}
-        </div>
-        <div class="checklist-item-description">
-            ${escapeHtml(checklist.description || "")}
+        <div class="checklist-item-content">
+            <div class="checklist-item-name">
+                ${escapeHtml(checklist.name)}
+            </div>
+
+            <div class="checklist-item-description">
+                ${escapeHtml(checklist.description || "")}
+            </div>
+
+            ${
+                isAvailable
+                    ? `<button type="button" class="checklist-add-button" aria-label="Add checklist">+</button>`
+                    : `<button type="button" class="checklist-remove-button" aria-label="Remove checklist">−</button>`
+            }
         </div>
     `;
 
@@ -285,9 +294,55 @@ function createChecklistElement(checklist) {
     });
 
     item.addEventListener("dblclick", event => {
-    event.stopPropagation();
-    openEditChecklistModal(checklist);
+        if (event.target.closest(".checklist-add-button")) {
+            return;
+        }
+
+        event.stopPropagation();
+        openEditChecklistModal(checklist);
     });
+
+    if (isAvailable) {
+        const addButton =
+            item.querySelector(".checklist-add-button");
+
+        addButton.addEventListener("click", event => {
+            event.stopPropagation();
+
+            const exists = assignedChecklists.some(
+                current =>
+                    Number(current.id_checklists) ===
+                    Number(checklist.id_checklists)
+            );
+
+            if (exists) {
+                return;
+            }
+
+            assignedChecklists.push(checklist);
+
+            availableChecklists =
+                availableChecklists.filter(
+                    current =>
+                        Number(current.id_checklists) !==
+                        Number(checklist.id_checklists)
+                );
+
+            renderChecklists();
+        });
+    } else {
+        const removeButton = item.querySelector(".checklist-remove-button");
+        removeButton.addEventListener("click", async event => {
+            event.stopPropagation();
+
+            assignedChecklists = assignedChecklists.filter(
+                current => Number(current.id_checklists) !== Number(checklist.id_checklists)
+            );
+
+            availableChecklists.push(checklist);
+            renderChecklists();
+        });
+    }
 
     return item;
 }
