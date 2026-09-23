@@ -1,4 +1,9 @@
 /*layout*/
+single-panel {
+    width: fit-content;
+    justify-content: center;
+    padding: 20px;
+}
 
 .vehicle-card-grid {
     display: grid;
