@@ -1,0 +1,600 @@
+/*layout*/
+single-panel {
+    width: fit-content;
+    justify-content: center;
+    padding: 20px;
+}
+
+.vehicle-card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    width: 100%;
+}
+
+
+/*Vehicle cards*/
+
+.vehicle-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+
+.vehicle-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,.1);
+    border-color: #cbd5e1;
+}
+
+.vehicle-card-image {
+    width: 100%;
+    height: 180px;
+    background: #f3f4f6;
+    overflow: hidden;
+}
+
+.vehicle-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.vehicle-card-image img[src=""],
+.vehicle-card-image img:not([src]) {
+    display: none;
+}
+
+.vehicle-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px;
+}
+
+.vehicle-card-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.vehicle-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+}
+
+.vehicle-card-info-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 14px;
+}
+
+.vehicle-card-info-row span {
+    color: #6b7280;
+}
+
+.vehicle-card-info-row strong {
+    text-align: right;
+    font-weight: 600;
+}
+
+.vehicle-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.vehicle-card-arrow {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+/*Problem cards*/
+
+.problem-card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 18px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-left: 5px solid #9ca3af;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.problem-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 18px rgba(0,0,0,.09);
+}
+
+.problem-card.priority-high {
+    border-left-color: #dc3545;
+}
+
+.problem-card.priority-medium {
+    border-left-color: #f59e0b;
+}
+
+.problem-card.priority-low {
+    border-left-color: #198754;
+}
+
+.problem-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.problem-card-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.problem-card-description {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.problem-card-note {
+    margin: 0;
+    padding: 10px 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.problem-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 4px;
+    border-top: 1px solid #eee;
+}
+
+.problem-priority,
+.problem-state {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.problem-priority-high {
+    background: #f8d7da;
+    color: #842029;
+}
+
+.problem-priority-medium {
+    background: #fff3cd;
+    color: #664d03;
+}
+
+.problem-priority-low {
+    background: #d1e7dd;
+    color: #0f5132;
+}
+
+.problem-state-open {
+    background: #f8d7da;
+    color: #842029;
+}
+
+.problem-state-closed {
+    background: #d1e7dd;
+    color: #0f5132;
+}
+/*Problems toolbar*/
+
+.problem-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+}
+
+.vehicle-filter {
+    position: relative;
+}
+
+.vehicle-filter-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 1000;
+    width: 280px;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.12);
+}
+
+.vehicle-filter-list {
+    display: flex;
+    flex-direction: column;
+    max-height: 260px;
+    margin-top: 8px;
+    overflow-y: auto;
+}
+
+.vehicle-filter-item {
+    width: 100%;
+    padding: 9px 10px;
+    text-align: left;
+    background: transparent;
+    border: 0;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.vehicle-filter-item:hover {
+    background: #f3f4f6;
+}
+
+.vehicle-filter-item.active {
+    background: #e9ecef;
+    font-weight: 600;
+}
+
+.problem-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.problem-header h2 {
+    margin-bottom: 4px;
+}
+
+.problem-header p {
+    margin: 0;
+    color: #6b7280;
+}
+/*Loading and empty states*/
+
+.inspection-loading {
+    grid-column: 1 / -1;
+    padding: 40px 20px;
+    text-align: center;
+    color: #6b7280;
+}
+
+.workflow-empty {
+    grid-column: 1 / -1;
+    padding: 50px 20px;
+    text-align: center;
+    color: #6b7280;
+}
+
+.workflow-error {
+    grid-column: 1 / -1;
+    padding: 20px;
+    color: #842029;
+    background: #f8d7da;
+    border-radius: 10px;
+}
+/*Reports*/
+
+.report-summary-cards {
+    margin-bottom: 24px;
+}
+
+.report-charts {
+    margin-bottom: 24px;
+}
+
+.report-chart {
+    width: 100%;
+    min-height: 230px;
+    padding: 10px 0;
+}
+
+.report-bar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.report-bar-item {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.report-bar-label {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.report-bar {
+    width: 100%;
+    height: 12px;
+    overflow: hidden;
+    background: #e9ecef;
+    border-radius: 999px;
+}
+
+.report-bar-fill {
+    height: 100%;
+    min-width: 2px;
+    border-radius: 999px;
+    background: #0d6efd;
+    transition: width .4s ease;
+}
+
+.report-pie-chart {
+    min-height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 45px;
+    padding: 20px;
+}
+
+.report-pie {
+    width: 190px;
+    height: 190px;
+    border-radius: 50%;
+    background: conic-gradient(
+        #198754 0 var(--first-percent),
+        #dc3545 var(--first-percent) 100%
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.report-pie::after {
+    content: "";
+    position: absolute;
+    inset: 35px;
+    background: white;
+    border-radius: 50%;
+}
+
+.report-pie-center {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.report-pie-center strong {
+    font-size: 32px;
+    line-height: 1;
+}
+
+.report-pie-center span {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.report-pie-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-width: 170px;
+}
+
+.report-pie-legend-item {
+    display: grid;
+    grid-template-columns: 12px 1fr auto;
+    align-items: center;
+    gap: 10px;
+}
+
+.report-pie-legend-item > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.report-pie-legend-item > div span {
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.report-pie-legend-item > b {
+    font-size: 14px;
+}
+
+.report-pie-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.report-pie-dot.success {
+    background: #198754;
+}
+
+.report-pie-dot.danger {
+    background: #dc3545;
+}
+
+.report-chart-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 210px;
+    color: #6b7280;
+}
+/*Report table*/
+
+#inspectionHistoryTable {
+    margin-bottom: 0;
+}
+
+#inspectionHistoryTable th {
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+#inspectionHistoryTable td {
+    vertical-align: middle;
+}
+.inspection-history-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    padding: 20px 0 5px;
+}
+
+.inspection-history-pagination .btn {
+    min-width: 38px;
+    height: 38px;
+    border-radius: 8px;
+}
+
+.report-result-passed {
+    background-color: rgba(34, 197, 94, 0.12);
+    color: #16a34a;
+    border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.report-result-failed {
+    background-color: rgba(239, 68, 68, 0.12);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}
+/*Problem modal*/
+
+#editProblemModal .modal-content {
+    border: 0;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+#editProblemModal .modal-header {
+    border-bottom: 1px solid #eee;
+}
+
+#editProblemModal .modal-footer {
+    border-top: 1px solid #eee;
+}
+/*Responsive*/
+
+@media (max-width: 1000px) {
+    .vehicle-card-grid,
+    .problem-card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .vehicle-card-image {
+        height: 170px;
+    }
+
+    .problem-toolbar {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .vehicle-filter-dropdown {
+        right: 0;
+        left: auto;
+        width: min(280px, calc(100vw - 32px));
+    }
+
+    .report-result-list {
+        gap: 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    .inspection-history-pagination {
+        gap: 4px;
+        padding-top: 16px;
+    }
+
+    .inspection-history-pagination .btn {
+        min-width: 34px;
+        height: 34px;
+        padding: 4px 9px;
+    }
+    .vehicle-card-grid, .problem-card-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .problem-toolbar {
+        flex-wrap: wrap;
+    }
+
+    .problem-toolbar > *,
+    .problem-toolbar .dropdown,
+    .problem-toolbar .vehicle-filter {
+        flex: 1;
+    }
+
+    .problem-toolbar button {
+        width: 100%;
+    }
+
+    .vehicle-card-body {
+        padding: 15px;
+    }
+
+    .vehicle-card-title {
+        font-size: 18px;
+    }
+
+    .problem-card {
+        padding: 15px;
+    }
+
+    .problem-card-header {
+        flex-direction: column;
+    }
+
+    .problem-card-footer {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .report-pie-chart {
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    .report-pie {
+        width: 160px;
+        height: 160px;
+    }
+
+    .report-pie::after {
+        inset: 30px;
+    }
+
+    .report-pie-legend {
+        width: 100%;
+    }
+}

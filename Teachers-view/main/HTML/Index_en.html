@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../CSS/style.css">
     <link rel="stylesheet" href="../CSS/addvehicle.css">
     <link rel ="stylesheet" href="../CSS/createChecklists.css">
+    <link rel="stylesheet" href="../CSS/inspection-report.css">
 </head>
 <body>
     <header class="topbar">
@@ -320,39 +321,238 @@
             <section class="panel single-panel">
     <div class="inspection-header">
         <div>
-            <h2>Inspections</h2>
-            <p>Vehicle departure inspections</p>
+            <h2>Vehicles</h2>
+            <p>Click a vehicle to start the departure inspection</p>
         </div>
         <button type="button" class="inspection-refresh" id="refreshInspections">↻ Refresh</button>
     </div>
-    <div id="inspectionList" class="inspection-list">
-        <div class="inspection-loading">Loading inspections...</div>
+
+    <div id="inspectionList" class="vehicle-card-grid">
+        <div class="inspection-loading">Loading vehicles...</div>
     </div>
 </section>
         </section>
 
         <section data-view-content="faults" hidden>
-            <div class="page-heading"><div><h1>Fault reports</h1><p class="subtitle">Track and resolve fleet faults</p></div><div class="filters">&#x2315; <select class="select"><option>All</option></select></div></div>
-            <section class="panel single-panel"><div class="empty"><span class="empty-icon">&#x1F5B9;</span>No fault reports</div></section>
-        </section>
+    <div class="page-heading">
+        <div>
+            <h1>Problems</h1>
+            <p class="subtitle">Track and resolve vehicle problems</p>
+        </div>
+
+        <div class="problem-toolbar">
+            <div class="vehicle-filter">
+                <button type="button" class="btn btn-outline-secondary" id="vehicleFilterButton">
+                    Vehicle
+                </button>
+
+                <div id="vehicleFilterDropdown" class="vehicle-filter-dropdown" hidden>
+                    <input type="text" id="vehicleSearchInput" class="form-control" placeholder="Search vehicle...">
+                    <div id="vehicleFilterList" class="vehicle-filter-list"></div>
+                </div>
+            </div>
+
+            <div class="dropdown">
+                <button
+                    class="btn btn-outline-secondary dropdown-toggle"
+                    type="button"
+                    id="problemSortButton"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    Sort
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-end" id="problemSortMenu">
+                    <li>
+                        <button class="dropdown-item" type="button" data-sort="priority-desc">
+                            Priority: High → Low
+                        </button>
+                    </li>
+                    <li>
+                        <button class="dropdown-item" type="button" data-sort="priority-asc">
+                            Priority: Low → High
+                        </button>
+                    </li>
+                    <li>
+                        <button class="dropdown-item" type="button" data-sort="open">
+                            Open
+                        </button>
+                    </li>
+                    <li>
+                        <button class="dropdown-item" type="button" data-sort="closed">
+                            Closed
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <section class="panel single-panel">
+        <div class="problem-header">
+            <div>
+                <h2>Problems</h2>
+                <p>All reported vehicle problems</p>
+            </div>
+
+            <span id="problemCount" class="badge bg-secondary">0</span>
+        </div>
+
+        <div id="problemList" class="problem-card-grid">
+            <div class="inspection-loading">Loading problems...</div>
+        </div>
+    </section>
+</section>
 
         <section data-view-content="reports" hidden>
-            <div class="page-heading"><div><h1>Reports</h1><p class="subtitle">Fleet usage and inspection reports</p></div><div class="filters">Time period: <button class="pill" type="button">7 days</button><button class="pill active" type="button">30 days</button><button class="pill" type="button">90 days</button></div></div>
-            <div class="cards">
-                <article class="card-teacher-main-page"><span class="card-icon">&#x25A3;</span><strong class="card-value">0</strong><span class="card-label">Inspections</span></article>
-                <article class="card-teacher-main-page"><span class="card-icon green">&#x2713;</span><strong class="card-value">0</strong><span class="card-label">Approved</span></article>
-                <article class="card-teacher-main-page"><span class="card-icon orange">&#x1F5B9;</span><strong class="card-value">0</strong><span class="card-label">Fault reports</span></article>
-                <article class="card-teacher-main-page"><span class="card-icon red">&#x25B3;</span><strong class="card-value">0</strong><span class="card-label">Open faults</span></article>
+    <div class="page-heading">
+        <div>
+            <h1>Reports</h1>
+            <p class="subtitle">Fleet usage and inspection reports</p>
+        </div>
+    </div>
+
+    <div class="cards report-summary-cards">
+        <article class="card-teacher-main-page">
+            <span class="card-icon">&#x25A3;</span>
+            <strong id="reportTotalInspections" class="card-value">0</strong>
+            <span class="card-label">Total inspections</span>
+        </article>
+
+        <article class="card-teacher-main-page">
+            <span class="card-icon green">&#x2713;</span>
+            <strong id="reportPassedInspections" class="card-value">0</strong>
+            <span class="card-label">Passed inspections</span>
+        </article>
+
+        <article class="card-teacher-main-page">
+            <span class="card-icon orange">&#x1F5B9;</span>
+            <strong id="reportTotalProblems" class="card-value">0</strong>
+            <span class="card-label">Total problems</span>
+        </article>
+
+        <article class="card-teacher-main-page">
+            <span class="card-icon red">&#x25B3;</span>
+            <strong id="reportOpenProblems" class="card-value">0</strong>
+            <span class="card-label">Open problems</span>
+        </article>
+    </div>
+
+    <div class="grid-2 report-charts">
+        <section class="panel large">
+            <h2 class="panel-title">
+                <span class="icon">&#x25A3;</span>
+                Inspections per vehicle
+            </h2>
+
+            <div id="inspectionsPerVehicleChart" class="report-chart">
+                <div class="empty">No inspection data</div>
+            </div>
+        </section>
+
+        <section class="panel large">
+            <h2 class="panel-title">
+                <span class="icon">&#x2713;</span>
+                Inspection results
+            </h2>
+
+            <div id="inspectionResultsChart" class="report-chart">
+                <div class="empty">No inspection data</div>
+            </div>
+        </section>
+
+        <section class="panel large">
+            <h2 class="panel-title">
+                <span class="icon">&#x1F5B9;</span>
+                Problems per vehicle
+            </h2>
+
+            <div id="problemsPerVehicleChart" class="report-chart">
+                <div class="empty">No problem data</div>
+            </div>
+        </section>
+
+        <section class="panel large">
+            <h2 class="panel-title">
+                <span class="icon">&#x25A3;</span>
+                Problem status
+            </h2>
+
+            <div id="problemStatusChart" class="report-chart">
+                <div class="empty">No problem data</div>
+            </div>
+        </section>
+    </div>
+
+    <section class="panel table-panel">
+        <h2 class="panel-title">
+            <span class="icon">&#x25A3;</span>
+            Inspection history
+        </h2>
+
+        <div class="table-responsive">
+            <table class="table" id="inspectionHistoryTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Vehicle</th>
+                        <th>Student</th>
+                        <th>Odometer</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+
+                <tbody id="inspectionHistoryBody">
+                    <tr>
+                        <td colspan="5">No inspection data</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="inspectionHistoryPagination" class="inspection-history-pagination"></div>
+        </div>
+    </section>
+</section>
+<div class="modal fade" id="editProblemModal" tabindex="-1" aria-labelledby="editProblemModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProblemModalLabel">Edit Problem</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <div class="grid-2">
-                <section class="panel large"><h2 class="panel-title"><span class="icon">&#x1F5B9;</span>Inspections per vehicle</h2><div class="empty">No inspections for the selected time period</div></section>
-                <section class="panel large"><h2 class="panel-title"><span class="icon">&#x2301;</span>Inspection results</h2><div class="empty">No inspections for the selected time period</div></section>
-                <section class="panel large"><h2 class="panel-title"><span class="icon">&#x1F5B9;</span>Faults per vehicle</h2><div class="empty">No faults for the selected time period</div></section>
-                <section class="panel large"><h2 class="panel-title"><span class="icon">&#x2667;</span>Most active students</h2><div class="empty">No inspections for the selected time period</div></section>
-            </div>
-            <section class="panel table-panel"><h2 class="panel-title"><span class="icon">&#x1F5B9;</span>Inspection history</h2><table class="table"><thead><tr><th>Date</th><th>Vehicle</th><th>Student</th><th>Odometer</th><th>Result</th></tr></thead><tbody><tr><td colspan="5">No inspections for the selected time period</td></tr></tbody></table></section>
-        </section>
+            <form id="editProblemForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editProblemPriority" class="form-label">Priority</label>
+                        <select id="editProblemPriority" class="form-select">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editProblemState" class="form-label">State</label>
+                        <select id="editProblemState" class="form-select">
+                            <option value="open">Open</option>
+                            <option value="closed">Closed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="btn btn-primary" id="saveProblemButton">
+                        Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <script src="../JS/app.js"></script>
@@ -360,5 +560,8 @@
     <script src="../../../VehicleList/vehicle.js"></script>
     <script src="../JS/addvehicle.js"></script>
     <script src="../JS/createChecklists.js"></script>
+    <script src="../JS/inspections.js"></script>
+    <script src="../JS/problems.js"></script>
+    <script src="../JS/reports.js"></script>
 </body>
 </html>
