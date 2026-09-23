@@ -1,6 +1,6 @@
 <?php
 require __DIR__ . "/../../assets/sharedUserFunctions.php";
-    CheckAccessSession(["user","teacher","admin"])
+CheckAccessSession(["user", "teacher", "admin"]);
 ?>
 
 <!DOCTYPE html>
@@ -28,13 +28,21 @@ require __DIR__ . "/../../assets/sharedUserFunctions.php";
 
     <main id="app" class="page">
         <section data-view-content="home">
-            <section class="panel table-panel">
-                <h2 class="panel-title">Your vehicles</h2>
+            <div id='loading'>
+                <h1>Loading vehicle list...</h1>
+                <p class="subtitle">Please wait, list will be loaded in any moment.</p>
+            </div>
+            <div id='noUsedByYou' hidden>
+                <h1>No vehicles used by you</h1>
+                <p class="subtitle">Scan QR Code in the vehicle using your mobile phone QR code app or click Get vehicle button.</p>
+            </div>
+            <section class="panel table-panel" id='carsCardsPanel' hidden>
+                <h2 class="panel-title">Vehicles used by you</h2>
                 <div id="car" class="cards"></div>
             </section>
-            <section class="panel table-panel"><h2 class="panel-title">Your recent inspections<a class="panel-action" href="#inspections">View all</a></h2><div class="empty">No inspections yet</div></section>
         </section>
     </main>
+     <script src="/assets/apiCommunication.js"></script>
     <script src="../JS/index.js"></script>
 </body>
 </html>

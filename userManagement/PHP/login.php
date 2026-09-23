@@ -2,6 +2,17 @@
 /** @var string $API */
 require  __DIR__ . "/../../assets/sharedUserFunctions.php";
 session_start();
+
+//Get user ID if needed
+if(isset($_GET["getUserId"])) {
+    $data = [];
+    $data["id"] = $_SESSION["login"];
+    echo(json_encode($data));
+    http_response_code(200);
+    die();
+}
+
+//Handle login
 $_SESSION["login"] = "";
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $data = GetPOSTData();

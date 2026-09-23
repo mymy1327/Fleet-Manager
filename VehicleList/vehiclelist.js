@@ -47,11 +47,19 @@ function getVehicleDetails(vehicleId) {
                 //create div
                 let newArticle = document.createElement("article")
                 newArticle.classList.add("card-garage");
+
                 // set id
                 newArticle.id = newId;
 
                 let clickableconnection = document.createElement("a")
-                clickableconnection.href = `../../../VehicleDetails/index.html?code=${intelligeble[x].code}`
+                console.log(window.location.href)
+                console.log((window.location.href).search("index_en.html"))
+                if ((window.location.href).search("Index_en.html") != -1){
+                    clickableconnection.href = `../../../VehicleDetails/index_en.html?code=${intelligeble[x].code}`    
+                }else{
+                    clickableconnection.href = `../../../VehicleDetails/index_fi.html?code=${intelligeble[x].code}`
+                }
+                
 
                 //set the image
                 let picture = document.createElement("img")
@@ -78,7 +86,7 @@ function getVehicleDetails(vehicleId) {
                 vehiclestatus.classList.add(`vehicle-status`)
                 vehiclestatus.classList.add(`${intelligeble[x].state}`)
                 vehiclestatus.textContent = intelligeble[x].state
-                // to be done 
+                // to be done
 
 
                 let vehicletype = document.createElement("p")
@@ -92,7 +100,7 @@ function getVehicleDetails(vehicleId) {
                 }else{
                     vehicledistance.textContent = "km ei saatavilla"
                 }
-                
+
 
                 let vehiclelicense = document.createElement("span")
                 vehiclelicense.classList.add("vehicle-license")
