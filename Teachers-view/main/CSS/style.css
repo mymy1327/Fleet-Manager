@@ -820,7 +820,7 @@ button:disabled, button:hover:disabled {
 
 .vehicle-info-panel .Vehicle-image {
     height: 132px;
-    width: auto;
+    width: 100%;
     padding: 0;
     border: 0;
     border-radius: 10px;
@@ -858,7 +858,7 @@ button:disabled, button:hover:disabled {
 .vehicle-detail-layout {
     /* Vehicle information on the left, inspections on the right. */
     display: grid;
-    grid-template-columns: 320px minmax(0, 1fr);
+    grid-template-columns: 320px 320px;
     gap: 24px;
     align-items: start;
 }
@@ -874,12 +874,20 @@ button:disabled, button:hover:disabled {
 
 /* Info panel for vehicle details. */
 .vehicle-info-panel {
+    width: 320px;
+    min-width: 320px;
+    max-width: 320px;
     padding: 14px 14px 18px;
     box-shadow: 3px 3px 2px #00000036;
+    display: grid;
+    margin: 0;
 }
 
 .vehicle-inspection-panel {
     /* Right-hand inspection column with a stable minimum height. */
+    width: 320px;
+    min-width: 320px;
+    max-width: 320px;
     min-height: 320px;
     padding: 12px 12px 14px;
 }
@@ -929,6 +937,7 @@ button:disabled, button:hover:disabled {
     /* Stack the selected-vehicle columns on smaller screens. */
     .vehicle-detail-layout {
         grid-template-columns: 1fr;
+        overflow-x: visible;
     }
 
     .vehicle-page-shell {
