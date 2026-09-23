@@ -1,6 +1,6 @@
 let carlist = document.getElementById("vehicle")
-let bob = new URLSearchParams(document.location.search)
-let name = bob.get("code")
+const bob = new URLSearchParams(document.location.search)
+const name = bob.get("code")
 console.log(name)
 const ip = "10.1.17.107:5503"
 function getVehicleDetails(getcode) {
