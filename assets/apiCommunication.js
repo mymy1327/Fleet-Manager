@@ -1,37 +1,4 @@
 /**
- * Sends PATCH request to API for selected column
- * @param {string} url URL path at API
- * @param {string} column Target column name
- * @param {string} idColumn Name of id column
- * @param {string} id ID
- * @returns {Promise<true|string>} Returns true on success or string as error message
- */
-async function SendPatchOfColumn(url, column, idColumn, id) {
-  //Create promise
-  return new Promise((resolve, reject) => {
-    //Create PATCH JSON
-    const data = {};
-    data[column] = document.getElementById(column).value;
-    data[idColumn] = id;
-    data.column = column;
-
-    //Send request
-    const xhr = new XMLHttpRequest();
-    xhr.open("PATCH", url, true); //add path to requested file
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.onload = () => {
-      //Handle request data
-      if (xhr.status == 200 || xhr.status == 201) {
-        resolve(true);
-      } else {
-        resolve(xhr.status + "|" + xhr.responceText);
-      }
-    };
-    xhr.send(JSON.stringify(data));
-  });
-}
-
-/**
  * Sends PATCH request to API for selected columns
  * @param {string} url URL path at API
  * @param {string[]} columns Target columns name
@@ -45,6 +12,7 @@ async function SendPatchOfColumns(url, columns, idColumn, id, changeCheck = fals
   return new Promise(async (resolve, reject) => {
     //Process every column
     let changes = false;
+    const data = {};
     for (const column of columns) {
       //Validate change
       if (changeCheck) {
@@ -53,13 +21,24 @@ async function SendPatchOfColumns(url, columns, idColumn, id, changeCheck = fals
         }
       }
 
-      //Send PATCH
+      //Create PATCH JSON
       changes = true;
-      const result = await SendPatchOfColumn(url, column, idColumn, id);
-      if (result !== true) {
-        resolve(result);
-        break;
-      }
+      data[column] = document.getElementById(column).value;
+    }
+    if(changes) {
+      //Send request
+      const xhr = new XMLHttpRequest();
+      xhr.open("PATCH", url + "/" + id, true); //add path to requested file
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.onload = () => {
+        //Handle request data
+        if (xhr.status == 200 || xhr.status == 201) {
+          resolve(true);
+        } else {
+          resolve(xhr.status + "|" + xhr.responceText);
+        }
+      };
+      xhr.send(JSON.stringify(data));
     }
     resolve(changes);
   });
