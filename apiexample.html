@@ -1,6 +1,38 @@
+<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+<p>for updating table entries there are 2 ways:
+    <ol>
+    <li><strong>PUT</strong>: completly rewrites table entry (you need to add all fields that the table needs)
+    <li><strong>PATCH</strong>: can update any column that you specify
+    </ol>
+
+    Example:<br>
+    DB:
+    <pre  class="prettyprint">{
+"id": 1,
+"name": "John Doe",
+"email": "john.doe@google.com"
+}</pre>
+
+    <strong>PUT</strong>:
+    <pre  class="prettyprint">PUT: /api/user/1
+{
+"name": "Jane Doe", //change name
+"email": "john.doe@google.com" //you need to specify all fields
+//if you don't include "email", "email" will be set to null
+}</pre>
+    is the same as <br>
+    <strong>PATCH</strong>:
+    <pre  class="prettyprint">PATCH: /api/user/1
+{
+"name": "Jane Doe", //change name
+//you can specify only changing fields
+}</pre>
+    </p>
+
 <div id="demo1"></div>
-<input id="filterVehicles" placeholder="filter vehicles by code" />
-<button onclick="getAllVehicles(document.getElementById('filterVehicles').value)">get all vehicles</button><br />
+<input id="filterVehiclesCode" placeholder="filter vehicles by code" />
+<input id="filterVehiclesState" placeholder="filter vehicles by state" />
+<button onclick="getAllVehicles(document.getElementById('filterVehiclesCode').value, document.getElementById('filterVehiclesState').value)">get all vehicles</button><br />
 <div id="demo2"></div>
 <input id="vehicleId" placeholder="vehicle id" />
 <button onclick="getVehicleDetails(document.getElementById('vehicleId').value)">get vehicle details</button><br />
@@ -36,6 +68,76 @@
     "
 >
     create vehicle
+</button>
+<div id="demo34"></div>
+<input id="updateVehicleId" placeholder="vehicle id">
+<input id="updateVehicleName" placeholder="name" />
+<input id="updateVehicleType" placeholder="type" />
+<input id="updateVehicleLicensePlate" placeholder="license plate" />
+<input id="updateVehicleCode" placeholder="code" />
+<input id="updateVehicleLastMaintenance" type="date" placeholder="YYYY-MM-DD last maintenance" />
+<input id="updateVehicleLastMaintenanceKm" type="number" placeholder="last maintenance in km" />
+<input id="updateVehicleNextMaintenance" type="date" placeholder="next maintenance" />
+<input id="updateVehicleMaintenanceIntervalKm" type="number" placeholder="maintenance interval km" />
+<input id="updateVehicleIdFiles" placeholder="file id" />
+<select id="updateVehicleState">
+    <option value="available">available</option>
+    <option value="in_use">in use</option>
+    <option value="disabled">disabled</option>
+</select>
+<button
+    onclick="
+        updateVehicle(
+            document.getElementById('updateVehicleId').value,
+            document.getElementById('updateVehicleName').value,
+            document.getElementById('updateVehicleType').value,
+            document.getElementById('updateVehicleLicensePlate').value,
+            document.getElementById('updateVehicleCode').value,
+            document.getElementById('updateVehicleLastMaintenance').value,
+            document.getElementById('updateVehicleLastMaintenanceKm').value,
+            document.getElementById('updateVehicleNextMaintenance').value,
+            document.getElementById('updateVehicleMaintenanceIntervalKm').value,
+            document.getElementById('updateVehicleIdFiles').value,
+            document.getElementById('updateVehicleState').value,
+        )
+    "
+>
+    update vehicle <strong>PUT</strong>
+</button>
+<div id="demo35"></div>
+<input id="UpdateVehicleId" placeholder="vehicle id">
+<input id="UpdateVehicleName" placeholder="name" />
+<input id="UpdateVehicleType" placeholder="type" />
+<input id="UpdateVehicleLicensePlate" placeholder="license plate" />
+<input id="UpdateVehicleCode" placeholder="code" />
+<input id="UpdateVehicleLastMaintenance" type="date" placeholder="YYYY-MM-DD last maintenance" />
+<input id="UpdateVehicleLastMaintenanceKm" type="number" placeholder="last maintenance in km" />
+<input id="UpdateVehicleNextMaintenance" type="date" placeholder="next maintenance" />
+<input id="UpdateVehicleMaintenanceIntervalKm" type="number" placeholder="maintenance interval km" />
+<input id="UpdateVehicleIdFiles" placeholder="file id" />
+<select id="UpdateVehicleState">
+    <option value="available">available</option>
+    <option value="in_use">in use</option>
+    <option value="disabled">disabled</option>
+</select>
+<button
+    onclick="
+        UpdateVehicle(
+            document.getElementById('UpdateVehicleId').value,
+            document.getElementById('UpdateVehicleName').value,
+            document.getElementById('UpdateVehicleType').value,
+            document.getElementById('UpdateVehicleLicensePlate').value,
+            document.getElementById('UpdateVehicleCode').value,
+            document.getElementById('UpdateVehicleLastMaintenance').value,
+            document.getElementById('UpdateVehicleLastMaintenanceKm').value,
+            document.getElementById('UpdateVehicleNextMaintenance').value,
+            document.getElementById('UpdateVehicleMaintenanceIntervalKm').value,
+            document.getElementById('UpdateVehicleIdFiles').value,
+            document.getElementById('UpdateVehicleState').value,
+        )
+    "
+>
+    update vehicle <strong>PATCH</strong>
 </button>
 <br />
 <div id="demo20"></div>
@@ -93,42 +195,22 @@
 >
     create checklist item</button
 ><br />
-<!--<div id="demo7"></div>
-<input id="rewriteChecklistId" placeholder="checklist item id" />
-<input id="rewriteChecklistName" placeholder="checklist item name" />
-<input id="rewriteChecklistDescription" placeholder="checklist item description" />
-<button
-    onclick="
-        rewriteChecklistItem(
-            document.getElementById('rewriteChecklistId').value,
-            document.getElementById('rewriteChecklistName').value,
-            document.getElementById('rewriteChecklistDescription').value,
-        )
-    "
->
-    rewrite checklist item</button
-><br />
-<div id="demo8"></div>
-<input id="rewriteCellChecklistId" placeholder="checklist item id" />
-<input
-    id="rewriteCellChecklistColumn"
-    placeholder="checklist item column name (name, description)"
-    style="width: 300px"
-/>
-<input id="rewriteCellChecklistName" placeholder="checklist item name" />
-<input id="rewriteCellChecklistDescription" placeholder="checklist item description" />
-<button
-    onclick="
-        rewriteChecklistItemCell(
-            document.getElementById('rewriteCellChecklistId').value,
-            document.getElementById('rewriteCellChecklistColumn').value,
-            document.getElementById('rewriteCellChecklistName').value,
-            document.getElementById('rewriteCellChecklistDescription').value,
-        )
-    "
->
-    rewrite checklist item cell</button
-><br />-->
+<div id="demo32"></div>
+<input id="updateChecklistId" placeholder="checklist id">
+<input id="updateChecklistName" placeholder="name">
+<input id="updateChecklistDescription" placeholder="description">
+<button onclick="updateChecklist(document.getElementById('updateChecklistId').value,
+  document.getElementById('updateChecklistName').value,
+  document.getElementById('updateChecklistDescription').value
+)">update checklist <strong>PUT</strong></strong></button>
+<div id="demo33"></div>
+<input id="UpdateChecklistId" placeholder="checklist id">
+<input id="UpdateChecklistName" placeholder="name">
+<input id="UpdateChecklistDescription" placeholder="description">
+<button onclick="UpdateChecklist(document.getElementById('UpdateChecklistId').value,
+  document.getElementById('UpdateChecklistName').value,
+  document.getElementById('UpdateChecklistDescription').value
+)">update checklist <strong>PATCH</strong></strong></button>
 <div id="demo9"></div>
 <input id="deleteChecklistItemId" placeholder="checklist id" />
 <button onclick="deleteChecklistItem(document.getElementById('deleteChecklistItemId').value)">
@@ -168,13 +250,60 @@
 >
     create new user</button
 ><br />
+<div id="demo36"></div>
+<input id="updateUserId" placeholder="user id">
+<input id="updateUsername" placeholder="username" />
+<input id="updateEmail" type="email" placeholder="email" />
+<input id="updatePassword" placeholder="password" />
+<select id="updateRole">
+    <option value="user">user</option>
+    <option value="teacher">teacher</option>
+    <option value="admin">admin</option>
+</select>
+<button
+    onclick="
+        updateUser(
+            document.getElementById('updateUserId').value,
+            document.getElementById('updateUsername').value,
+            document.getElementById('updateEmail').value,
+            document.getElementById('updatePassword').value,
+            document.getElementById('updateRole').value,
+        )
+    "
+>
+    update user <strong>PUT</strong></button
+><br />
+<div id="demo37"></div>
+<input id="UpdateUserId" placeholder="user id">
+<input id="UpdateUsername" placeholder="username" />
+<input id="UpdateEmail" type="email" placeholder="email" />
+<input id="UpdatePassword" placeholder="password" />
+<select id="UpdateRole">
+    <option value="user">user</option>
+    <option value="teacher">teacher</option>
+    <option value="admin">admin</option>
+</select>
+<button
+    onclick="
+        UpdateUser(
+            document.getElementById('UpdateUserId').value,
+            document.getElementById('UpdateUsername').value,
+            document.getElementById('UpdateEmail').value,
+            document.getElementById('UpdatePassword').value,
+            document.getElementById('UpdateRole').value,
+        )
+    "
+>
+    update user <strong>PATCH</strong></button
+><br />
 <div id="demo21"></div>
 <input id="deleteUserId" placeholder="user id" />
 <button onclick="deleteUser(document.getElementById('deleteUserId').value)">delete user</button><br />
 <br />
 <div id="demo11"></div>
-<input id="filterInspections" placeholder="filter by vehicle id" />
-<button onclick="getAllInspections(document.getElementById('filterInspections').value)">get all inspections</button
+<input id="filterInspectionsVehicle" placeholder="filter by vehicle id" />
+<input id="filterInspectionsUser" placeholder="filter by user id">
+<button onclick="getAllInspections(document.getElementById('filterInspectionsVehicle').value, document.getElementById('filterInspectionsUser').value)">get all inspections</button
 ><br />
 <div id="demo12"></div>
 <input id="inspectionsId" placeholder="inspection id" />
@@ -201,6 +330,7 @@
 <select id="inspectionsType">
     <option value="departure" selected>departure</option>
     <option value="return">return</option>
+    <option value="teacher">teacher</option>
 </select>
 <input id="inspectionsLink" placeholder="departure inspection id" />
 <button
@@ -221,8 +351,11 @@
     create inspection</button
 ><br /><br />
 <div id="demo13"></div>
-<input id="filterProblems" placeholder="filter by vehicle id" />
-<button onclick="getAllProblems(document.getElementById('filterProblems').value)">get all problems</button><br />
+<input id="filterProblemsVehicle" placeholder="filter by vehicle id" />
+<input id="filterProblemsPriority" placeholder="filter by priority" />
+<input id="filterProblemsState" placeholder="filter by state" />
+<input id="filterProblemsInspection" placeholder="filter by inspection id" />
+<button onclick="getAllProblems(document.getElementById('filterProblemsVehicle').value,document.getElementById('filterProblemsPriority').value,document.getElementById('filterProblemsState').value,document.getElementById('filterProblemsInspection').value)">get all problems</button><br />
 <div id="demo14"></div>
 <input id="problemId" placeholder="problem id" />
 <button onclick="getProblemDetails(document.getElementById('problemId').value)">get problem details</button><br />
@@ -250,13 +383,76 @@
 >
     create problem
 </button>
+<div id="demo30"></div>
+<input id="updateProblemId" placeholder="problem id"/>
+<input id="updateProblemInspId" placeholder="inspection id" />
+<input id="updateProblemCheckId" placeholder="checklist id" />
+<input id="updateProblemNote" placeholder="note" />
+<input id="updateProblemFileId" placeholder="file id" />
+<select id="updateProblemState">
+    <option value="open" selected>open</option>
+    <option value="resolved">resolved</option>
+</select>
+<select id="updateProblemPriority">
+    <option value="low" selected>low</option>
+    <option value="medium">medium</option>
+    <option value="high">high</option>
+    <option value="critical">critical</option>
+</select>
+<button
+    onclick="
+        updateProblem(
+            document.getElementById('updateProblemId').value,
+            document.getElementById('updateProblemInspId').value,
+            document.getElementById('updateProblemCheckId').value,
+            document.getElementById('updateProblemNote').value,
+            document.getElementById('updateProblemFileId').value,
+            document.getElementById('updateProblemState').value,
+            document.getElementById('updateProblemPriority').value,
+        )
+    "
+>
+    update problem <strong>PUT</strong>
+</button>
+<div id="demo31"></div>
+<input id="UpdateProblemId" placeholder="problem id"/>
+<input id="UpdateProblemInspId" placeholder="inspection id" />
+<input id="UpdateProblemCheckId" placeholder="checklist id" />
+<input id="UpdateProblemNote" placeholder="note" />
+<input id="UpdateProblemFileId" placeholder="file id" />
+<select id="UpdateProblemState">
+    <option value="open" selected>open</option>
+    <option value="resolved">resolved</option>
+</select>
+<select id="UpdateProblemPriority">
+    <option value="low" selected>low</option>
+    <option value="medium">medium</option>
+    <option value="high">high</option>
+    <option value="critical">critical</option>
+</select>
+<button
+    onclick="
+        UpdateProblem(
+            document.getElementById('UpdateProblemId').value,
+            document.getElementById('UpdateProblemInspId').value,
+            document.getElementById('UpdateProblemCheckId').value,
+            document.getElementById('UpdateProblemNote').value,
+            document.getElementById('UpdateProblemFileId').value,
+            document.getElementById('UpdateProblemState').value,
+            document.getElementById('UpdateProblemPriority').value,
+        )
+    "
+>
+    update problem <strong>PATCH</strong>
+
+</button>
 <script>
     const restapi = "https://developmenterasmus.kolojar.cz";
     //const restapi = "http://127.0.0.1:5501";
 
-    function getAllVehicles(code = null) {
+    function getAllVehicles(code = null, state = null) {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", restapi + "/api/vehicles?code=" + code, true); // ?code can be removed
+        xhr.open("GET", restapi + "/api/vehicles?code=" + code+"&state="+state, true); // ?code can be removed
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             // work with response here (code: xhr.status, json response: xhr.responseText)
@@ -265,9 +461,9 @@
         xhr.send();
     }
 
-    function getAllInspections(vehicleId = null) {
+    function getAllInspections(vehicleId = null, userId = null) {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", restapi + "/api/inspections?id_vehicles=" + vehicleId, true); // ?id_vehicles can be removed
+        xhr.open("GET", restapi + "/api/inspections?id_vehicles=" + vehicleId + "&id_users=" + userId, true); // ?id_vehicles can be removed
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             // work with response here (code: xhr.status, json response: xhr.responseText)
@@ -287,9 +483,9 @@
         xhr.send();
     }
 
-    function getAllProblems(vehicleId = null) {
+    function getAllProblems(vehicleId = null, priority = null, state = null, id_inspections = null) {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", restapi + "/api/problems?id_vehicles=" + vehicleId, true); // ?id_vehicles can be removed
+        xhr.open("GET", restapi + "/api/problems?id_vehicles=" + vehicleId + "&priority="+priority+"&state="+state+"&id_inspections="+id_inspections, true); // ?id_vehicles can be removed
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             // work with response here (code: xhr.status, json response: xhr.responseText)
@@ -380,7 +576,7 @@
     function removeVehicleChecklist(vehicleId, checklistId) {
         let data = {};
         const xhr = new XMLHttpRequest();
-        xhr.open("DELETE", restapi + "/api/vehicles/" + vehicleId+"/"+checklistId, true);
+        xhr.open("DELETE", restapi + "/api/vehicles/" + vehicleId + "/" + checklistId, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             // code work with response here (code: xhr.status, json response: xhr.responseText)
@@ -443,7 +639,8 @@
         maintenance_interval_km,
         id_files,
         state,
-    ) {
+    )
+    {
         let data = {};
         data.name = name;
         data.type = type;
@@ -536,33 +733,174 @@
         xhr.send();
     }
 
-    function rewriteChecklistItem(checklistId, name, description) {
+    //PUT
+    function updateProblem(problemId, inspectionId, checklistId, note, fileId, state, priority) {
         let data = {};
+        data.id_inspections = inspectionId;
         data.id_checklists = checklistId;
-        data.name = name;
-        data.description = description;
+        data.note = note;
+        data.id_files = fileId;
+        data.state = state;
+        data.priority = priority;
         const xhr = new XMLHttpRequest();
-        xhr.open("PUT", "../databaseAPI/checklists.php", true);
+        xhr.open("PUT", restapi + "/api/problems/"+problemId, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
-            // work with response here (code: xhr.status, json response: xhr.responseText)
-            document.getElementById("demo7").innerHTML = xhr.status + "<br>" + xhr.responseText;
+            // code work with response here (code: xhr.status, json response: xhr.responseText)
+            document.getElementById("demo30").innerHTML = xhr.status + "<br>" + xhr.responseText;
         };
         xhr.send(JSON.stringify(data));
     }
 
-    function rewriteChecklistItemCell(checklistId, column, name, description) {
+    //PATCH
+    function UpdateProblem(problemId, inspectionId, checklistId, note, fileId, state, priority) {
         let data = {};
-        data.column = column;
-        data.id_checklists = checklistId;
+        function check(value){
+            if (value != null && value != "") {
+                return value
+            } else return undefined
+        };
+        data.id_inspections = check(inspectionId);
+        data.id_checklists = check(checklistId);
+        data.note = check(note);
+        data.id_files = check(fileId);
+        data.state = check(state);
+        data.priority = check(priority);
+        console.log(data);
+        const xhr = new XMLHttpRequest();
+        xhr.open("PATCH", restapi + "/api/problems/"+problemId, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            // code work with response here (code: xhr.status, json response: xhr.responseText)
+            document.getElementById("demo31").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send(JSON.stringify(data));
+    }
+
+    //PUT
+    function updateChecklist(checklistId, name, description) {
+        let data = {};
         data.name = name;
         data.description = description;
         const xhr = new XMLHttpRequest();
-        xhr.open("PATCH", "../databaseAPI/checklists.php", true);
+        xhr.open("PUT", restapi + "/api/checklists/"+checklistId, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
-            // work with response here (code: xhr.status, json response: xhr.responseText)
-            document.getElementById("demo8").innerHTML = xhr.status + "<br>" + xhr.responseText;
+            // code work with response here (code: xhr.status, json response: xhr.responseText)
+            document.getElementById("demo32").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send(JSON.stringify(data));
+    }
+
+    //PATCH
+    function UpdateChecklist(checklistId, name, description) {
+        let data = {};
+        function check(value){
+            if (value != null && value != "") {
+                return value
+            } else return undefined
+        };
+        data.name = check(name);
+        data.description = check(description);
+        console.log(data);
+        const xhr = new XMLHttpRequest();
+        xhr.open("PATCH", restapi + "/api/checklists/"+checklistId, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            // code work with response here (code: xhr.status, json response: xhr.responseText)
+            document.getElementById("demo33").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send(JSON.stringify(data));
+    }
+
+    //PUT
+    function updateVehicle(vehicleId, name, type, license_plate, code, last_maintenance, last_maintenance_km, next_maintenance, maintenance_interval_km, fileId, state) {
+        let data = {};
+        data.name = name;
+        data.type = type;
+        data.license_plate = license_plate;
+        data.code = code;
+        data.last_maintenance = last_maintenance;
+        data.id_files = fileId;
+        data.state = state;
+        data.last_maintenance_km = last_maintenance_km;
+        data.next_maintenance = next_maintenance;
+        data.maintenance_interval_km = maintenance_interval_km;
+        const xhr = new XMLHttpRequest();
+        xhr.open("PUT", restapi + "/api/vehicles/"+vehicleId, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            // code work with response here (code: xhr.status, json response: xhr.responseText)
+            document.getElementById("demo34").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send(JSON.stringify(data));
+    }
+
+    //PATCH
+    function UpdateVehicle(vehicleId, name, type, licensePlate, code, lastMaintenance, lastMaintenanceKm, nextMaintenance, maintenanceIntervalKm, fileId, state) {
+        let data = {};
+        function check(value){
+            if (value != null && value != "") {
+                return value
+            } else return undefined
+        };
+        data.name = check(name);
+        data.type = check(type);
+        data.license_plate = check(licensePlate);
+        data.code = check(code);
+        data.last_maintenance = check(lastMaintenance);
+        data.last_maintenance_km = check(lastMaintenanceKm);
+        data.next_maintenance = check(nextMaintenance);
+        data.maintenance_interval_km = check(maintenanceIntervalKm);
+        data.id_files = check(fileId);
+        data.state = check(state);
+        console.log(data);
+        const xhr = new XMLHttpRequest();
+        xhr.open("PATCH", restapi + "/api/vehicles/"+vehicleId, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            // code work with response here (code: xhr.status, json response: xhr.responseText)
+            document.getElementById("demo35").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send(JSON.stringify(data));
+    }
+
+    //PUT
+    function updateUser(userId, username, email, password, role) {
+        let data = {};
+        data.username = username;
+        data.email = email;
+        data.password = password;
+        data.role = role;
+        const xhr = new XMLHttpRequest();
+        xhr.open("PUT", restapi + "/api/users/"+userId, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            // code work with response here (code: xhr.status, json response: xhr.responseText)
+            document.getElementById("demo36").innerHTML = xhr.status + "<br>" + xhr.responseText;
+        };
+        xhr.send(JSON.stringify(data));
+    }
+
+    //PATCH
+    function UpdateUser(userId, username, email, password, role) {
+        let data = {};
+        function check(value){
+            if (value != null && value != "") {
+                return value
+            } else return undefined
+        };
+        data.username = check(username);
+        data.email = check(email);
+        data.password = check(password);
+        data.role = check(role);
+        console.log(data);
+        const xhr = new XMLHttpRequest();
+        xhr.open("PATCH", restapi + "/api/users/"+userId, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onload = () => {
+            // code work with response here (code: xhr.status, json response: xhr.responseText)
+            document.getElementById("demo37").innerHTML = xhr.status + "<br>" + xhr.responseText;
         };
         xhr.send(JSON.stringify(data));
     }

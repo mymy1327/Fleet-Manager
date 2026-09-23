@@ -1,0 +1,385 @@
+.checklist-modal {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    padding: 20px;
+    box-sizing: border-box;
+    background: rgba(0, 0, 0, 0.55);
+    align-items: center;
+    justify-content: center;
+}
+
+.checklist-modal-content {
+    width: 100%;
+    max-width: 1000px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    animation: checklistModalOpen 0.2s ease;
+}
+
+.checklist-modal-small .checklist-modal-content {
+    max-width: 550px;
+}
+
+@keyframes checklistModalOpen {
+    from {
+        opacity: 0;
+        transform: translateY(-15px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.checklist-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.checklist-modal-header h2 {
+    margin: 0;
+    color: #222;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.checklist-modal-close {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    color: #666;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.checklist-modal-close:hover {
+    background: #f0f0f0;
+    color: #222;
+}
+.vehicle-selector {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.vehicle-selector label {
+    padding: 14px;
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+#vehicleSelect {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #fff;
+    font-size: 15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.selected-vehicle {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px;
+    margin-bottom: 24px;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+}
+
+.selected-vehicle-image {
+    width: 130px;
+    height: 90px;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 10px;
+    background: #f3f3f3;
+}
+
+.selected-vehicle-image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.selected-vehicle-info {
+    min-width: 0;
+}
+
+.selected-vehicle-info h3 {
+    margin: 0 0 10px;
+    font-size: 20px;
+}
+
+.selected-vehicle-info p {
+    margin: 4px 0;
+    font-size: 14px;
+}
+
+.selected-vehicle-info span {
+    color: #777;
+    margin-right: 5px;
+}
+
+.checklist-lists {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 20px 24px;
+}
+
+.checklist-list-container {
+    min-width: 0;
+}
+
+.checklist-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.checklist-list-header > div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.checklist-list-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.checklist-list-header span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    box-sizing: border-box;
+    border-radius: 20px;
+    background: #eeeeee;
+    color: #555;
+    font-size: 12px;
+}
+
+.checklist-list {
+    min-height: 300px;
+    max-height: 400px;
+    padding: 10px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f8f8f8;
+}
+
+.checklist-list.drag-over {
+    border-color: #4a90e2;
+    background: #eef6ff;
+}
+
+.checklist-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 280px;
+    color: #999;
+    font-size: 13px;
+    text-align: center;
+}
+
+.checklist-item {
+    padding: 12px;
+    margin-bottom: 8px;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    background: #fff;
+    cursor: grab;
+    user-select: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.checklist-item:last-child {
+    margin-bottom: 0;
+}
+
+.checklist-item:hover {
+    border-color: #aaa;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.checklist-item:active {
+    cursor: grabbing;
+    transform: scale(0.99);
+}
+
+.checklist-item.dragging {
+    opacity: 0.5;
+}
+
+.checklist-item-name {
+    margin-bottom: 5px;
+    color: #222;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.checklist-item-description {
+    color: #777;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.add-checklist-button {
+    padding: 7px 11px;
+    border: none;
+    border-radius: 6px;
+    background: #eeeeee;
+    color: #333;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.add-checklist-button:hover {
+    background: #dedede;
+}
+
+#addChecklistForm {
+    padding: 24px;
+}
+
+.checklist-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 18px;
+}
+
+.checklist-form-group label {
+    color: #444;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.checklist-form-group input,
+.checklist-form-group textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid #d3d3d3;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+}
+
+.checklist-form-group input {
+    min-height: 42px;
+}
+
+.checklist-form-group input:focus,
+.checklist-form-group textarea:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.12);
+}
+
+.checklist-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 18px 24px;
+    border-top: 1px solid #e5e5e5;
+}
+
+.checklist-btn {
+    min-width: 100px;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.checklist-btn-cancel {
+    background: #eeeeee;
+    color: #333;
+}
+
+.checklist-btn-cancel:hover {
+    background: #ddd;
+}
+
+.checklist-btn-submit {
+    background: #2f80ed;
+    color: #fff;
+}
+
+.checklist-btn-submit:hover {
+    background: #256dcc;
+}
+
+@media (max-width: 700px) {
+    .checklist-lists {
+        grid-template-columns: 1fr;
+    }
+
+    .checklist-list {
+        max-height: 300px;
+    }
+    .selected-vehicle {
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .selected-vehicle-image {
+        width: 100px;
+        height: 75px;
+    }
+
+    .selected-vehicle-info h3 {
+        font-size: 17px;
+    }
+    .checklist-modal {
+        padding: 10px;
+    }
+
+    .checklist-modal-content {
+        max-height: 95vh;
+    }
+
+    .checklist-modal-header,
+    .checklist-lists,
+    .checklist-modal-actions {
+        padding: 16px;
+    }
+}
