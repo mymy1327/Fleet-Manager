@@ -23,6 +23,30 @@ $uri = array_slice(explode("/", $path), 2);
 $data = json_decode(file_get_contents("php://input"), true);
 
 /**
+ * checking the datetime to turn all vehicles available after 16:00
+ */
+date_default_timezone_set("Europe/Helsinki");
+$currentHour = date("H");
+$currentDate = date("Y-m-d");
+if ($currentHour >= 16) {
+    $conn->query("UPDATE `vehicles` SET `state`='available' WHERE state = 'in_use'");
+}else{
+    $conn->query("UPDATE `vehicles` v
+    JOIN inspections i
+        ON v.id_vehicles = i.id_vehicles
+    JOIN (
+        SELECT id_vehicles, MAX(`date`) AS latest_date
+        FROM inspections
+        GROUP BY id_vehicles
+    ) latest
+        ON i.id_vehicles = latest.id_vehicles
+        AND i.`date` = latest.latest_date
+    SET `state`='available'
+    WHERE DATE(i.`date`) < CURDATE() 
+    AND `state` = 'in_use'");
+}
+
+/**
  * returns all entries in table
  * @param mysqli $conn connection to database
  * @param string $table db table name
