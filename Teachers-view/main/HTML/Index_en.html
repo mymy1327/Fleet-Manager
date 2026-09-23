@@ -187,13 +187,11 @@
 
         <section data-view-content="inspections" hidden>
             <div class="page-heading"><div><h1>Inspections</h1><p class="subtitle">All vehicle departure inspections</p></div>
-            <button class="button" id="assignChecklistButton" type="button">&#xFF0B;&nbsp; Assign Checklist
-            </button>
+            <button class="button" id="assignChecklistButton" type="button">&#xFF0B;&nbsp; Assign Checklist</button>
             <div id="vehicleChecklistModal" class="checklist-modal">
         <div class="checklist-modal-content">
             <div class="checklist-modal-header">
                 <h2>Assign Checklists</h2>
-
                 <button type="button" class="checklist-modal-close" id="closeChecklistModal">&times;</button>
             </div>
             <div class="vehicle-selector">
@@ -319,7 +317,18 @@
         </div>
     </div>
         </div>
-            <section class="panel single-panel"><div class="empty"><span class="empty-icon">&#x1F5B9;</span>No inspections yet</div></section>
+            <section class="panel single-panel">
+    <div class="inspection-header">
+        <div>
+            <h2>Inspections</h2>
+            <p>Vehicle departure inspections</p>
+        </div>
+        <button type="button" class="inspection-refresh" id="refreshInspections">↻ Refresh</button>
+    </div>
+    <div id="inspectionList" class="inspection-list">
+        <div class="inspection-loading">Loading inspections...</div>
+    </div>
+</section>
         </section>
 
         <section data-view-content="faults" hidden>
