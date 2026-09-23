@@ -1,6 +1,6 @@
 <?php
 /** @var string $API */
-require  __DIR__ . "/../../assets/sharedUserFunctions.php";
+require  __DIR__ . "/../sharedUserFunctions.php";
 session_start();
 
 //Get user ID if needed
@@ -65,5 +65,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     </main>
 </body>
+<script src="../apiCommunication.js"></script>
 <script src="../JS/login.js"></script>
 </html>

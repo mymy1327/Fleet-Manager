@@ -859,7 +859,7 @@ button:disabled, button:hover:disabled {
 .vehicle-detail-layout {
     /* Vehicle information on the left, inspections on the right. */
     display: grid;
-    grid-template-columns: 320px 320px;
+    grid-template-columns: 300px 300px;
     gap: 24px;
     align-items: start;
 }
@@ -875,9 +875,9 @@ button:disabled, button:hover:disabled {
 
 /* Info panel for vehicle details. */
 .vehicle-info-panel {
-    width: 320px;
-    min-width: 320px;
-    max-width: 320px;
+    width: 300px;
+    min-width: 300px;
+    max-width: 300px;
     padding: 14px 14px 18px;
     box-shadow: 3px 3px 2px #00000036;
     display: grid;
@@ -886,9 +886,9 @@ button:disabled, button:hover:disabled {
 
 .vehicle-inspection-panel {
     /* Right-hand inspection column with a stable minimum height. */
-    width: 320px;
-    min-width: 320px;
-    max-width: 320px;
+    width: 300px;
+    min-width: 300px;
+    max-width: 300px;
     min-height: 320px;
     padding: 12px 12px 14px;
 }
@@ -932,6 +932,52 @@ button:disabled, button:hover:disabled {
     color: #7e8ca0;
     font-size: 16px;
     font-weight: 500;
+}
+
+
+.inspection-action-buttons {
+    /* Keep the vehicle actions below the info panel and align them right. */
+    display: flex;
+    justify-content: flex-end;
+    width: 300px;
+    margin-top: 12px;
+}
+
+.vehicle-inspection-edit-buttons {
+    /* Keep the edit and delete controls together on the right. */
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    width: 100%;
+}
+
+.vehicle-inspection-edit-buttons .vehicle-inspection-edit-button:first-child {
+    flex: 1;
+    min-width: 0;
+}
+
+.vehicle-inspection-edit-buttons .vehicle-inspection-edit-button:last-child {
+    width: 30%;
+    min-width: 30%;
+    padding: 0;
+}
+
+.vehicle-inspection-edit-button {
+    /* Individual inspection tab; behavior is intentionally disabled above. */
+    height: 30px;
+    padding: 0 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #f3f5f8;
+    color: #58667c;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.vehicle-inspection-edit-button.is-active {
+    border-color: #bfd5f9;
+    background: #fff;
+    color: var(--blue);
 }
 
 @media (max-width: 760px) {
