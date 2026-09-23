@@ -303,7 +303,14 @@
 <div id="demo11"></div>
 <input id="filterInspectionsVehicle" placeholder="filter by vehicle id" />
 <input id="filterInspectionsUser" placeholder="filter by user id">
-<button onclick="getAllInspections(document.getElementById('filterInspectionsVehicle').value, document.getElementById('filterInspectionsUser').value)">get all inspections</button
+<input id="filterInspectionsDate" type="date" placeholder="filter by date">
+<button onclick="
+    getAllInspections(
+        document.getElementById('filterInspectionsVehicle').value,
+        document.getElementById('filterInspectionsUser').value,
+        document.getElementById('filterInspectionsDate').value
+    )
+  ">get all inspections</button
 ><br />
 <div id="demo12"></div>
 <input id="inspectionsId" placeholder="inspection id" />
@@ -461,9 +468,9 @@
         xhr.send();
     }
 
-    function getAllInspections(vehicleId = null, userId = null) {
+    function getAllInspections(vehicleId = null, userId = null, date = null) {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", restapi + "/api/inspections?id_vehicles=" + vehicleId + "&id_users=" + userId, true); // ?id_vehicles can be removed
+        xhr.open("GET", restapi + "/api/inspections?id_vehicles=" + vehicleId + "&id_users=" + userId+ "&date="+date, true); // ?id_vehicles can be removed
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             // work with response here (code: xhr.status, json response: xhr.responseText)

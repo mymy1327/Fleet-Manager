@@ -30,7 +30,7 @@ $currentHour = date("H");
 $currentDate = date("Y-m-d");
 if ($currentHour >= 16) {
     $conn->query("UPDATE `vehicles` SET `state`='available' WHERE state = 'in_use'");
-}else{
+} else {
     $conn->query("UPDATE `vehicles` v
     JOIN inspections i
         ON v.id_vehicles = i.id_vehicles
@@ -42,7 +42,7 @@ if ($currentHour >= 16) {
         ON i.id_vehicles = latest.id_vehicles
         AND i.`date` = latest.latest_date
     SET `state`='available'
-    WHERE DATE(i.`date`) < CURDATE() 
+    WHERE DATE(i.`date`) < CURDATE()
     AND `state` = 'in_use'");
 }
 
@@ -62,12 +62,18 @@ function getFullTable($conn, $table, $filterColumn, $filter)
         $quary = "SELECT * FROM `$table` WHERE";
         $types = "";
         for ($i = 0; $i < count($filterColumn); $i++) {
-            if ($i == 0) {
+            $types .= "s";
+            if ($filterColumn[$i] == "date") {
+                if ($i == 0) {
+                    $quary .= " CAST(`date` AS DATE) = ?";
+                } else {
+                    $quary .= " AND CAST(`date` AS DATE) = ?";
+                }
+            } elseif ($i == 0) {
                 $quary .= " `$filterColumn[$i]` = ?";
             } else {
                 $quary .= " AND `$filterColumn[$i]` = ?";
             }
-            $types .= "s";
         }
         $stmt = $conn->prepare($quary);
         $stmt->bind_param($types, ...$filter);
