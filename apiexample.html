@@ -1,8 +1,28 @@
 <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+<p>When using <strong>GET</strong> for the whole list, you can now use:
+<ul>
+    <li><i>order_by</i>: (<small style="font-size: small;">default:</small>id_{table}) which you can set any column of the table</li>
+    <li><i>order_way</i>: (<small style="font-size: small;">default:</small>ASC | DESC) which allows you to set order direction</li>
+    <li><i>offset</i>: number of rows from start to skip (can be used for paging)</li>
+    <li><i>limit</i>: number of rows to return</li>
+</ul>
+
+example:
+<pre class="prettyprint">/api/inspections?order_by=date&limit=3
+//gives you the 3 oldest inspections
+/api/inspections?order_by=date&limit=5&id_users=2&order_way=DESC
+//returns 5 newest inspections by user 2
+//as you can see the order of parameters doesn't matter
+/api/vehicles?limit=20 //1. page
+/api/vehicles?limit=20&offset=20 //2. page
+/api/vehicles?limit=20&offset=40 //3. page
+</pre>
+</p>
+<hr>
 <p>for updating table entries there are 2 ways:
     <ol>
-    <li><strong>PUT</strong>: completly rewrites table entry (you need to add all fields that the table needs)
-    <li><strong>PATCH</strong>: can update any column that you specify
+    <li><strong>PUT</strong>: completly rewrites table entry (you need to add all fields that the table needs)</li>
+    <li><strong>PATCH</strong>: can update any column that you specify</li>
     </ol>
 
     Example:<br>

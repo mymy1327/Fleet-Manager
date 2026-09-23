@@ -52,37 +52,72 @@ if ($currentHour >= 16) {
  * @param string $table db table name
  * @param string[] $filterColumn filtered column
  * @param string[] $filter filtering value
+ * @param string|null $orderBy order field
+ * @param string|null $orderWay[ASC | DESC]
+ * @param int|null $offset offset to limit rows
+ * @param int|null $limit number of rows to return
  * @return json|array[int, string|null] list of entries | array with error code on failure
  */
-function getFullTable($conn, $table, $filterColumn, $filter)
-{
+function getFullTable(
+    $conn,
+    $table,
+    $filterColumn,
+    $filter,
+    $orderBy = null,
+    $orderWay = null,
+    $offset = null,
+    $limit = null,
+) {
+    $orderBY = $orderBy ?? "id_$table";
+    $orderWay = $orderWay ?? "ASC";
+    $offset = $offset ?? null;
+    $limit = $limit ?? null;
     global $listOfTables;
     //logToConsole($filter);
     if (count($filterColumn) > 0) {
-        $quary = "SELECT * FROM `$table` WHERE";
+        $query = "SELECT * FROM `$table` WHERE";
         $types = "";
         for ($i = 0; $i < count($filterColumn); $i++) {
             $types .= "s";
             if ($filterColumn[$i] == "date") {
                 if ($i == 0) {
-                    $quary .= " CAST(`date` AS DATE) = ?";
+                    $query .= " CAST(`date` AS DATE) = ?";
                 } else {
-                    $quary .= " AND CAST(`date` AS DATE) = ?";
+                    $query .= " AND CAST(`date` AS DATE) = ?";
                 }
             } elseif ($i == 0) {
-                $quary .= " `$filterColumn[$i]` = ?";
+                $query .= " `$filterColumn[$i]` = ?";
             } else {
-                $quary .= " AND `$filterColumn[$i]` = ?";
+                $query .= " AND `$filterColumn[$i]` = ?";
             }
         }
-        $stmt = $conn->prepare($quary);
+        $query .= " ORDER BY `$orderBy` $orderWay";
+        if (isset($offset)) {
+            $query .= " OFFSET ? ROW";
+            $types .= "i";
+            $filter[] = $offset;
+        }
+        if (isset($limit)) {
+            $query .= "  FETCH NEXT ? ROWS ONLY";
+            $types .= "i";
+            $filter[] = $limit;
+        }
+        $stmt = $conn->prepare($query);
         $stmt->bind_param($types, ...$filter);
         if (!$stmt->execute()) {
             return [404];
         }
         $return = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     } else {
-        $result = $conn->query("SELECT * FROM `$table`");
+        $query = "SELECT * FROM `$table`";
+        $query .= " ORDER BY `$orderBy` $orderWay";
+        if (!is_null($offset)) {
+            $query .= " OFFSET $offset ROW";
+        }
+        if (!is_null($limit)) {
+            $query .= " FETCH NEXT $limit ROWS ONLY";
+        }
+        $result = $conn->query($query);
         if (!$result) {
             return [404];
         }
@@ -696,6 +731,23 @@ switch ($_SERVER["REQUEST_METHOD"]) {
     case "GET":
         $filterColumn = [];
         $filter = [];
+        $order_by = null;
+        $order_way = null;
+        $offset = null;
+        $limit = null;
+        if (isset($_GET["order_by"]) && !is_null($_GET["order_by"]) && $_GET["order_by"] != "") {
+            $order_by = $_GET["order_by"];
+        }
+        if (isset($_GET["order_way"]) && !is_null($_GET["order_way"]) && $_GET["order_way"] != "") {
+            $order_way = $_GET["order_way"];
+        }
+        if (isset($_GET["offset"]) && !is_null($_GET["offset"]) && $_GET["offset"] != "") {
+            $offset = $_GET["offset"];
+        }
+        if (isset($_GET["limit"]) && !is_null($_GET["limit"]) && $_GET["limit"] != "") {
+            $limit = $_GET["limit"];
+        }
+
         if (
             isset($_GET["id_vehicles"]) &&
             !is_null($_GET["id_vehicles"]) &&
@@ -746,7 +798,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         }
 
         if (!isset($uri[1])) {
-            $return = getFullTable($conn, $uri[0], $filterColumn, $filter);
+            $return = getFullTable($conn, $uri[0], $filterColumn, $filter, $order_by, $order_way, $offset, $limit);
             if (gettype($return) == "array") {
                 heaDie($return[0], $return[1] ?? null);
             }
