@@ -229,8 +229,8 @@
 .checklist-lists {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    padding: 20px 24px;
+    gap: 8px;
+    padding: 20px 12px;
 }
 
 .checklist-list-container {
@@ -348,7 +348,7 @@
     border-radius: 6px;
     background: #eeeeee;
     color: #333;
-    font-size: 13px;
+    font-size: 18px;
     cursor: pointer;
 }
 
