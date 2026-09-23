@@ -51,7 +51,14 @@ function getVehicleDetails(vehicleId) {
                 newArticle.id = newId;
 
                 let clickableconnection = document.createElement("a")
-                clickableconnection.href = `../../../VehicleDetails/index.html?code=${intelligeble[x].code}`
+                console.log(window.location.href)
+                console.log((window.location.href).search("index_en.html"))
+                if ((window.location.href).search("Index_en.html") != -1){
+                    clickableconnection.href = `../../../VehicleDetails/index_en.html?code=${intelligeble[x].code}`    
+                }else{
+                    clickableconnection.href = `../../../VehicleDetails/index_fi.html?code=${intelligeble[x].code}`
+                }
+                
 
                 //set the image
                 let picture = document.createElement("img")
