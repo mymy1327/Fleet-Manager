@@ -44,5 +44,6 @@ require __DIR__ . "/../../assets/sharedUserFunctions.php";
             <a href="../PHP/user.php"><button class="button">Add new user</button></a>
         </main>
     </body>
+    <script src="/assets/apiCommunication.js"></script>
     <script src="../JS/admin.js"></script>
 </html>

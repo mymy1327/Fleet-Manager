@@ -77,7 +77,7 @@ async function SendRequestAPI(url, data, method) {
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onload = () => {
       //Handle request data
-      if (xhr.status == 200 || xhr.status == 201) {
+      if (xhr.status == 200 || xhr.status == 201 || xhr.status == 202 || xhr.status == 203 || xhr.status == 204) {
         resolve([true,JSON.parse(xhr.responseText)]);
       } else {
         resolve([xhr.status + "|" + parseApiErrorMessage(xhr.responceText),null]);
@@ -100,8 +100,8 @@ async function SendRequestAPIAndHandleErrors(url, data, method) {
     //Send GET
     const [resp, dataResp] = await SendRequestAPI(url,data,method)
     if (resp !== true) {
-      const split = responce.split("|", 2)
-      window.location.href = ("/errorPages/PHP/handleError.php?code=" + split[0] + "&message=" + encodeURIComponent(split[1]) + "&from=" + encodeURIComponent(window.location.href));
+      const split = resp.split("|", 2)
+      window.location.href = ("/assets/PHP/handleError.php?code=" + split[0] + "&message=" + encodeURIComponent(split[1]) + "&from=" + encodeURIComponent(window.location.href));
       resolve([false,null]);
       return
     }
@@ -120,6 +120,17 @@ async function SendRequestAPIAndHandleErrors(url, data, method) {
 async function SendPostAPI(url, data) {
   return SendRequestAPI(url, data, "POST")
 }
+
+/**
+ * Sends PATCH request to API
+ * @param {string} url URL path at API
+ * @param {any} data JSON object data to be send
+ * @returns {Promise<[boolean,any]>} Returns true on success or string as error message and value got from API
+ */
+async function SendPatchAPI(url, data) {
+  return SendRequestAPI(url, data, "PATCH")
+}
+
 
 /**
  * Sends POST request to API for selected columns
@@ -184,7 +195,7 @@ async function SendGetAPI(url) {
 }
 
 /**
- * Sends GET request to API
+ * Sends GET request to API and automatically handle errors
  * @param {string} url URL path at API
  * @returns {Promise<[boolean,any]>} Returns true on success or false on error and value got from API
  */
@@ -193,13 +204,41 @@ async function SendGetAPIAndHandleErrors(url) {
 }
 
 /**
- * Sends POST request to API
+ * Sends POST request to API  and automatically handle errors
  * @param {string} url URL path at API
  * @param {any} data JSON object data to be send
  * @returns {Promise<[boolean,any]>} Returns true on success or string as error message and value got from API
  */
 async function SendPostAPIAndHandleErrors(url,data) {
   return SendRequestAPIAndHandleErrors(url, data, "POST")
+}
+
+/**
+ * Sends PATCH request to API  and automatically handle errors
+ * @param {string} url URL path at API
+ * @param {any} data JSON object data to be send
+ * @returns {Promise<[boolean,any]>} Returns true on success or string as error message and value got from API
+ */
+async function SendPatchAPIAndHandleErrors(url,data) {
+  return SendRequestAPIAndHandleErrors(url, data, "PATCH")
+}
+
+/**
+ * Sends DELETE request to API
+ * @param {string} url URL path at API
+ * @returns {Promise<[true|string,any]>} Returns true on success or string as error message and value got from API
+ */
+async function SendDeleteAPI(url) {
+  return SendRequestAPI(url, null, "DELETE")
+}
+
+/**
+ * Sends DELETE request to API and automatically handle errors
+ * @param {string} url URL path at API
+ * @returns {Promise<[boolean,any]>} Returns true on success or false on error and value got from API
+ */
+async function SendDeleteAPIAndHandleErrors(url) {
+  return SendRequestAPIAndHandleErrors(url, null, "DELETE")
 }
 
 /**
@@ -223,7 +262,7 @@ async function SendGetOfColumsAndHandleErrors(url, columns, idParamName) {
     const responce = await SendGetOfColums(url, columns, params.get(idParamName));
     if (responce !== true) {
       const split = responce.split("|", 2)
-      window.location.href = ("/errorPages/PHP/handleError.php?code=" + split[0] + "&message=" + encodeURIComponent(split[1]) + "&from=" + encodeURIComponent(window.location.href));
+      window.location.href = ("/assets/PHP/handleError.php?code=" + split[0] + "&message=" + encodeURIComponent(split[1]) + "&from=" + encodeURIComponent(window.location.href));
       resolve(false);
       return
     }
@@ -279,7 +318,7 @@ async function GetLoggedInUserID() {
   //Create promise
   return new Promise(async (resolve, reject) => {
     //Send API request
-    const [ok, id] = await SendGetAPIAndHandleErrors("/userManagement/PHP/login.php?getUserId");
+    const [ok, id] = await SendGetAPIAndHandleErrors("/assets/PHP/login.php?getUserId");
     if (!ok) {
       resolve(null);
     }

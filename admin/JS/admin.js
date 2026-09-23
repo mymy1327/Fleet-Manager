@@ -28,19 +28,32 @@ async function main() {
 
     //Change password button
     const btnChangePassword = document.createElement("button");
-    btnChangePassword.classList.add("button")
+    btnChangePassword.classList.add("button");
     btnChangePassword.innerText = "Change password";
-    btnChangePassword.addEventListener("click", () => {
-      const xhr = new XMLHttpRequest();
-      xhr.open("PATCH", "../../api/users/" + user.id, true); //add path to requested file
-      xhr.setRequestHeader("Content-Type", "application/json");
-      xhr.onload = () => {
-        if (xhr.status != 200) {
-          alert("Failed saving new password!");
-        }
-        window.location.reload();
-      };
-      xhr.send(JSON.stringify({ function: "changePassword", password: prompt("Enter new password: ") })); //data is a list send to requested file
+    btnChangePassword.addEventListener("click", async () => {
+      //Get new password
+      btnChangePassword.disabled = true;
+      const password = prompt("Enter new password:");
+      if (password == null) {
+        btnChangePassword.disabled = false;
+        return;
+      }
+
+      //Get password hash
+      const [ok, resp2] = await SendPostAPIAndHandleErrors("/assets/PHP/generatePasswordHash.php", { password: password });
+      if (!ok) {
+        return;
+      }
+
+      //Change password
+      const data = {};
+      data["password"] = resp2["hash"];
+      const [ok2, _] = await SendPatchAPIAndHandleErrors("/api/users/" + user.id_users, data);
+      if (!ok2) {
+        return;
+      }
+      alert("Password changed!");
+      window.location.reload();
     });
     actions.appendChild(btnChangePassword);
 
@@ -57,18 +70,14 @@ async function main() {
     const btnDelete = document.createElement("button");
     btnDelete.classList.add("button");
     btnDelete.innerText = "Delete";
-    btnDelete.addEventListener("click", () => {
-      if (confirm("Are you sure you want to delete: " + user.name)) {
-        const xhr = new XMLHttpRequest();
-        xhr.open("DELETE", "../../api/users/" + user.id, true); //add path to requested file
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.onload = () => {
-          if (xhr.status != 200) {
-            alert("Failed deleting: " + user.name);
-          }
+    btnDelete.addEventListener("click", async () => {
+      if (confirm("Are you sure you want to delete: " + user.username)) {
+        const [ok, _] = await SendDeleteAPIAndHandleErrors("/api/users/" + user.id_users);
+        if (ok) {
           window.location.reload();
-        };
-        xhr.send(JSON.stringify()); //data is a list send to requested file
+        } else {
+          //alert("Failed deleting: " + user.username);
+        }
       }
     });
     actions.appendChild(btnDelete);
