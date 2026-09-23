@@ -66,6 +66,7 @@ function getVehicleDetails(vehicleId) {
 
                 let vehicleheadingh = document.createElement("div")
                 vehicleheadingh.classList.add("box")
+                
 
                 let vehiclemodel = document.createElement("h2")
                 vehiclemodel.classList.add("vehicle-model")
