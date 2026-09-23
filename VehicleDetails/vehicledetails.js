@@ -1,7 +1,8 @@
 let carlist = document.getElementById("vehicle")
 let bob = new URLSearchParams(document.location.search)
 let name = bob.get("code")
-
+console.log(name)
+const ip = "10.1.17.107:5503"
 function getVehicleDetails(getcode) {
     const xhr = new XMLHttpRequest();
     xhr.open("GET", `/api/vehicles?code=` + getcode, true);
@@ -57,9 +58,13 @@ function getVehicleDetails(getcode) {
             vehicledistance.classList.add("vehicle-distance")
             vehicledistance.textContent = "no"
 
-            let vehiclelicense = document.createElement("span")
-            vehiclelicense.classList.add("vehicle-license")
-            vehiclelicense.textContent = intelligeble[x].license_plate
+                let visualisedvehiclecode = document.createElement("p")
+                vehiclecode.classList.add("vehicle-code")
+                console.log(parseInt(intelligeble[x].id_vehicles))
+                console.log(`http://${ip}/inspection-student-form/index.html?id=${intelligeble[x].code}`)
+                visualizeqr(`http://${ip}/vehicle/${intelligeble[x].code}`, visualisedvehiclecode)
+                
+                //append in div
                 
             let vehiclecode = document.createElement("p")
             vehiclecode.classList.add("vehicle-code")
@@ -130,7 +135,7 @@ function visualizeqr(code, changing) {
         const text = code; // User-supplied Unicode text
         const errCorLvl = qrcodegen.QrCode.Ecc.LOW; // Error correction level
         const qr = qrcodegen.QrCode.encodeText(text, errCorLvl); // Make the QR Code symbol
-        drawCanvas(qr, 10, 4, "#FFFFFF", "#000000", appendCanvas("", changing)); // Draw it on screen
+        drawCanvas(qr, 1, 4, "#FFFFFF", "#000000", appendCanvas("", changing)); // Draw it on screen
     }
     // Creates a variety of QR Codes that exercise different features of the library, and appends each one to the document.
     

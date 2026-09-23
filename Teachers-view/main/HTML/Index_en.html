@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fleet Manager</title>
+    <title>Hyria Garage</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="../CSS/style.css">
     <link rel="stylesheet" href="../CSS/addvehicle.css">
@@ -11,20 +11,24 @@
 </head>
 <body>
     <header class="topbar">
-        <a class="brand" href="#home" aria-label="Fleet Manager home">
-            <span class="brand-mark" aria-hidden="true">&#x26DF;</span>
-            <strong>Fleet Manager</strong>
-        </a>
-        <nav class="main-nav" aria-label="Main navigation">
-            <a href="#home" data-view="home"><span>&#x2317;</span>Home</a>
-            <a href="#fleet" data-view="fleet"><span class="nav-icon" aria-hidden="true">&#x26DF;</span>Fleet</a>
-            <a href="#inspections" data-view="inspections"><span>&#x1F5B9;</span>Inspections</a>
-            <a href="#faults" data-view="faults"><span>&#x25B3;</span>Faults</a>
-            <a href="#reports" data-view="reports"><span>&#x25A5;</span>Reports</a>
-        </nav>
-        <div class="header-actions">
-            <button class="language-switch" type="button" data-language-switch>EN</button>
-            <button class="logout" type="button">&#x21AA;&nbsp; Logout</button>
+        <div class="topbar-row">
+            <a class="brand" href="#home" aria-label="Hyria Garage home">
+                <span class="brand-mark" aria-hidden="true">&#x26DF;</span>
+                <strong>Hyria Garage</strong>
+            </a>
+            <div class="header-actions">
+                <button class="language-switch" type="button" data-language-switch>EN</button>
+                <button class="logout" type="button">&#x21AA;&nbsp; Logout</button>
+            </div>
+        </div>
+        <div class="topbar-row">
+            <nav class="main-nav" aria-label="Main navigation">
+                <a href="#home" data-view="home"><span>&#x2317;</span>Home</a>
+                <a href="#fleet" data-view="fleet"><span class="nav-icon" aria-hidden="true">&#x26DF;</span>Fleet</a>
+                <a href="#inspections" data-view="inspections"><span>&#x1F5B9;</span>Inspections</a>
+                <a href="#faults" data-view="faults"><span>&#x25B3;</span>Faults</a>
+                <a href="#reports" data-view="reports"><span>&#x25A5;</span>Reports</a>
+            </nav>
         </div>
     </header>
 
@@ -250,7 +254,19 @@
                     </div>
                 </div>
             </div>
-            <div class="modal fade" id="editChecklistModal" tabindex="-1" aria-labelledby="editChecklistModalLabel" aria-hidden="true">
+
+            <div class="checklist-modal-actions">
+                <button type="button" id="cancelChecklistButton" class="checklist-btn checklist-btn-cancel">
+                    Cancel
+                </button>
+
+                <button type="button" id="submitChecklistButton" class="checklist-btn checklist-btn-submit">
+                    Submit
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="editChecklistModal" tabindex="-1" aria-labelledby="editChecklistModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -279,40 +295,21 @@
         </div>
     </div>
 </div>
-
-            <div class="checklist-modal-actions">
-                <button type="button" id="cancelChecklistButton" class="checklist-btn checklist-btn-cancel">
-                    Cancel
-                </button>
-
-                <button type="button" id="submitChecklistButton" class="checklist-btn checklist-btn-submit">
-                    Submit
-                </button>
-            </div>
-        </div>
-    </div>
-
     <div id="addChecklistModal" class="checklist-modal checklist-modal-small">
         <div class="checklist-modal-content">
             <div class="checklist-modal-header">
                 <h2>Add Checklist</h2>
-
                 <button type="button" class="checklist-modal-close" id="closeAddChecklistModal">&times;</button>
             </div>
-
             <form id="addChecklistForm">
                 <div class="checklist-form-group">
                     <label for="newChecklistName">Checklist name</label>
-
                     <input type="text" id="newChecklistName" placeholder="Enter checklist name" required>
                 </div>
-
                 <div class="checklist-form-group">
                     <label for="newChecklistDescription">Description</label>
-
                     <textarea id="newChecklistDescription" placeholder="Enter checklist description" rows="5" required></textarea>
                 </div>
-
                 <div class="checklist-modal-actions">
                     <button type="button" id="cancelAddChecklistButton" class="checklist-btn checklist-btn-cancel">Cancel</button>
 
