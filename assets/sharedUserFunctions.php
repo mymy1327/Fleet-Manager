@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/../errorPages/PHP/errorManager.php";
+require_once __DIR__ . "/./PHP/errorManager.php";
 $API = "https://developmenterasmus.kolojar.cz/api";
 /**
  * Checks if user id in session is possible to login
@@ -279,7 +279,7 @@ function PathToURL(string $path)
 function HandleError(int $code, string|null $message = null, string|null $from = null, string $lang = "en", bool $redirect = false)
 {
     //Get paths
-    $path = __DIR__ . "/../errorPages/PHP/handleError.php";
+    $path = __DIR__ . "/assets/PHP/handleError.php";
     $url = PathToURL($path);
 
     //Chceck if from is null

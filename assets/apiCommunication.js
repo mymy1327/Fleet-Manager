@@ -101,7 +101,7 @@ async function SendRequestAPIAndHandleErrors(url, data, method) {
     const [resp, dataResp] = await SendRequestAPI(url,data,method)
     if (resp !== true) {
       const split = resp.split("|", 2)
-      window.location.href = ("/errorPages/PHP/handleError.php?code=" + split[0] + "&message=" + encodeURIComponent(split[1]) + "&from=" + encodeURIComponent(window.location.href));
+      window.location.href = ("/assets/PHP/handleError.php?code=" + split[0] + "&message=" + encodeURIComponent(split[1]) + "&from=" + encodeURIComponent(window.location.href));
       resolve([false,null]);
       return
     }
@@ -262,7 +262,7 @@ async function SendGetOfColumsAndHandleErrors(url, columns, idParamName) {
     const responce = await SendGetOfColums(url, columns, params.get(idParamName));
     if (responce !== true) {
       const split = responce.split("|", 2)
-      window.location.href = ("/errorPages/PHP/handleError.php?code=" + split[0] + "&message=" + encodeURIComponent(split[1]) + "&from=" + encodeURIComponent(window.location.href));
+      window.location.href = ("/assets/PHP/handleError.php?code=" + split[0] + "&message=" + encodeURIComponent(split[1]) + "&from=" + encodeURIComponent(window.location.href));
       resolve(false);
       return
     }
