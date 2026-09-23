@@ -572,11 +572,13 @@ single-panel {
 
 #inspectionHistoryTable {
     margin-bottom: 0;
+    font-size: 15px;
 }
 
 #inspectionHistoryTable th {
     white-space: nowrap;
     font-weight: 600;
+    text-align: center;
 }
 
 #inspectionHistoryTable td {
