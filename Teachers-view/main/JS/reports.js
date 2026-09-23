@@ -226,13 +226,11 @@ const inspectionHistoryPerPage = 10;
 
 function renderInspectionHistory() {
     const container = document.getElementById("inspectionHistoryBody");
-    const pagination = document.getElementById("inspectionHistoryPagination");
-
     if (!container) return;
 
     if (!reportInspections.length) {
         container.innerHTML = `<tr><td colspan="5">Ei tarkastuksia</td></tr>`;
-        if (pagination) pagination.innerHTML = "";
+        renderInspectionHistoryPagination(0);
         return;
     }
 
@@ -240,18 +238,14 @@ function renderInspectionHistory() {
         (a, b) => new Date(b.date) - new Date(a.date)
     );
 
-    const totalPages = Math.ceil(
-        sorted.length / inspectionHistoryPerPage
-    );
+    const totalPages = Math.ceil(sorted.length / inspectionHistoryPerPage);
 
     if (inspectionHistoryPage > totalPages) {
         inspectionHistoryPage = totalPages;
     }
 
     const start = (inspectionHistoryPage - 1) * inspectionHistoryPerPage;
-    const end = start + inspectionHistoryPerPage;
-
-    const pageItems = sorted.slice(start, end);
+    const pageItems = sorted.slice(start, start + inspectionHistoryPerPage);
 
     container.innerHTML = pageItems.map(inspection => {
         const vehicle = reportVehicles.find(
@@ -280,7 +274,6 @@ function renderInspectionHistory() {
 
 function renderInspectionHistoryPagination(totalPages) {
     const container = document.getElementById("inspectionHistoryPagination");
-
     if (!container) return;
 
     if (totalPages <= 1) {
@@ -288,35 +281,73 @@ function renderInspectionHistoryPagination(totalPages) {
         return;
     }
 
-    let html = `
-        <button class="btn btn-outline-secondary btn-sm"
-                ${inspectionHistoryPage === 1 ? "disabled" : ""}
-                onclick="changeInspectionHistoryPage(${inspectionHistoryPage - 1})">
-            ‹
-        </button>
-    `;
+    const pages = [];
 
-    for (let page = 1; page <= totalPages; page++) {
-        html += `
-            <button class="btn btn-sm ${page === inspectionHistoryPage ? "btn-primary" : "btn-outline-secondary"}"
-                    onclick="changeInspectionHistoryPage(${page})">
-                ${page}
-            </button>
-        `;
+    if (totalPages <= 5) {
+        for (let i = 1; i <= totalPages; i++) {
+            pages.push(i);
+        }
+    } else if (inspectionHistoryPage <= 3) {
+        pages.push(1, 2, 3, "...", totalPages);
+    } else if (inspectionHistoryPage >= totalPages - 2) {
+        pages.push(1, "...", totalPages - 2, totalPages - 1, totalPages);
+    } else {
+        pages.push(
+            1,
+            "...",
+            inspectionHistoryPage - 1,
+            inspectionHistoryPage,
+            inspectionHistoryPage + 1,
+            "...",
+            totalPages
+        );
     }
 
-    html += `
-        <button class="btn btn-outline-secondary btn-sm"
-                ${inspectionHistoryPage === totalPages ? "disabled" : ""}
-                onclick="changeInspectionHistoryPage(${inspectionHistoryPage + 1})">
+    container.innerHTML = `
+        <button
+            type="button"
+            class="btn btn-outline-secondary btn-sm"
+            ${inspectionHistoryPage === 1 ? "disabled" : ""}
+            onclick="changeInspectionHistoryPage(${inspectionHistoryPage - 1})">
+            ‹
+        </button>
+
+        ${pages.map(page => {
+            if (page === "...") {
+                return `<span class="inspection-pagination-dots">...</span>`;
+            }
+
+            return `
+                <button
+                    type="button"
+                    class="btn btn-sm ${page === inspectionHistoryPage
+                        ? "btn-primary"
+                        : "btn-outline-secondary"}"
+                    onclick="changeInspectionHistoryPage(${page})">
+                    ${page}
+                </button>
+            `;
+        }).join("")}
+
+        <button
+            type="button"
+            class="btn btn-outline-secondary btn-sm"
+            ${inspectionHistoryPage === totalPages ? "disabled" : ""}
+            onclick="changeInspectionHistoryPage(${inspectionHistoryPage + 1})">
             ›
         </button>
     `;
-
-    container.innerHTML = html;
 }
 
 function changeInspectionHistoryPage(page) {
+    if (page < 1) return;
+
+    const totalPages = Math.ceil(
+        reportInspections.length / inspectionHistoryPerPage
+    );
+
+    if (page > totalPages) return;
+
     inspectionHistoryPage = page;
     renderInspectionHistory();
 }

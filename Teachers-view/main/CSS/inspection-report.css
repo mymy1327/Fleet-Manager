@@ -474,6 +474,14 @@ single-panel {
     height: 38px;
     border-radius: 8px;
 }
+.inspection-pagination-dots {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 38px;
+    color: #6c757d;
+}
 
 .report-result-passed {
     background-color: rgba(34, 197, 94, 0.12);
@@ -539,7 +547,12 @@ single-panel {
     .inspection-history-pagination .btn {
         min-width: 34px;
         height: 34px;
-        padding: 4px 9px;
+        padding: 4px 8px;
+    }
+
+    .inspection-pagination-dots {
+        min-width: 18px;
+        height: 34px;
     }
     .vehicle-card-grid, .problem-card-grid {
         grid-template-columns: 1fr;
