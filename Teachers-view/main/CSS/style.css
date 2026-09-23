@@ -598,6 +598,7 @@ button:disabled, button:hover:disabled {
     flex-shrink: 0;
 }
 
+
 .pill {
     /* Rounded time-period selector used in reports. */
     display: inline-block;
