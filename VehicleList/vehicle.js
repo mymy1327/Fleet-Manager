@@ -49,7 +49,6 @@ function getVehicleDetails(vehicleId) {
             console.log(intelligeble)
             let totalvehicles = document.getElementById("totalvehicles");
             totalvehicles.textContent = intelligeble.length
-
             let totalavailable = document.getElementById("totalavailable");
             let temp = 0
             for (x in intelligeble){
