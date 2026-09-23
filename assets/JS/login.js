@@ -11,7 +11,7 @@ loginButton.addEventListener("click", async () => {
   //Create data
   loginButton.disabled = true;
   const data = {};
-  data["username"] = document.getElementById("username").value
+  data["email"] = document.getElementById("email").value
   data["password"] = document.getElementById("password").value
   data["rememberMe"] = document.getElementById("rememberMe").checked ? "true" : "false"
   if(params.has("next")) {

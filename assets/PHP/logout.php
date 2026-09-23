@@ -2,7 +2,7 @@
 session_start();
 
 //Clear cookies
-setcookie('remember_me_username', '', [
+setcookie('remember_me_email', '', [
     'expires'  => time() - 30 * 24 * 3600,
     'path'     => '/',
     'secure'   => true,

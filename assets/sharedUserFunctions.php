@@ -16,8 +16,8 @@ function CheckAccessSession(array $roles, bool $displayError = true): bool
 
     //Set session value if needed
     if (!isset($_SESSION["login"]) || $_SESSION["login"] == "" || $_SESSION["login"] == "-1") {
-        if (isset($_COOKIE["remember_me_username"]) && isset($_COOKIE["remember_me_password"])) {
-            $result = HandleLogin( $_COOKIE["remember_me_username"],$_COOKIE["remember_me_password"],true,null);
+        if (isset($_COOKIE["remember_me_email"]) && isset($_COOKIE["remember_me_password"])) {
+            $result = HandleLogin( $_COOKIE["remember_me_email"],$_COOKIE["remember_me_password"],true,null);
             if($result["code"] === 200) {
                 $_SESSION["login"]  = $result["id"];
             } else {
@@ -68,13 +68,13 @@ function CheckAccess(int $user, array $roles): int|true
 
 /**
  * Handles login of user
- * @param string $username Username
+ * @param string $email Email
  * @param string $password Password
  * @param bool $rememberMe Remember user
  * @param string|null $next Next URL, can be null
  * @param mixed Result of login
  */
-function HandleLogin(string $username, string $password, bool $rememberMe, string|null $next): mixed {
+function HandleLogin(string $email, string $password, bool $rememberMe, string|null $next): mixed {
     //Handle login - Get user info form API
     $users = SendRequestToAPI("/users","GET");
     if($users === false) {
@@ -86,13 +86,12 @@ function HandleLogin(string $username, string $password, bool $rememberMe, strin
 
     //Find user
     foreach ($users as $user) {
-        if ($user["username"] == $username) {
+        if ($user["email"] == $email) {
             //Verify password
             if (password_verify($password, $user["password"])) {
                 //Remember me
                 if($rememberMe) {
-                setcookie('remember_me_username', $username, [
-                    'expires'  => time() + 30 * 24 * 3600,
+                    setcookie('remember_me_email', 24 * 3600,[
                     'path'     => '/',
                     'secure'   => true,
                     'httponly' => true,
@@ -125,7 +124,7 @@ function HandleLogin(string $username, string $password, bool $rememberMe, strin
                 return $result;
             }
             //Clear cookies
-            setcookie('remember_me_username', '', [
+            setcookie('remember_me_email', '', [
                 'expires'  => time() - 30 * 24 * 3600,
                 'path'     => '/',
                 'secure'   => true,
@@ -146,7 +145,7 @@ function HandleLogin(string $username, string $password, bool $rememberMe, strin
         }
     }
     //Clear cookies
-    setcookie('remember_me_username', '', [
+    setcookie('remember_me_email', '', [
         'expires'  => time() - 30 * 24 * 3600,
         'path'     => '/',
         'secure'   => true,
@@ -242,7 +241,7 @@ function SendRequestToAPI(string $path, string $method = "GET", mixed $body = nu
 
 /**
  * Gets POST data
- * @return mixed Values
+ * @return mixed Values from JSON
  */
 function GetPOSTData(): mixed
 {
