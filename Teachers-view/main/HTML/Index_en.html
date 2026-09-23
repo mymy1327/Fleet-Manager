@@ -250,7 +250,19 @@
                     </div>
                 </div>
             </div>
-            <div class="modal fade" id="editChecklistModal" tabindex="-1" aria-labelledby="editChecklistModalLabel" aria-hidden="true">
+
+            <div class="checklist-modal-actions">
+                <button type="button" id="cancelChecklistButton" class="checklist-btn checklist-btn-cancel">
+                    Cancel
+                </button>
+
+                <button type="button" id="submitChecklistButton" class="checklist-btn checklist-btn-submit">
+                    Submit
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="editChecklistModal" tabindex="-1" aria-labelledby="editChecklistModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -279,40 +291,21 @@
         </div>
     </div>
 </div>
-
-            <div class="checklist-modal-actions">
-                <button type="button" id="cancelChecklistButton" class="checklist-btn checklist-btn-cancel">
-                    Cancel
-                </button>
-
-                <button type="button" id="submitChecklistButton" class="checklist-btn checklist-btn-submit">
-                    Submit
-                </button>
-            </div>
-        </div>
-    </div>
-
     <div id="addChecklistModal" class="checklist-modal checklist-modal-small">
         <div class="checklist-modal-content">
             <div class="checklist-modal-header">
                 <h2>Add Checklist</h2>
-
                 <button type="button" class="checklist-modal-close" id="closeAddChecklistModal">&times;</button>
             </div>
-
             <form id="addChecklistForm">
                 <div class="checklist-form-group">
                     <label for="newChecklistName">Checklist name</label>
-
                     <input type="text" id="newChecklistName" placeholder="Enter checklist name" required>
                 </div>
-
                 <div class="checklist-form-group">
                     <label for="newChecklistDescription">Description</label>
-
                     <textarea id="newChecklistDescription" placeholder="Enter checklist description" rows="5" required></textarea>
                 </div>
-
                 <div class="checklist-modal-actions">
                     <button type="button" id="cancelAddChecklistButton" class="checklist-btn checklist-btn-cancel">Cancel</button>
 

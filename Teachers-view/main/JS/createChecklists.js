@@ -52,15 +52,6 @@ function openEditChecklistModal(checklist) {
     editChecklistModal.show();
 }
 
-closeEditChecklistModal.addEventListener("click", () => {
-    editChecklistModal.style.display = "none";
-    editingChecklist = null;
-});
-
-cancelEditChecklistButton.addEventListener("click", () => {
-    editChecklistModal.style.display = "none";
-    editingChecklist = null;
-});
 
 editChecklistForm.addEventListener("submit", async event => {
     event.preventDefault();
