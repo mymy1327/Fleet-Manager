@@ -3,8 +3,8 @@
  * @var mysqli $conn
  */
 header("Content-Type: application/json");
-header("Allow: DELETE, PUT, PATCH");
-header("Access-Control-Allow-Methods: DELETE");
+header("Allow: *");
+header("Access-Control-Allow-Methods: *");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, Origin");
 //session_start();
@@ -728,6 +728,15 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         ) {
             $filterColumn[] = "id_users";
             $filter[] = $_GET["id_users"];
+        }
+        if (
+            isset($_GET["date"]) &&
+            !is_null($_GET["date"]) &&
+            $_GET["date"] != "" &&
+            in_array($uri[0], [$listOfTables[4]])
+        ) {
+            $filterColumn[] = "date";
+            $filter[] = $_GET["date"];
         }
 
         if (!isset($uri[1])) {

@@ -539,13 +539,11 @@ async function updateChecklist(checklistId, name, description) {
 
 async function patchChecklistColumn(checklistId, column, value) {
     const data = {
-        [column]: value,
-        id_checklists: checklistId,
-        column: column
+        [column]: value
     };
 
     const response = await fetch(
-        restapi + "/api/checklists",
+        restapi + "/api/checklists/"+ checklistId,
         {
             method: "PATCH",
             headers: {
