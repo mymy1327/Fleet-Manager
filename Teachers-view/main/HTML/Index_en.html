@@ -324,7 +324,7 @@
             <h2>Vehicles</h2>
             <p>Click a vehicle to start the departure inspection</p>
         </div>
-        <button type="button" class="inspection-refresh" id="refreshInspections">↻ Refresh</button>
+        <button type="button" class="inspection-refresh btn btn-primary btn-sm" id="refreshInspections">↻ Refresh</button>
     </div>
 
     <div id="inspectionList" class="vehicle-card-grid">
@@ -379,8 +379,8 @@
                         </button>
                     </li>
                     <li>
-                        <button class="dropdown-item" type="button" data-sort="closed">
-                            Closed
+                        <button class="dropdown-item" type="button" data-sort="resolved">
+                            Resolved
                         </button>
                     </li>
                 </ul>
@@ -528,6 +528,7 @@
                             <option value="low">Low</option>
                             <option value="medium">Medium</option>
                             <option value="high">High</option>
+                            <option value="critical">Critical</option>
                         </select>
                     </div>
 
@@ -535,7 +536,7 @@
                         <label for="editProblemState" class="form-label">State</label>
                         <select id="editProblemState" class="form-select">
                             <option value="open">Open</option>
-                            <option value="closed">Closed</option>
+                            <option value="resolved">Resolved</option>
                         </select>
                     </div>
                 </div>

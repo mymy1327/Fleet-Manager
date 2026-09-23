@@ -75,9 +75,10 @@ async function loadProblemsByVehicle(vehicleId) {
 
 function getProblemPriorityValue(priority) {
     const values = {
-        high: 3,
+        low: 1,
         medium: 2,
-        low: 1
+        high: 3,
+        critical: 4
     };
 
     return values[String(priority).toLowerCase()] || 0;
@@ -103,11 +104,14 @@ function sortProblems(items) {
             });
             break;
 
-        case "closed":
+        case "resolved":
             sorted.sort((a, b) => {
-                const aClosed = String(a.state).toLowerCase() === "closed";
-                const bClosed = String(b.state).toLowerCase() === "closed";
-                return Number(bClosed) - Number(aClosed);
+                const aResolved =
+                    String(a.state).toLowerCase() === "resolved";
+                const bResolved =
+                    String(b.state).toLowerCase() === "resolved";
+
+                return Number(bResolved) - Number(aResolved);
             });
             break;
 
@@ -137,7 +141,8 @@ function renderProblems() {
     }
 
     if (!sortedProblems.length) {
-        container.innerHTML = '<div class="workflow-empty">Ei ongelmia.</div>';
+        container.innerHTML =
+            '<div class="workflow-empty">Ei ongelmia.</div>';
         return;
     }
 
@@ -146,14 +151,15 @@ function renderProblems() {
         const state = String(problem.state || "open").toLowerCase();
 
         const priorityText = {
-            high: "High",
+            low: "Low",
             medium: "Medium",
-            low: "Low"
+            high: "High",
+            critical: "Critical"
         };
 
         const stateText = {
             open: "Open",
-            closed: "Closed"
+            resolved: "Resolved"
         };
 
         return `
@@ -169,7 +175,8 @@ function renderProblems() {
 
                         <h3>
                             ${escapeProblemHtml(
-                                problem.checklist?.name || "Unknown problem"
+                                problem.checklist?.name ||
+                                "Unknown problem"
                             )}
                         </h3>
                     </div>
@@ -196,41 +203,16 @@ function renderProblems() {
                         Inspection #${problem.id_inspections ?? "-"}
                     </span>
                 </div>
-
-                <div class="problem-card-footer">
-                    <button
-                        type="button"
-                        class="btn btn-primary btn-sm edit-problem-button"
-                        data-problem-id="${problem.id_problems}">
-                        Edit
-                    </button>
-                </div>
             </article>
         `;
     }).join("");
 
-    container
-        .querySelectorAll(".edit-problem-button")
-        .forEach(button => {
-            button.addEventListener("click", event => {
-                event.stopPropagation();
-
-                const problemId = Number(
-                    button.dataset.problemId
-                );
-
-                openEditProblem(problemId);
-            });
+    container.querySelectorAll(".problem-card").forEach(card => {
+        card.addEventListener("click", () => {
+            const problemId = Number(card.dataset.problemId);
+            openEditProblem(problemId);
         });
-
-    container
-        .querySelectorAll(".problem-card")
-        .forEach(card => {
-            card.addEventListener("click", () => {
-                const problemId = Number(card.dataset.problemId);
-                openEditProblem(problemId);
-            });
-        });
+    });
 }
 
 function renderProblemVehicleFilter() {
@@ -399,49 +381,77 @@ function openEditProblem(problemId) {
 async function saveProblem() {
     if (!editingProblemId) return;
 
-    const priorityInput = document.getElementById("editProblemPriority");
-    const stateInput = document.getElementById("editProblemState");
+    const priorityInput =
+        document.getElementById("editProblemPriority");
+
+    const stateInput =
+        document.getElementById("editProblemState");
 
     if (!priorityInput || !stateInput) return;
 
-    const data = {
-        priority: priorityInput.value,
-        state: stateInput.value
-    };
+    const problem = problems.find(
+        item => Number(item.id_problems) === Number(editingProblemId)
+    );
+
+    if (!problem) return;
+
+    const newPriority = priorityInput.value;
+    const newState = stateInput.value;
 
     try {
-        const response = await fetch(
-            problemRestApi + "/api/problems/" + editingProblemId,
-            {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            }
-        );
-
-        if (!response.ok) {
-            throw new Error(
-                "Failed to update problem: " + response.status
+        if (newPriority !== problem.priority) {
+            const priorityResponse = await fetch(
+                problemRestApi +
+                "/api/problems/" +
+                editingProblemId,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        priority: newPriority
+                    })
+                }
             );
+
+            if (!priorityResponse.ok) {
+                throw new Error(
+                    "Failed to update priority: " +
+                    priorityResponse.status
+                );
+            }
         }
 
-        const updatedProblem = await response.json();
+        if (newState !== problem.state) {
+            const stateResponse = await fetch(
+                problemRestApi +
+                "/api/problems/" +
+                editingProblemId,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        state: newState
+                    })
+                }
+            );
 
-        const index = problems.findIndex(
-            item => Number(item.id_problems) === Number(editingProblemId)
-        );
-
-        if (index !== -1) {
-            problems[index] = {
-                ...problems[index],
-                ...updatedProblem,
-                ...data
-            };
+            if (!stateResponse.ok) {
+                throw new Error(
+                    "Failed to update state: " +
+                    stateResponse.status
+                );
+            }
         }
 
-        const modalElement = document.getElementById("editProblemModal");
+        problem.priority = newPriority;
+        problem.state = newState;
+
+        const modalElement =
+            document.getElementById("editProblemModal");
 
         if (modalElement) {
             bootstrap.Modal
@@ -451,6 +461,7 @@ async function saveProblem() {
 
         editingProblemId = null;
         renderProblems();
+
     } catch (error) {
         console.error("Error updating problem:", error);
         alert("Ongelman päivittäminen epäonnistui.");

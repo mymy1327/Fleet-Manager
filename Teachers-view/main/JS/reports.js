@@ -181,41 +181,61 @@ function renderBarChart(container, data, label) {
 }
 
 function renderResultChart(container, data) {
-    const total = data.reduce((sum, item) => sum + item.value, 0);
+    const total = data.reduce(
+        (sum, item) => sum + item.value,
+        0
+    );
 
     if (!total) {
-        container.innerHTML = '<div class="report-chart-empty">Ei tietoja</div>';
+        container.innerHTML =
+            '<div class="report-chart-empty">Ei tietoja</div>';
         return;
     }
 
-    const first = data[0]?.value || 0;
-    const firstPercent = (first / total) * 100;
+    const firstPercent =
+        (data[0].value / total) * 100;
 
     container.innerHTML = `
-        <div class="report-pie-chart">
-            <div class="report-pie"
-                 style="--first-percent:${firstPercent}%;">
-                <div class="report-pie-center">
+        <div class="report-donut-wrapper">
+
+            <div class="report-donut"
+                 style="--target:${firstPercent}%">
+
+                <div class="report-donut-center">
                     <strong>${total}</strong>
-                    <span>Yhteensä</span>
+                    <span>Total</span>
                 </div>
+
             </div>
 
-            <div class="report-pie-legend">
+            <div class="report-donut-legend">
+
                 ${data.map((item, index) => {
-                    const percent = ((item.value / total) * 100).toFixed(0);
+                    const percent =
+                        ((item.value / total) * 100).toFixed(0);
 
                     return `
-                        <div class="report-pie-legend-item">
-                            <span class="report-pie-dot ${index === 0 ? "success" : "danger"}"></span>
-                            <div>
-                                <strong>${item.value}</strong>
+                        <div class="report-donut-item">
+
+                            <div class="report-donut-label">
+                                <span class="report-donut-dot ${
+                                    index === 0
+                                        ? "primary"
+                                        : "danger"
+                                }"></span>
+
                                 <span>${item.name}</span>
                             </div>
-                            <b>${percent}%</b>
+
+                            <div class="report-donut-value">
+                                <strong>${item.value}</strong>
+                                <small>${percent}%</small>
+                            </div>
+
                         </div>
                     `;
                 }).join("")}
+
             </div>
         </div>
     `;

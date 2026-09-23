@@ -85,7 +85,6 @@ function renderInspectionVehicles() {
                 <span class="btn btn-primary btn-sm">
                     Aloita tarkastus
                 </span>
-                <span class="vehicle-card-arrow">→</span>
             </div>
         </div>
     `;
