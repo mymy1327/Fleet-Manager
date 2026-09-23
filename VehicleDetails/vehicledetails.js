@@ -55,8 +55,17 @@ function getVehicleDetails(getcode) {
             vehicletype.classList.add("vehicle-type")
             
             let vehicledistance = document.createElement("p")
-            vehicledistance.classList.add("vehicle-distance")
-            vehicledistance.textContent = "no"
+                vehicledistance.classList.add("vehicle-distance")
+                if (typeof(intelligeble[x].km) === "number"){
+                    vehicledistance.textContent = `${intelligeble[x].km} km`
+                }else{
+                    vehicledistance.textContent = "km ei saatavilla"
+                }
+                
+
+            let vehiclelicense = document.createElement("span")
+            vehiclelicense.classList.add("vehicle-license")
+            vehiclelicense.textContent = intelligeble[x].license_plate
                 
             let vehiclecode = document.createElement("p")
             vehiclecode.classList.add("vehicle-code")
