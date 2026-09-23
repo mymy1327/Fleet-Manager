@@ -26,33 +26,68 @@ $data = json_decode(file_get_contents("php://input"), true);
  * @param string $table "problems" added for backward compatibility
  * @param string[] $filterColumn filtered column
  * @param string[] $filter filtering value
- * @return json|array[false, int, string|null] list of entries | false on failure
+ * @param string|null $orderBy order field
+ * @param string|null $orderWay[ASC | DESC]
+ * @param int|null $offset offset to limit rows
+ * @param int|null $limit number of rows to return
+ * @return json|array[int, string|null] list of entries | array with error code on failure
  */
-function getFullTable($conn, $table = "problems", $filterColumn, $filter)
-{
+function getFullTable(
+    $conn,
+    $table = "problems",
+    $filterColumn,
+    $filter,
+    $orderBy = null,
+    $orderWay = null,
+    $offset = null,
+    $limit = null,
+) {
     $table = $table ?? "problems";
+    $orderBy = $orderBy ?? "id_$table";
+    $orderWay = $orderWay ?? "ASC";
+    $offset = $offset ?? null;
+    $limit = $limit ?? null;
     //logToConsole($filter);
     if (count($filterColumn) > 0) {
-        $quary = "SELECT * FROM `$table` WHERE";
+        $query = "SELECT * FROM `$table` WHERE";
         $types = "";
         for ($i = 0; $i < count($filterColumn); $i++) {
             if ($i == 0) {
-                $quary .= " `$filterColumn[$i]` = ?";
+                $query .= " `$filterColumn[$i]` = ?";
             } else {
-                $quary .= " AND `$filterColumn[$i]` = ?";
+                $query .= " AND `$filterColumn[$i]` = ?";
             }
             $types .= "s";
         }
-        $stmt = $conn->prepare($quary);
+        $query .= " ORDER BY `$orderBy` $orderWay";
+        if (isset($offset)) {
+            $query .= " OFFSET ? ROW";
+            $types .= "i";
+            $filter[] = $offset;
+        }
+        if (isset($limit)) {
+            $query .= "  FETCH NEXT ? ROWS ONLY";
+            $types .= "i";
+            $filter[] = $limit;
+        }
+        $stmt = $conn->prepare($query);
         $stmt->bind_param($types, ...$filter);
         if (!$stmt->execute()) {
             return [404];
         }
         $return = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     } else {
-        $result = $conn->query("SELECT * FROM `$table`");
+        $query = "SELECT * FROM `$table`";
+        $query .= " ORDER BY `$orderBy` $orderWay";
+        if (!is_null($offset)) {
+            $query .= " OFFSET $offset ROW";
+        }
+        if (!is_null($limit)) {
+            $query .= " FETCH NEXT $limit ROWS ONLY";
+        }
+        $result = $conn->query($query);
         if (!$result) {
-            return [false, 404];
+            return [404];
         }
         $return = $result->fetch_all(MYSQLI_ASSOC);
     }
@@ -277,6 +312,23 @@ switch ($_SERVER["REQUEST_METHOD"]) {
     case "GET":
         $filterColumn = [];
         $filter = [];
+        $order_by = null;
+        $order_way = null;
+        $offset = null;
+        $limit = null;
+        if (isset($_GET["order_by"]) && !is_null($_GET["order_by"]) && $_GET["order_by"] != "") {
+            $order_by = $_GET["order_by"];
+        }
+        if (isset($_GET["order_way"]) && !is_null($_GET["order_way"]) && $_GET["order_way"] != "") {
+            $order_way = $_GET["order_way"];
+        }
+        if (isset($_GET["offset"]) && !is_null($_GET["offset"]) && $_GET["offset"] != "") {
+            $offset = $_GET["offset"];
+        }
+        if (isset($_GET["limit"]) && !is_null($_GET["limit"]) && $_GET["limit"] != "") {
+            $limit = $_GET["limit"];
+        }
+
         if (isset($_GET["id_vehicles"]) && !is_null($_GET["id_vehicles"]) && $_GET["id_vehicles"] != "") {
             $return = getProblemsByVehicleId($conn, $_GET["id_vehicles"]);
             if (gettype($return) == "array") {
@@ -297,7 +349,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             $filter[] = $_GET["id_inspections"];
         }
         if (!isset($uri[1])) {
-            $return = getFullTable($conn, null, $filterColumn, $filter);
+            $return = getFullTable($conn, null, $filterColumn, $filter, $order_by, $order_way, $offset, $limit);
         } else {
             $return = getEntryDetails($conn, null, $uri[1]);
         }
