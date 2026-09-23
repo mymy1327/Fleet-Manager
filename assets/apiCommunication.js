@@ -1,34 +1,19 @@
 /**
- * Sends PATCH request to API for selected column
- * @param {string} url URL path at API
- * @param {string} column Target column name
- * @param {string} idColumn Name of id column
- * @param {string} id ID
- * @returns {Promise<true|string>} Returns true on success or string as error message
+ * Simple logic for processsing API error messages
+ * @param {string} responceText Incomming responce text
+ * @returns {string} Result message
  */
-async function SendPatchOfColumn(url, column, idColumn, id) {
-  //Create promise
-  return new Promise((resolve, reject) => {
-    //Create PATCH JSON
-    const data = {};
-    data[column] = document.getElementById(column).value;
-    data[idColumn] = id;
-    data.column = column;
-
-    //Send request
-    const xhr = new XMLHttpRequest();
-    xhr.open("PATCH", url, true); //add path to requested file
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.onload = () => {
-      //Handle request data
-      if (xhr.status == 200 || xhr.status == 201) {
-        resolve(true);
-      } else {
-        resolve(xhr.status + "|" + xhr.responceText);
-      }
-    };
-    xhr.send(JSON.stringify(data));
-  });
+function parseApiErrorMessage(responceText) {
+  try {
+    const resp = JSON.parse(responceText);
+    if (resp) {
+      return resp["message"];
+    } else {
+      return responceText;
+    }
+  } catch {
+    return responceText
+  }
 }
 
 /**
@@ -45,6 +30,7 @@ async function SendPatchOfColumns(url, columns, idColumn, id, changeCheck = fals
   return new Promise(async (resolve, reject) => {
     //Process every column
     let changes = false;
+    const data = {};
     for (const column of columns) {
       //Validate change
       if (changeCheck) {
@@ -53,13 +39,24 @@ async function SendPatchOfColumns(url, columns, idColumn, id, changeCheck = fals
         }
       }
 
-      //Send PATCH
+      //Create PATCH JSON
       changes = true;
-      const result = await SendPatchOfColumn(url, column, idColumn, id);
-      if (result !== true) {
-        resolve(result);
-        break;
-      }
+      data[column] = document.getElementById(column).value;
+    }
+    if(changes) {
+      //Send request
+      const xhr = new XMLHttpRequest();
+      xhr.open("PATCH", url + "/" + id, true); //add path to requested file
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.onload = () => {
+        //Handle request data
+        if (xhr.status == 200 || xhr.status == 201) {
+          resolve(true);
+        } else {
+          resolve(xhr.status + "|" + parseApiErrorMessage(xhr.responceText));
+        }
+      };
+      xhr.send(JSON.stringify(data));
     }
     resolve(changes);
   });
@@ -89,7 +86,7 @@ async function SendPostOfColumns(url, columns) {
       if (xhr.status == 200 || xhr.status == 201) {
         resolve(true);
       } else {
-        resolve(xhr.status + "|" + xhr.responseText);
+        resolve(xhr.status + "|" + parseApiErrorMessage(xhr.responceText));
       }
     };
     xhr.send(JSON.stringify(data));
@@ -112,20 +109,61 @@ async function SendGetOfColums(url, columns, id) {
     }
 
     //Load item from API
-    const itemResponce = await fetch(url + "/" + encodeURIComponent(id));
-    if (!itemResponce.ok) {
-      resolve(itemResponce.status + "|" + await itemResponce.text());
+    const [resp, item] = await SendGetAPI(url + "/" + encodeURIComponent(id));
+    if (resp !== true) {
+      resolve(resp);
       return
     }
 
     //Get item and put values to input
-    const item = JSON.parse(await itemResponce.text());
     for (const column of columns) {
       document.getElementById(column).value = item[column];
        document.getElementById(column).originalValue = item[column];
       document.getElementById(column).disabled = false;
     }
     resolve(true);
+  })
+}
+
+/**
+ * Sends GET request to API
+ * @param {string} url URL path at API
+ * @returns {Promise<[true|string,any]>} Returns true on success or string as error message and value got from API
+ */
+async function SendGetAPI(url) {
+  //Create promise
+  return new Promise(async (resolve, reject) => {
+    //Load from API
+    const itemResponce = await fetch(url);
+    if (!itemResponce.ok) {
+      resolve([itemResponce.status + "|" + parseApiErrorMessage(await itemResponce.text()),null]);
+      return
+    }
+
+    //Get JSON
+    resolve([true,await itemResponce.json()]);
+  })
+}
+
+/**
+ * Sends GET request to API
+ * @param {string} url URL path at API
+ * @returns {Promise<[boolean,any]>} Returns true on success or false on error and value got from API
+ */
+async function SendGetAPIAndHandleErrors(url) {
+  //Create promise
+  return new Promise(async (resolve, reject) => {
+    //Send GET
+    const [resp, data] = await SendGetAPI(url)
+    if (resp !== true) {
+      const split = responce.split("|", 2)
+      window.location.href = ("/errorPages/PHP/handleError.php?code=" + split[0] + "&message=" + encodeURIComponent(split[1]) + "&from=" + encodeURIComponent(window.location.href));
+      resolve([false,null]);
+      return
+    }
+
+    //Get JSON
+    resolve([true,data]);
   })
 }
 
@@ -196,4 +234,20 @@ function SetupListenForChanges(columns, targets) {
     });
   }
   updateStatus();
+}
+
+/**
+ * Gets currently logged in user
+ * @returns {Promise<null|number>} User ID
+ */
+async function GetLoggedInUserID() {
+  //Create promise
+  return new Promise(async (resolve, reject) => {
+    //Send API request
+    const [ok, id] = await SendGetAPIAndHandleErrors("/userManagement/PHP/login.php?getUserId");
+    if (!ok) {
+      resolve(null);
+    }
+    resolve(id.id);
+  });
 }

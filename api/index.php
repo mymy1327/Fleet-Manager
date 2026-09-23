@@ -3,8 +3,8 @@
  * @var mysqli $conn
  */
 header("Content-Type: application/json");
-header("Allow: DELETE, PUT, PATCH");
-header("Access-Control-Allow-Methods: DELETE");
+header("Allow: *");
+header("Access-Control-Allow-Methods: *");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, Origin");
 //session_start();
@@ -30,7 +30,7 @@ $currentHour = date("H");
 $currentDate = date("Y-m-d");
 if ($currentHour >= 16) {
     $conn->query("UPDATE `vehicles` SET `state`='available' WHERE state = 'in_use'");
-}else{
+} else {
     $conn->query("UPDATE `vehicles` v
     JOIN inspections i
         ON v.id_vehicles = i.id_vehicles
@@ -42,7 +42,7 @@ if ($currentHour >= 16) {
         ON i.id_vehicles = latest.id_vehicles
         AND i.`date` = latest.latest_date
     SET `state`='available'
-    WHERE DATE(i.`date`) < CURDATE() 
+    WHERE DATE(i.`date`) < CURDATE()
     AND `state` = 'in_use'");
 }
 
@@ -62,12 +62,18 @@ function getFullTable($conn, $table, $filterColumn, $filter)
         $quary = "SELECT * FROM `$table` WHERE";
         $types = "";
         for ($i = 0; $i < count($filterColumn); $i++) {
-            if ($i == 0) {
+            $types .= "s";
+            if ($filterColumn[$i] == "date") {
+                if ($i == 0) {
+                    $quary .= " CAST(`date` AS DATE) = ?";
+                } else {
+                    $quary .= " AND CAST(`date` AS DATE) = ?";
+                }
+            } elseif ($i == 0) {
                 $quary .= " `$filterColumn[$i]` = ?";
             } else {
                 $quary .= " AND `$filterColumn[$i]` = ?";
             }
-            $types .= "s";
         }
         $stmt = $conn->prepare($quary);
         $stmt->bind_param($types, ...$filter);
@@ -728,6 +734,15 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         ) {
             $filterColumn[] = "id_users";
             $filter[] = $_GET["id_users"];
+        }
+        if (
+            isset($_GET["date"]) &&
+            !is_null($_GET["date"]) &&
+            $_GET["date"] != "" &&
+            in_array($uri[0], [$listOfTables[4]])
+        ) {
+            $filterColumn[] = "date";
+            $filter[] = $_GET["date"];
         }
 
         if (!isset($uri[1])) {

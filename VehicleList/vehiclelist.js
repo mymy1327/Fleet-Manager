@@ -47,6 +47,7 @@ function getVehicleDetails(vehicleId) {
                 //create div
                 let newArticle = document.createElement("article")
                 newArticle.classList.add("card-garage");
+
                 // set id
                 newArticle.id = newId;
 
@@ -85,7 +86,7 @@ function getVehicleDetails(vehicleId) {
                 vehiclestatus.classList.add(`vehicle-status`)
                 vehiclestatus.classList.add(`${intelligeble[x].state}`)
                 vehiclestatus.textContent = intelligeble[x].state
-                // to be done 
+                // to be done
 
 
                 let vehicletype = document.createElement("p")
@@ -99,7 +100,7 @@ function getVehicleDetails(vehicleId) {
                 }else{
                     vehicledistance.textContent = "km ei saatavilla"
                 }
-                
+
 
                 let vehiclelicense = document.createElement("span")
                 vehiclelicense.classList.add("vehicle-license")
