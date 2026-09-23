@@ -1,4 +1,22 @@
 /**
+ * Simple logic for processsing API error messages
+ * @param {string} responceText Incomming responce text
+ * @returns {string} Result message
+ */
+function parseApiErrorMessage(responceText) {
+  try {
+    const resp = JSON.parse(responceText);
+    if (resp) {
+      return resp["message"];
+    } else {
+      return responceText;
+    }
+  } catch {
+    return responceText
+  }
+}
+
+/**
  * Sends PATCH request to API for selected columns
  * @param {string} url URL path at API
  * @param {string[]} columns Target columns name
@@ -35,7 +53,7 @@ async function SendPatchOfColumns(url, columns, idColumn, id, changeCheck = fals
         if (xhr.status == 200 || xhr.status == 201) {
           resolve(true);
         } else {
-          resolve(xhr.status + "|" + xhr.responceText);
+          resolve(xhr.status + "|" + parseApiErrorMessage(xhr.responceText));
         }
       };
       xhr.send(JSON.stringify(data));
@@ -68,7 +86,7 @@ async function SendPostOfColumns(url, columns) {
       if (xhr.status == 200 || xhr.status == 201) {
         resolve(true);
       } else {
-        resolve(xhr.status + "|" + xhr.responseText);
+        resolve(xhr.status + "|" + parseApiErrorMessage(xhr.responceText));
       }
     };
     xhr.send(JSON.stringify(data));
@@ -118,7 +136,7 @@ async function SendGetAPI(url) {
     //Load from API
     const itemResponce = await fetch(url);
     if (!itemResponce.ok) {
-      resolve([itemResponce.status + "|" + await itemResponce.text(),null]);
+      resolve([itemResponce.status + "|" + parseApiErrorMessage(await itemResponce.text()),null]);
       return
     }
 
