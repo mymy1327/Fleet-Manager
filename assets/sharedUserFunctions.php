@@ -110,9 +110,9 @@ function HandleLogin(string $username, string $password, bool $rememberMe, strin
                 //Redirect to valid password
                 $_SESSION["login"] = $user["id_users"];
                 $result = [];
-                if($next !== null) {
+                if($next === null) {
                     if($user["role"] == "admin") {
-                        $result["next"] = "./admin.php";
+                        $result["next"] = "/admin/PHP/index.php";
                     } else if($user["role"] == "user") {
                         $result["next"] = "../../userDashboard/PHP/index.php";
                     }
