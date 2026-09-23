@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/./PHP/errorManager.php";
+require_once __DIR__ . "/PHP/errorManager.php";
 $API = "https://developmenterasmus.kolojar.cz/api";
 /**
  * Checks if user id in session is possible to login
@@ -113,7 +113,7 @@ function HandleLogin(string $email, string $password, bool $rememberMe, string|n
                     if($user["role"] == "admin") {
                         $result["next"] = "/admin/PHP/index.php";
                     } else if($user["role"] == "user") {
-                        $result["next"] = "../../userDashboard/PHP/index.php";
+                        $result["next"] = "/user/PHP/index.php";
                     }
                 } else {
                     $result["next"] = $next;

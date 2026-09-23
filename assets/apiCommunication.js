@@ -318,7 +318,7 @@ async function GetLoggedInUserID() {
   //Create promise
   return new Promise(async (resolve, reject) => {
     //Send API request
-    const [ok, id] = await SendGetAPIAndHandleErrors("/userManagement/PHP/login.php?getUserId");
+    const [ok, id] = await SendGetAPIAndHandleErrors("/assets/PHP/login.php?getUserId");
     if (!ok) {
       resolve(null);
     }
