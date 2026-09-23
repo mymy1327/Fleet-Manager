@@ -343,12 +343,12 @@
 
 .add-checklist-button {
     width: fit-content;
-    padding: 3px 5px;
+    padding: 5px 8px;
     border: none;
     border-radius: 6px;
     background: #eeeeee;
     color: #333;
-    font-size: 8px;
+    font-size: 10px;
     cursor: pointer;
 }
 
