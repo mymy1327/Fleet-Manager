@@ -68,7 +68,7 @@ function getFullTable(
     $offset = null,
     $limit = null,
 ) {
-    $orderBY = $orderBy ?? "id_$table";
+    $orderBy = $orderBy ?? "id_$table";
     $orderWay = $orderWay ?? "ASC";
     $offset = $offset ?? null;
     $limit = $limit ?? null;
