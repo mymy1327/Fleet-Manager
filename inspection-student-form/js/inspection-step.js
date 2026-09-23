@@ -11,8 +11,6 @@ let previousInspection = null;
 let vehicleId = null;
 let vehicleCode = null;
 
-sessionStorage.getItem("login")
-
 function escapeHTML(value) {
     if (value === null || value === undefined) {
         return "";
@@ -2092,9 +2090,9 @@ async function submitInspection (inspectionResult) {
         submitButton.disabled = true;
         submitButton.textContent = "Lähetetään...";
     }
-    const userId = Number(sessionStorage.getItem("login"));
+    const userId = await GetLoggedInUserID();
 
-        if(!userId) {
+        if(userId == null) {
             alert("Käyttäjää ei löytynyt. Kirjaudu uudelleen.");
             return;
         }

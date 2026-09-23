@@ -57,14 +57,6 @@ function getVehicleDetails(getcode) {
             let vehicledistance = document.createElement("p")
             vehicledistance.classList.add("vehicle-distance")
             vehicledistance.textContent = "no"
-
-                let visualisedvehiclecode = document.createElement("p")
-                vehiclecode.classList.add("vehicle-code")
-                console.log(parseInt(intelligeble[x].id_vehicles))
-                console.log(`http://${ip}/inspection-student-form/index.html?id=${intelligeble[x].code}`)
-                visualizeqr(`http://${ip}/vehicle/${intelligeble[x].code}`, visualisedvehiclecode)
-                
-                //append in div
                 
             let vehiclecode = document.createElement("p")
             vehiclecode.classList.add("vehicle-code")

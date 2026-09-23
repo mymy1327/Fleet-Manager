@@ -1,4 +1,4 @@
-sessionStorage.clear("login");
+//sessionStorage.clear("login");
 const params = new URLSearchParams(window.location.search);
 let uri = "./login.php";
 if(params.has("next")) {

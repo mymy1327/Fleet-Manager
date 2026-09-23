@@ -112,20 +112,61 @@ async function SendGetOfColums(url, columns, id) {
     }
 
     //Load item from API
-    const itemResponce = await fetch(url + "/" + encodeURIComponent(id));
-    if (!itemResponce.ok) {
-      resolve(itemResponce.status + "|" + await itemResponce.text());
+    const [resp, item] = await SendGetAPI(url + "/" + encodeURIComponent(id));
+    if (resp !== true) {
+      resolve(resp);
       return
     }
 
     //Get item and put values to input
-    const item = JSON.parse(await itemResponce.text());
     for (const column of columns) {
       document.getElementById(column).value = item[column];
        document.getElementById(column).originalValue = item[column];
       document.getElementById(column).disabled = false;
     }
     resolve(true);
+  })
+}
+
+/**
+ * Sends GET request to API
+ * @param {string} url URL path at API
+ * @returns {Promise<[true|string,any]>} Returns true on success or string as error message and value got from API
+ */
+async function SendGetAPI(url) {
+  //Create promise
+  return new Promise(async (resolve, reject) => {
+    //Load from API
+    const itemResponce = await fetch(url);
+    if (!itemResponce.ok) {
+      resolve([itemResponce.status + "|" + await itemResponce.text(),null]);
+      return
+    }
+
+    //Get JSON
+    resolve([true,await itemResponce.json()]);
+  })
+}
+
+/**
+ * Sends GET request to API
+ * @param {string} url URL path at API
+ * @returns {Promise<[boolean,any]>} Returns true on success or false on error and value got from API
+ */
+async function SendGetAPIAndHandleErrors(url) {
+  //Create promise
+  return new Promise(async (resolve, reject) => {
+    //Send GET
+    const [resp, data] = await SendGetAPI(url)
+    if (resp !== true) {
+      const split = responce.split("|", 2)
+      window.location.href = ("/errorPages/PHP/handleError.php?code=" + split[0] + "&message=" + encodeURIComponent(split[1]) + "&from=" + encodeURIComponent(window.location.href));
+      resolve([false,null]);
+      return
+    }
+
+    //Get JSON
+    resolve([true,data]);
   })
 }
 
@@ -196,4 +237,20 @@ function SetupListenForChanges(columns, targets) {
     });
   }
   updateStatus();
+}
+
+/**
+ * Gets currently logged in user
+ * @returns {Promise<null|number>} User ID
+ */
+async function GetLoggedInUserID() {
+  //Create promise
+  return new Promise(async (resolve, reject) => {
+    //Send API request
+    const [ok, id] = await SendGetAPIAndHandleErrors("/userManagement/PHP/login.php?getUserId");
+    if (!ok) {
+      resolve(null);
+    }
+    resolve(id.id);
+  });
 }
