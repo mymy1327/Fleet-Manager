@@ -182,49 +182,65 @@ single-panel {
 }
 
 .problem-state.open {
-    background: #fff3cd;
-    color: #856404;
+    background-color: rgba(239, 68, 68, 0.12);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    padding: 5px, 7px;
 }
 
 .problem-state.resolved {
-    background: #d1e7dd;
-    color: #0f5132;
+    background-color: #5ada89;
+    color: #0c401f;
+    border: 1px solid #16a34a;
+    padding: 5px, 7px;
 }
 
 .problem-card.priority-low {
-    border-left: 3px solid #198754;
+    border: 1px solid #16a34a;
+    box-shadow: 2px 5px 10px 10px #20c15b;
 }
 
 .problem-card.priority-medium {
-    border-left: 3px solid #ffc107;
+    border: 1px solid  #d97706;
+    box-shadow: 2px 5px 10px 10px #e99330;
 }
 
 .problem-card.priority-high {
-    border-left: 3px solid #fd7e14;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    box-shadow: 2px 5px 10px 10px rgba(230, 11, 11, 0.25);
 }
 
 .problem-card.priority-critical {
-    border-left: 3px solid #dc3545;
+    border: 1px solid rgba(255, 0, 0, 0.806);
+    box-shadow: 2px 5px 10px 10px rgba(68, 1, 1, 0.25);
 }
 
 .problem-card.priority-low .problem-priority-badge {
-    background: #d1e7dd;
-    color: #0f5132;
+    background-color: #5ada89;
+    color: #0c401f;
+    border: 1px solid #16a34a;
+    padding: 5px, 8px;
 }
 
 .problem-card.priority-medium .problem-priority-badge {
-    background: #fff3cd;
-    color: #856404;
+    background-color: rgba(245, 158, 11, 0.14);
+    color: #d97706;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    padding: 5px, 8px;
 }
 
 .problem-card.priority-high .problem-priority-badge {
-    background: #ffe5d0;
-    color: #984c0c;
+    background-color: rgba(239, 68, 68, 0.12);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    padding: 5px, 8px;
 }
 
 .problem-card.priority-critical .problem-priority-badge {
-    background: #f8d7da;
-    color: #842029;
+    background-color: rgba(120, 7, 7, 0.12);
+    color: #ff0000;
+    border: 1px solid rgba(255, 0, 0, 0.806);
+    padding: 5px, 8px;
 }
 /*Problems toolbar*/
 
@@ -590,12 +606,14 @@ single-panel {
     background-color: rgba(34, 197, 94, 0.12);
     color: #16a34a;
     border: 1px solid rgba(34, 197, 94, 0.25);
+    padding: 4px, 8px;
 }
 
 .report-result-failed {
     background-color: rgba(239, 68, 68, 0.12);
     color: #dc2626;
     border: 1px solid rgba(239, 68, 68, 0.25);
+    padding: 4px, 8px;
 }
 /*Problem modal*/
 
