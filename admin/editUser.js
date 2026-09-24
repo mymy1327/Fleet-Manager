@@ -9,6 +9,20 @@ async function main() {
   }
   const role = document.getElementById("role");
   SetupListenForChanges(columns, ["save"]);
+
+  console.log("role.value:", role.value);
+    console.log("role.originalValue:", role.originalValue);
+    
+role.addEventListener("change", () => {
+    const saveButton = document.getElementById("save");
+
+    if (role.value !== role.originalValue) {
+        saveButton.disabled = false;
+    } else {
+        saveButton.disabled = true;
+    }
+});
+
   const changePasswordButton = document.getElementById("changePassword");
   if (changePasswordButton != null) {
     changePasswordButton.disabled = false;
