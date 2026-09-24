@@ -123,6 +123,8 @@ body {
 #usersTable button {
     border-radius: 7px;
     font-size: 13px;
+    margin-bottom: 10px;
+    color: #e5e7eb;
 }
 
 /* Mobile */
