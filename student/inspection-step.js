@@ -1339,7 +1339,7 @@ function setupBackButton() {
 
     backButton.onclick = () => {
         if (code) {
-            window.location.href = `index.html?code=${encodeURIComponent(code)}`;
+            window.location.href = `studentForm.html?code=${encodeURIComponent(code)}`;
         } else {
             window.history.back();
         }
@@ -2180,7 +2180,7 @@ async function submitInspection (inspectionResult) {
         }
 
         alert("Tarkastus lähetetty onnistuneesti.");
-        window.location.href = `index.html?code=${encodeURIComponent(vehicleCode)}`;
+        window.location.href = `studentForm.html?code=${encodeURIComponent(vehicleCode)}`;
 
 
     } catch (error) {
