@@ -293,14 +293,19 @@ function renderQuestion() {
 
     renderAnswerOptions(checklist);
 
-    if (isOilQuestion && !hasFault) {
-    setupOilCamera();
-}
+    // Fault photo/UI
+    if (hasFault) {
+       renderFaultForm();
+    }
 
     restoreCurrentAnswer();
     renderProgress();
     updateNavigationButtons();
     updateInspectionNoteVisibility();
+     // Oil photo is only active when NOT reporting a fault
+    if (isOilQuestion && !hasFault) {
+        setupOilCamera();
+    }
 }
 
 function restoreCurrentAnswer() {
@@ -516,7 +521,7 @@ function renderAnswerOptions(checklist) {
     const faultButton = document.createElement("button");
     const current = answers[currentQuestionIndex];
     faultButton.type = "button";
-    faultButton.className = `question-option report-fault"; ${
+    faultButton.className = `question-option report-fault ${
         current.answer === "Report Faults" ? "selected" : ""
     }`;
     faultButton.dataset.value = "Report Faults";
@@ -542,48 +547,40 @@ function selectAnswer(value) {
     current.answer = value;
     current.error = null;
 
-    // Remove selected
-    document.querySelectorAll(".question-option").forEach(button => {
-        button.classList.remove("selected");
-    });
+    const checklist = checklists[currentQuestionIndex];
+    const questionName = checklist?.name || "";
 
-    // Select current
-    const selected = document.querySelector(
-        `.question-option[data-value="${CSS.escape(value)}"]`
-    );
+    const normalizedName = questionName
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
 
-    if (selected) {
-        selected.classList.add("selected");
+    const isOilQuestion =
+        normalizedName.includes("oljy") ||
+        normalizedName.includes("oil");
+
+    if (isOilQuestion && value !== "Report Faults") {
+        current.oilPhotoConfirmed = false;
     }
 
-    const layout = document.querySelector(".question-layout");
-
-    if (layout) {
-        layout.classList.remove("has-fault");
-    }
-
-    // Hide fault form
-    const faultContainer = document.getElementById("faultContainer");
-
-    if (faultContainer) {
-        faultContainer.style.display = "none";
-        faultContainer.innerHTML = "";
-    }
-
-    updateNavigationButtons();
+    renderQuestion();
 }
 
 function selectFault() {
     const current = answers[currentQuestionIndex];
     const checklist = checklists[currentQuestionIndex];
-    const isOilQuestion = (checklist?.name || "").toLowerCase().includes("öljy");
+    const isOilQuestion =
+        (checklist?.name || "")
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .includes("oljy");
 
     // If in report fault, click again => cancel
     if (current.answer === "Report Faults") {
         current.answer = current.previousAnswer ?? null;
         current.error = null;
 
-        // If turn back to normal, will ask to take picture of the oil stick
         if (isOilQuestion) {
             current.oilPhoto = null;
             current.oilPhotoConfirmed = false;
@@ -592,7 +589,7 @@ function selectFault() {
         renderQuestion();
         return;
     }
-
+    // If turn back to normal, will ask to take picture of the oil stick
     current.previousAnswer = current.answer;
     current.answer = "Report Faults";
 

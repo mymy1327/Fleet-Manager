@@ -21,6 +21,7 @@ async function loadReports() {
         reportVehicles = await vehiclesResponse.json();
         reportInspections = await inspectionsResponse.json();
         reportProblems = await problemsResponse.json();
+        console.log(reportProblems);
 
         reportVehicles = Array.isArray(reportVehicles) ? reportVehicles : [];
         reportInspections = Array.isArray(reportInspections) ? reportInspections : [];
@@ -146,8 +147,8 @@ function renderProblemStatus() {
     ).length;
 
     renderResultChart(container, [
-        { name: "Open", value: open },
-        { name: "Resolved", value: resolved }
+        { name: "Resolved", value: resolved },
+        { name: "Open", value: open }
     ]);
 }
 
