@@ -37,24 +37,6 @@ require __DIR__ . "/../assets/sharedUserFunctions.php";
                     <p class="subtitle mb-0" data-i18n="subTitle">Manage user - change name, email and role.</p>
                 </div>
             </div>
-            <div class="container-fluid gap-2 justify-content-center>
-        <input type="hidden" id='role'>
-        <input type="hidden" id='password'>
-        <label  for="username" data-i18n="username">Username: draft</label>
-        <input  type="text" id="username" name="username" />
-        <label  for="email" data-i18n="email">Email:</label>
-        <input  type="email" id="email" name="email" />
-
-
-        <label  for="role" data-i18n="role">Role:</label>
-        <input  type="radio" name="role" value="admin" id="roleAdmin" />
-        <label  for="roleAdmin" data-i18n="roleAdmin">Admin</label>
-        <input type="radio" name="role" value="student" id="roleStudent" checked />
-        <label  for="roleStudent" data-i18n="roleStudent">Student</label>
-        <input  type="radio" name="role" value="teacher" id="roleTeacher" />
-        <label  for="roleTeacher" data-i18n="roleTeacher">Teacher</label>
-        <button id="save" class="button btn btn-link text-decoration-none" data-i18n="submit" disabled>Submit</button>
-</div>
 <div class="container-fluid gap-2 justify-content-center">
         <input type="hidden" id='role'>
         <input type="hidden" id='password'>
