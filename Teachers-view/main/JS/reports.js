@@ -273,12 +273,12 @@ function renderInspectionHistory() {
         );
 
         const passed = Number(inspection.passed) === 1;
-
+        const studentName = getUserName(inspection);
         return `
             <tr>
                 <td>${formatReportDate(inspection.date)}</td>
                 <td>${escapeReportHtml(vehicle?.name || "-")}</td>
-                <td>${getUserName(inspection)}</td>
+                <td>${studentName}</td>
                 <td>${inspection.km ?? "-"} km</td>
                 <td>
                     <span class="${passed ? "report-result report-result-passed" : "report-result report-result-failed"}">
@@ -291,7 +291,7 @@ function renderInspectionHistory() {
 
     renderInspectionHistoryPagination(totalPages);
 }
-function getUserName (inspection) {
+function getUserName(inspection) {
     const userId = inspection.id_users;
     const xhr = new XMLHttpRequest();
     xhr.open("GET", restapi + "/api/users/" + userId, true);
