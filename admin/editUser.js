@@ -8,6 +8,11 @@ async function main() {
     return;
   }
   SetupListenForChanges(columns, ["save"]);
+  const role = document.getElementById("role");
+// Turn select changes to inputs
+role.addEventListener("change", () => {
+    role.dispatchEvent(new Event("input"));
+});
   const changePasswordButton = document.getElementById("changePassword");
   if (changePasswordButton != null) {
     changePasswordButton.disabled = false;
@@ -32,6 +37,7 @@ async function main() {
       );
 
       if (!ok) {
+        btnSave.disabled = false;
         return;
       }
       document.getElementById("password").value = resp2["hash"];
@@ -71,6 +77,7 @@ async function main() {
     //Get password hash
     const [ok, resp2] = await SendPostAPIAndHandleErrors("/assets/generatePasswordHash.php", { password: password });
     if (!ok) {
+      changePasswordButton.disabled = false;
       return;
     }
 
@@ -79,6 +86,7 @@ async function main() {
     data["password"] = resp2["hash"];
     const [ok2, _] = await SendPatchAPIAndHandleErrors(API + "/users/" + id, data);
     if (!ok2) {
+      changePasswordButton.disabled = false;
       return;
     }
     alert("Password changed!");

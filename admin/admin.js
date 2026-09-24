@@ -30,6 +30,7 @@ async function main() {
 
     //Add action buttons
     const actions = document.createElement("td");
+    actions.classList.add("d-flex p-3 flex-column justify-content-center align-items-center");
     row.appendChild(actions);
 
     //Change password button
