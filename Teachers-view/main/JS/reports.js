@@ -278,7 +278,7 @@ function renderInspectionHistory() {
             <tr>
                 <td>${formatReportDate(inspection.date)}</td>
                 <td>${escapeReportHtml(vehicle?.name || "-")}</td>
-                <td>${studentName}</td>
+                <td>${escapeReportHtml(studentName)}</td>
                 <td>${inspection.km ?? "-"} km</td>
                 <td>
                     <span class="${passed ? "report-result report-result-passed" : "report-result report-result-failed"}">
@@ -291,29 +291,18 @@ function renderInspectionHistory() {
 
     renderInspectionHistoryPagination(totalPages);
 }
-function getUserName(inspection) {
-    const userId = inspection.id_users;
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", restapi + "/api/users/" + userId, true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.onload = () => {
-        if (xhr.status < 200 || xhr.status >= 300) {
-            console.error("Get user's name error:", xhr.status);
-            return;
-        }
-        try {
-            const data = JSON.parse(xhr.responseText);
-            console.log(data);
-            console.log(data.username);
-            return data.username;
-        } catch (error) {
-            console.error("JSON parse error:", error);
-        }
-    };
-    xhr.onerror = () => {
-        console.error("Vehicle API connection failed.");
-    };
-    xhr.send();
+async function getUserName(inspection) {
+    const response = await fetch(
+        restapi + "/api/users/" + inspection.id_users
+    );
+
+    if (!response.ok) {
+        console.error("Get user's name error:", response.status);
+        return "-";
+    }
+
+    const data = await response.json();
+    return data.username || "-";
 }
 
 function renderInspectionHistoryPagination(totalPages) {
