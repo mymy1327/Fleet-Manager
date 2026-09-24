@@ -60,7 +60,7 @@ CheckAccessSession(["admin"]);
                     <th data-i18n="uT1">Name</th>
                     <th data-i18n="uT2">Email</th>
                     <th data-i18n="uT3">Role</th>
-                    <th data-i18n="uT4">Actions</th>
+                    <th class="d-flex p-2 flex-column justify-content-center align-items-center" data-i18n="uT4">Actions</th>
                 </tr>
             </table>
         </div>

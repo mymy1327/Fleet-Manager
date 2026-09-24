@@ -40,17 +40,17 @@ require __DIR__ . "/../assets/sharedUserFunctions.php";
             </div>
         <input class="form-control" type="hidden" id='role'>
         <input class="form-control" type="hidden" id='password'>
-        <label class="form-control" for="username" data-i18n="username">Username:</label> <br />
-        <input class="form-control" type="text" id="username" name="username" /> <br />
-        <label class="form-control" for="email" data-i18n="email">Email:</label><br />
-        <input class="form-control" type="email" id="email" name="email" /><br />
-        <label class="form-control" for="role" data-i18n="role">Role:</label> <br />
+        <label class="form-control" for="username" data-i18n="username">Username:</label>
+        <input class="form-control" type="text" id="username" name="username" />
+        <label class="form-control" for="email" data-i18n="email">Email:</label>
+        <input class="form-control" type="email" id="email" name="email" />
+        <label class="form-control" for="role" data-i18n="role">Role:</label>
         <input class="form-control" type="radio" name="role" value="admin" id="roleAdmin" />
-        <label class="form-control" for="roleAdmin" data-i18n="roleAdmin">Admin</label><br />
+        <label class="form-control" for="roleAdmin" data-i18n="roleAdmin">Admin</label>
         <input class="form-control"type="radio" name="role" value="student" id="roleStudent" checked />
-        <label class="form-control" for="roleStudent" data-i18n="roleStudent">Student</label><br />
+        <label class="form-control" for="roleStudent" data-i18n="roleStudent">Student</label>
         <input class="form-control" type="radio" name="role" value="teacher" id="roleTeacher" />
-        <label class="form-control" for="roleTeacher" data-i18n="roleTeacher">Teacher</label><br />
+        <label class="form-control" for="roleTeacher" data-i18n="roleTeacher">Teacher</label>
         <button id="save" class="button btn btn-link text-decoration-none" data-i18n="submit" disabled>Submit</button>
         <?php
         if (isset($_GET["id"])) {
