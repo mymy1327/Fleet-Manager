@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . "/../sharedUserFunctions.php";
+require __DIR__ . "/sharedUserFunctions.php";
 $DEFAULT_LANGUAGE = "fi";
 session_start();
 

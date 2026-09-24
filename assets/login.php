@@ -1,6 +1,6 @@
 <?php
 /** @var string $API */
-require  __DIR__ . "/../sharedUserFunctions.php";
+require  __DIR__ . "/sharedUserFunctions.php";
 session_start();
 
 //Get user ID if needed
@@ -27,9 +27,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Login</title>
-	<link rel="stylesheet" href="../../Teachers-view/main/CSS/style.css" />
-        <link rel="stylesheet" href="../../checklistManagement/CSS/style.css" />
-        <link rel="stylesheet" href="../CSS/login.css">
+	<link rel="stylesheet" href="/assets/style.css" />
+        <link rel="stylesheet" href="./login.css">
 </head>
 <body>
     <main id="app" class="page">
@@ -65,6 +64,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     </main>
 </body>
-<script src="../apiCommunication.js"></script>
-<script src="../JS/login.js"></script>
+<script src="/assets/apiCommunication.js"></script>
+<script src="./login.js"></script>
 </html>

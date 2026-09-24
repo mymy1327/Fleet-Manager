@@ -111,9 +111,9 @@ function HandleLogin(string $email, string $password, bool $rememberMe, string|n
                 $result = [];
                 if($next === null) {
                     if($user["role"] == "admin") {
-                        $result["next"] = "/admin/PHP/index.php";
+                        $result["next"] = "/admin/index.php";
                     } else if($user["role"] == "user") {
-                        $result["next"] = "/user/PHP/index.php";
+                        $result["next"] = "/user/index.php";
                     }
                 } else {
                     $result["next"] = $next;
@@ -279,7 +279,7 @@ function PathToURL(string $path)
 function HandleError(int $code, string|null $message = null, string|null $from = null, string $lang = "en", bool $redirect = false)
 {
     //Get paths
-    $path = __DIR__ . "/assets/PHP/handleError.php";
+    $path = __DIR__ . "/assets/handleError.php";
     $url = PathToURL($path);
 
     //Chceck if from is null

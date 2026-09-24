@@ -18,7 +18,7 @@ class TranslationData {
     const cleanPath = urlObj.pathname + urlObj.search + urlObj.hash;
 
     //Send request
-    const [ok, resp] = await SendGetAPIAndHandleErrors("/assets/PHP/languageManager.php?file=" + encodeURIComponent(cleanPath));
+    const [ok, resp] = await SendGetAPIAndHandleErrors("/assets/languageManager.php?file=" + encodeURIComponent(cleanPath));
     if (!ok) {
       return;
     }
@@ -79,7 +79,7 @@ class TranslationData {
  * @param {string} language New language
  */
 async function ChangeLanguage(language) {
-  await SendPostAPIAndHandleErrors("/assets/PHP/languageManager.php", { "language": language });
+  await SendPostAPIAndHandleErrors("/assets/languageManager.php", { "language": language });
   window.location.reload();
 }
 
