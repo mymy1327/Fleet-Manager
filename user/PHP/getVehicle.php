@@ -9,6 +9,8 @@ require __DIR__ . "/../../assets/sharedUserFunctions.php";
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Get vehicle</title>
+	<meta name='data-i18n-url' content='../LANG/getVehicle.lang'>
+    <meta name='data-i18n-languages' content='fi;en'>
 	<link rel="stylesheet" href="../../Teachers-view/main/CSS/style.css">
 	<link rel="stylesheet" href="../CSS/style.css">
 </head>
@@ -38,6 +40,7 @@ require __DIR__ . "/../../assets/sharedUserFunctions.php";
 	<p><i>Note: You should be using this page only when you are near the vehicle.</i></p>
     </main>
     <script src="/assets/apiCommunication.js"></script>
+    <script src="/assets/languageManager.js"></script>
 	<script src="../JS/getVehicle.js"></script>
 </body>
 </html>
