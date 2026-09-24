@@ -2,7 +2,7 @@ let carlist = document.getElementById("vehicle")
 const bob = new URLSearchParams(document.location.search)
 const name = bob.get("code")
 console.log(name)
-const ip = "10.1.17.107:5503"
+const ip = "developmenterasmus.kolojar.cz"
 function getVehicleDetails(getcode) {
     const xhr = new XMLHttpRequest();
     xhr.open("GET", `/api/vehicles?code=` + getcode, true);
