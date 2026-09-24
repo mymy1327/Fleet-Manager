@@ -270,7 +270,7 @@ function renderQuestion() {
     .replace(/[\u0300-\u036f]/g, "");
 
     const isOilQuestion =
-    normalizedQuestionName.includes("oljy") ||
+    normalizedQuestionName.includes("öljy") ||
     normalizedQuestionName.includes("oil");
     const currentAnswer = answers[currentQuestionIndex]?.answer;
     const hasFault = currentAnswer === "Report Faults";
