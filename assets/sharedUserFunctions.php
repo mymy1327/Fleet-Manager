@@ -304,11 +304,12 @@ function HandleError(int $code, string|null $message = null, string|null $from =
  * Generate error for API
  * @param int $code HTTP error code
  * @param string|null $message Status message, set to null for none
+ * @param int|null $responceCode HTTP responce code
  * @return string Echoes responce as JSON
  */
-function GenerateAPIError(int $code, string|null $message = null)
+function GenerateAPIError(int $code, string|null $message = null, int | null $responceCode = null)
 {
-    http_response_code($code);
+    http_response_code($responceCode === null ? $code : $responceCode);
     $responce = [];
     $responce["code"] = $code;
     if ($message !== null) {
@@ -316,4 +317,31 @@ function GenerateAPIError(int $code, string|null $message = null)
     }
     echo json_encode($responce);
     die();
+}
+
+/**
+ * Converts path to absolute with safety checks
+ * @param string $relative Relative path to be resolved
+ * @return string|false Resolved path or false as error
+ */
+function ConvertToAbsolutePath(string $relative): string|false {
+    //Gets root and merges it
+    $root = realpath($_SERVER['DOCUMENT_ROOT']);
+    $resolved = realpath($root . DIRECTORY_SEPARATOR . $relative);
+
+    // Deny if path escaped the root
+    if ($resolved === false || !str_starts_with($resolved, $root . DIRECTORY_SEPARATOR)) {
+        return false;
+    }
+
+    // Reject null bytes
+    if (str_contains($relative, "\0")) {
+        return false;
+    }
+    return $resolved;
+}
+
+function logToConsole(string $log)
+{
+    file_put_contents("php://stdout", $log . "\n");
 }
