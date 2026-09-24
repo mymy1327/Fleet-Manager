@@ -1,6 +1,6 @@
 <?php
 require __DIR__ . "/../assets/sharedUserFunctions.php";
-    CheckAccessSession(["user","teacher","admin"])
+    CheckAccessSession(["student","teacher","admin"])
 ?>
 
 <!DOCTYPE html>
