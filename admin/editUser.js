@@ -10,14 +10,14 @@ async function main() {
   SetupListenForChanges(columns, ["save"]);
 
 const role = document.getElementById("role");
-role.originalValue = role.value;
 
-role.addEventListener("change", () => {
-    role.dispatchEvent(new Event("input"));
+console.log("role element:", role);
+console.log("before:", role.value);
 
+role.addEventListener("change", function () {
+    console.log("SELECT CHANGED");
+    console.log("new value:", this.value);
 });
-    console.log(role.value);
-console.log(role.originalValue);
   const changePasswordButton = document.getElementById("changePassword");
   if (changePasswordButton != null) {
     changePasswordButton.disabled = false;
