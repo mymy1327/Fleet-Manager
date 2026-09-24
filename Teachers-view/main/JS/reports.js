@@ -281,7 +281,7 @@ function renderInspectionHistory() {
                 <td>${inspection.id_users ?? "-"}</td>
                 <td>${inspection.km ?? "-"} km</td>
                 <td>
-                    <span class="${passed ? "report-result-passed" : "report-result-failed"}">
+                    <span class="${passed ? "report-result report-result-passed" : "report-result report-result-failed"}">
                         ${passed ? "Hyväksytty" : "Hylätty"}
                     </span>
                 </td>
