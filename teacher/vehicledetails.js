@@ -1,8 +1,7 @@
 let carlist = document.getElementById("vehicle")
 const bob = new URLSearchParams(document.location.search)
-const name = bob.get("code")
-console.log(name)
-const ip = "developmenterasmus.kolojar.cz"
+
+const restapi = "developmenterasmus.kolojar.cz"
 function getVehicleDetails(getcode) {
     const xhr = new XMLHttpRequest();
     xhr.open("GET", `/api/vehicles?code=` + getcode, true);
@@ -71,24 +70,10 @@ function getVehicleDetails(getcode) {
             vehiclecode.classList.add("vehicle-code")
             vehiclecode.textContent = intelligeble[x].code
 
-             
-          //  let clickablevisualisedvehiclecode = document.createElement("button")
-           // clickablevisualisedvehiclecode.onclick = "popupcall()"
-            //clickablevisualisedvehiclecode.id = "qrcodepopup" //(refer to line 118)
-
-
-           // let popupitself = document.createElement("div")
-           // popupitself.id = "popupitself"
-           // popupitself.style.display = "blcok";
-           // popupitself.innerHTML = `
-              //  visualizeqr("https://developmenterasmus.kolojar.cz/vehicle/" + ${intelligeble[x].code}, "visualisedvehiclecode", 12)
-            //`
-
             let visualisedvehiclecode = document.createElement("p")
             vehiclecode.classList.add("vehicle-code")
-            console.log(parseInt(intelligeble[x].id_vehicles))
-            console.log(`https://developmenterasmus.kolojar.cz/inspection-student-form/index.html?id=${intelligeble[x].code}`)
-            visualizeqr(`https://developmenterasmus.kolojar.cz/vehicle/${intelligeble[x].code}`, visualisedvehiclecode, 12)
+            
+            visualizeqr(`https://${restapi}/vehicle/${intelligeble[x].code}`, visualisedvehiclecode, 12)
             //End of Card element
 
             //Appending
@@ -205,11 +190,4 @@ function visualizeqr(code, changing,size) {
         return result;
     }
 
-
-const languageSwitch = document.querySelector("[data-language-switch]");
-
-
-languageSwitch?.addEventListener("click", () => {
-    const targetPage = location.pathname.endsWith("Index_fi.html") ? "Index_en.html" : "Index_fi.html";
-    window.location.href = `${targetPage}${location.hash}`;
-});
+// insert the langauge switch here

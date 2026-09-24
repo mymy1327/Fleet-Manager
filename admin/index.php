@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . "/../../assets/sharedUserFunctions.php";
+require __DIR__ . "/../assets/sharedUserFunctions.php";
     CheckAccessSession(["admin"])
 ?>
 
@@ -9,8 +9,7 @@ require __DIR__ . "/../../assets/sharedUserFunctions.php";
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>User management</title>
-        <link rel="stylesheet" href="../../Teachers-view/main/CSS/style.css" />
-        <link rel="stylesheet" href="../../checklistManagement/CSS/style.css" />
+        <link rel="stylesheet" href="/assets/style.css" />
     </head>
     <body>
         <header class="topbar">
@@ -23,7 +22,7 @@ require __DIR__ . "/../../assets/sharedUserFunctions.php";
             <nav class="main-nav" aria-label="Main navigation"></nav>
             <div class="header-actions">
                 <button class="language-switch" type="button" data-language-switch>FI</button>
-                <a href='/assets/PHP/logout.php'> <button class="logout" type="button">↪&nbsp; Logout</button></a>
+                <a href='/assets/logout.php'> <button class="logout" type="button">↪&nbsp; Logout</button></a>
             </div>
         </header>
         <main id="app" class="page">
@@ -45,5 +44,5 @@ require __DIR__ . "/../../assets/sharedUserFunctions.php";
         </main>
     </body>
     <script src="/assets/apiCommunication.js"></script>
-    <script src="../JS/admin.js"></script>
+    <script src="admin.js"></script>
 </html>
