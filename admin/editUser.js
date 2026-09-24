@@ -11,16 +11,9 @@ async function main() {
   const changePasswordButton = document.getElementById("changePassword");
   if (changePasswordButton != null) {
     changePasswordButton.disabled = false;
-    document.querySelector('input[name="role"][value="' + document.getElementById("role").value + '"]').checked = true;
   }
 
-  //Listen for radio changes
-  for (const role of document.getElementsByName("role")) {
-    role.addEventListener("input", () => {
-      document.getElementById("role").value = document.querySelector('input[name="role"]:checked').value;
-      document.getElementById("role").dispatchEvent(new Event("input"));
-    });
-  }
+  //Listen for radio changes (there's no radio anymore :D )
 
   //Save button
   const btnSave = document.getElementById("save");
@@ -32,10 +25,12 @@ async function main() {
     btnSave.disabled = true;
 
     //Send POST or PATCH
-    document.getElementById("role").value = document.querySelector('input[name="role"]:checked').value;
     if (id === true) {
-      //POST - generate hash
-      const [ok, resp2] = await SendPostAPIAndHandleErrors("/assets/generatePasswordHash.php", { password: document.getElementById("username").value });
+      const [ok, resp2] = await SendPostAPIAndHandleErrors(
+        "/assets/generatePasswordHash.php",
+        { password: document.getElementById("username").value }
+      );
+
       if (!ok) {
         return;
       }
@@ -44,7 +39,7 @@ async function main() {
       //Send POST
       const resp = await SendPostOfColumns(API + "/users", columns);
       if (resp === true) {
-        alert("Password for user is: " + document.getElementById("username").value)
+        alert("Password for user is: " + document.getElementById("username").value);
         window.location.href = "./admin.php";
       } else {
         alert("Failed to save changes: " + resp);
@@ -63,6 +58,7 @@ async function main() {
   });
 
   //Change password button
+  if (changePasswordButton != null) {
   changePasswordButton.addEventListener("click", async () => {
     //Get new password
     changePasswordButton.disabled = true;
@@ -88,5 +84,6 @@ async function main() {
     alert("Password changed!");
     window.location.reload();
   });
+}
 }
 main();
