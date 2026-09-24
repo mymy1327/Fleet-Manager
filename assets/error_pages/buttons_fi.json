@@ -9,11 +9,11 @@
   },
   "login": {
     "text": "Kirjaudu sisään",
-    "action": "const from = '[FROM]'; let href = '/assets/PHP/login.php'; if(from != '') {href+= '?next=' + from;}; window.location.href = href;"
+    "action": "const from = '[FROM]'; let href = '/assets/login.php'; if(from != '') {href+= '?next=' + from;}; window.location.href = href;"
   },
   "logout": {
     "text": "Kirjaudu ulos",
-    "action": "const from = '[FROM]'; let href = '/assets/PHP/logout.php'; if(from != '') {href+= '?next=' + from;}; window.location.href = href;"
+    "action": "const from = '[FROM]'; let href = '/assets/logout.php'; if(from != '') {href+= '?next=' + from;}; window.location.href = href;"
   },
   "back": {
     "text": "Takaisin",
