@@ -728,7 +728,7 @@ function deleteEntry($conn, $table, $id)
  */
 function forceDeleteVehicle($conn, int $vehicleId)
 {
-    $stmt = $conn->prepare("SELECT id_inspections FROM inspections WHERE id_vehicles = ?");
+    $stmt = $conn->prepare("SELECT id_inspections, oil_picture AS id_files FROM inspections WHERE id_vehicles = ?");
     $intId = (int) $vehicleId;
     $stmt->bind_param("i", $intId);
     if (!$stmt->execute()) {
@@ -737,12 +737,45 @@ function forceDeleteVehicle($conn, int $vehicleId)
 
     $result = $stmt->get_result();
     $stmt->close();
-    while ($row = $result->fetch_assoc()["id_inspections"]) {
-        if (!$conn->query("DELETE FROM `problems` WHERE id_inspections = $row")) {
-            return [404, json_encode(["error" => "Not Found", "message" => "Entry $row not found in problems."])];
+    while ($row = $result->fetch_assoc()) {
+        $problems = $conn->query(
+            "SELECT `id_files` FROM `problems` WHERE id_inspections = " . $row["id_inspections"],
+        );
+
+        if (!$conn->query("DELETE FROM `problems` WHERE id_inspections = " . $row["id_inspections"])) {
+            return [
+                404,
+                json_encode([
+                    "error" => "Not Found",
+                    "message" => "Entry " . $row["id_inspections"] . " not found in problems.",
+                ]),
+            ];
         }
-        if (!$conn->query("DELETE FROM `inspections` WHERE id_inspections = $row")) {
-            return [404, json_encode(["error" => "Not Found", "message" => "Entry $row not found in inspections."])];
+        while ($problemFile = $problems->fetch_assoc()["id_files"]) {
+            if (!$conn->query("DELETE FROM `files` WHERE id_file = $problemFile")) {
+                return [
+                    404,
+                    json_encode(["error" => "Not Found", "message" => "Entry $problemFile not found in files."]),
+                ];
+            }
+        }
+        if (!$conn->query("DELETE FROM `inspections` WHERE id_inspections = " . $row["id_inspections"])) {
+            return [
+                404,
+                json_encode([
+                    "error" => "Not Found",
+                    "message" => "Entry " . $row["id_inspections"] . " not found in inspections.",
+                ]),
+            ];
+        }
+        if (!$conn->query("DELETE FROM `files` WHERE id_file = " . $row["id_files"])) {
+            return [
+                404,
+                json_encode([
+                    "error" => "Not Found",
+                    "message" => "Entry " . $row["id_files"] . " not found in files.",
+                ]),
+            ];
         }
     }
 
@@ -994,7 +1027,11 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             } else {
                 if (
                     ($uri[0] == $listOfTables[0] && $uri[1] == 25) ||
-                    ($uri[0] == $listOfTables[1] && $uri[2] == 25)
+                    ($uri[0] == $listOfTables[1] && $uri[2] == 25) ||
+                    ($uri[0] == $listOfTables[0] && $uri[1] == 1) ||
+                    ($uri[0] == $listOfTables[1] && $uri[2] == 1) ||
+                    ($uri[0] == $listOfTables[0] && $uri[1] == 2) ||
+                    ($uri[0] == $listOfTables[1] && $uri[2] == 2)
                 ) {
                     //prevent deletion of oil checklist (mandatory item)
                     heaDie(400, ["error" => "Bad Request", "message" => "Can't delete this checklist item."]);
