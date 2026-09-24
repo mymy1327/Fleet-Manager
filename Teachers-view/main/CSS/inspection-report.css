@@ -3,6 +3,7 @@ single-panel {
     width: fit-content;
     justify-content: center;
     padding: 20px;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .vehicle-card-grid {
@@ -245,37 +246,70 @@ single-panel {
     padding: 5px, 8px;
 }
 /*Problems toolbar*/
+.page-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    width: 100%;
+    margin-bottom: 24px;
+}
+
+.page-heading > div:first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.page-heading h1 {
+    margin: 0;
+}
+
+.page-heading .subtitle {
+    margin: 6px 0 0;
+    white-space: normal;
+    word-break: normal;
+    overflow-wrap: break-word;
+}
 
 .problem-toolbar {
     display: flex;
     align-items: center;
-    gap: 10px;
-    position: relative;
+    gap: 12px;
+    flex: 0 0 auto;
 }
 
 .vehicle-filter {
     position: relative;
+    flex: 0 0 auto;
+}
+
+.vehicle-filter > button,
+.problem-toolbar .dropdown > button {
+    min-width: 180px;
+    height: 48px;
 }
 
 .vehicle-filter-dropdown {
     position: absolute;
-    top: calc(100% + 8px);
-    right: 0;
     z-index: 1000;
-    width: 280px;
+    top: calc(100% + 5px);
+    left: 0;
+    width: 260px;
     padding: 10px;
     background: #fff;
-    border: 1px solid #dee2e6;
-    border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0,0,0,.12);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
 }
 
 .vehicle-filter-list {
-    display: flex;
-    flex-direction: column;
-    max-height: 260px;
-    margin-top: 8px;
+    max-height: 250px;
     overflow-y: auto;
+    margin-top: 8px;
+}
+
+.problem-toolbar .dropdown {
+    flex: 0 0 auto;
 }
 
 .vehicle-filter-item {
@@ -653,6 +687,29 @@ single-panel {
     .vehicle-card-image {
         height: 170px;
     }
+     .page-heading {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+
+    .page-heading > div:first-child {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .page-heading h1 {
+        font-size: 40px;
+        line-height: 1.1;
+    }
+
+    .page-heading .subtitle {
+        font-size: 18px;
+        line-height: 1.4;
+        width: 100%;
+        max-width: none;
+    }
 
     .problem-toolbar {
         width: 100%;
@@ -691,7 +748,28 @@ single-panel {
         gap: 12px;
     }
     .problem-toolbar {
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        width: 100%;
+        gap: 10px;
+    }
+
+    .vehicle-filter,
+    .problem-toolbar .dropdown {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .vehicle-filter > button,
+    .problem-toolbar .dropdown > button {
+        width: 100%;
+        min-width: 0;
+        height: 48px;
+    }
+
+    .vehicle-filter-dropdown {
+        width: 100%;
+        max-width: 100%;
     }
     .problem-card-grid {
         grid-template-columns: 1fr;
