@@ -1,3 +1,22 @@
+/* Animation for text in Fleet */
+.box {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.vehicle-model {
+    display: inline-block;
+    padding-left: 100%;
+    animation: slide-left 10s linear infinite;
+}
+@keyframes slide-left {
+    from {
+        transform: translateX(0%);
+    }
+    to {
+        transform: translateX(-100%);
+    }
+}
 /*layout*/
 single-panel {
     width: fit-content;
