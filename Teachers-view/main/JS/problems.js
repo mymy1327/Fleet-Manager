@@ -381,14 +381,9 @@ async function getProblemPhoto (problemId) {
     return photoUrl;
 }
 async function updateProblem(problemId, state, priority) {
-    await patchProblemColumn(problemId, "state", state);
-    await patchProblemColumn(problemId, "priority", priority);
-    return true;
-}
-
-async function patchProblemColumn(problemId, column, value) {
     const data = {
-        [column]: value
+        state: state,
+        priority: priority
     };
 
     const response = await fetch(
@@ -402,7 +397,7 @@ async function patchProblemColumn(problemId, column, value) {
         }
     );
 
-    if (response.status !== 200 && response.status !== 201) {
+    if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`${response.status}|${errorText}`);
     }
@@ -411,19 +406,25 @@ async function patchProblemColumn(problemId, column, value) {
 }
 
 async function saveProblem(problemId) {
+    console.log("Problem ID:", problemId);
+
     const state = document.getElementById("editProblemState").value;
     const priority = document.getElementById("editProblemPriority").value;
+
+    console.log("Payload:", {
+        state,
+        priority
+    });
 
     try {
         await updateProblem(problemId, state, priority);
 
-        // Close modal
         const modal = bootstrap.Modal.getInstance(
             document.getElementById("editProblemModal")
         );
+
         modal?.hide();
 
-        // Reload problems
         getAllProblems();
     } catch (error) {
         console.error("Failed to update problem:", error);
