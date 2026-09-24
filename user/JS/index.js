@@ -18,11 +18,10 @@ document.addEventListener("DOMContentLoaded", async function () {
   const vehiclesInUseByCurrentUser = [];
   for (const vehicle of vehicles) {
     //Get inspections per user per vehicle
-    const [ok, inspections] = await SendGetAPIAndHandleErrors(`http://${ip}/api/inspections?id_users=${id}&id_vehicles=${vehicle.id_vehicles}`);
+    const [ok, inspections] = await SendGetAPIAndHandleErrors(`http://${ip}/api/inspections?id_users=${id}&id_vehicles=${vehicle.id_vehicles}&order_by=date&limit=1&order_way=DESC`);
     if (!ok) {
       return;
     }
-    inspections.sort((a, b) => b.date - a.date);
     console.log("insp", inspections);
 
     //Check first inspection
