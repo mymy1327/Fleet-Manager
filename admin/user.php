@@ -55,7 +55,7 @@ require __DIR__ . "/../assets/sharedUserFunctions.php";
 
         <select class="form-select" name="role" id="role">
             <option value="admin" data-i18n="roleAdmin">Admin</option>
-            <option value="student" data-i18n="roleStudent" selected>Student</option>
+            <option value="student" data-i18n="roleStudent">Student</option>
             <option value="teacher" data-i18n="roleTeacher">Teacher</option>
         </select>
     </div>

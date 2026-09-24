@@ -8,10 +8,14 @@ async function main() {
     return;
   }
   SetupListenForChanges(columns, ["save"]);
-  const role = document.getElementById("role");
-// Turn select changes to inputs
+
+const role = document.getElementById("role");
+role.originalValue = role.value;
+
 role.addEventListener("change", () => {
     role.dispatchEvent(new Event("input"));
+    console.log(role.value);
+console.log(role.originalValue);
 });
   const changePasswordButton = document.getElementById("changePassword");
   if (changePasswordButton != null) {
