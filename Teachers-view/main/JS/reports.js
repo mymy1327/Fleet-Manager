@@ -278,7 +278,7 @@ function renderInspectionHistory() {
             <tr>
                 <td>${formatReportDate(inspection.date)}</td>
                 <td>${escapeReportHtml(vehicle?.name || "-")}</td>
-                <td>${getUserName(inspection.id_users)}</td>
+                <td>${getUserName(inspection)}</td>
                 <td>${inspection.km ?? "-"} km</td>
                 <td>
                     <span class="${passed ? "report-result report-result-passed" : "report-result report-result-failed"}">
