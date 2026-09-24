@@ -38,7 +38,6 @@ require __DIR__ . "/../assets/sharedUserFunctions.php";
                 </div>
             </div>
 <div class="container-fluid gap-2 justify-content-center">
-        <input type="hidden" id='role'>
         <input type="hidden" id='password'>
         <div class="input-group mb-3">
         <span class="input-group-text" id="inputGroup-sizing-default" for="username" data-i18n="username">Username</span>
