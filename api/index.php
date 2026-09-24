@@ -720,6 +720,53 @@ function deleteEntry($conn, $table, $id)
     return true;
 }
 
+/**
+ * completly delete every connection to vehicle and the vehicle
+ * @param mysqli $conn connection to database
+ * @param int $vehicleId id of vehicle to delete
+ * @return true|array[int, string|null] true on success | array with error code on failure
+ */
+function forceDeleteVehicle($conn, int $vehicleId)
+{
+    $stmt = $conn->prepare("SELECT id_inspections FROM inspections WHERE id_vehicles = ?");
+    $intId = (int) $vehicleId;
+    $stmt->bind_param("i", $intId);
+    if (!$stmt->execute()) {
+        return [404, json_encode(["error" => "Not Found", "message" => "Entry $intId not found in inspections."])];
+    }
+
+    $result = $stmt->get_result();
+    $stmt->close();
+    while ($row = $result->fetch_assoc()["id_inspections"]) {
+        if (!$conn->query("DELETE FROM `problems` WHERE id_inspections = $row")) {
+            return [404, json_encode(["error" => "Not Found", "message" => "Entry $row not found in problems."])];
+        }
+        if (!$conn->query("DELETE FROM `inspections` WHERE id_inspections = $row")) {
+            return [404, json_encode(["error" => "Not Found", "message" => "Entry $row not found in inspections."])];
+        }
+    }
+
+    $stmt = $conn->prepare("DELETE FROM vehicle_checklists WHERE id_vehicles = ?");
+    $intId = (int) $vehicleId;
+    $stmt->bind_param("i", $intId);
+    if (!$stmt->execute()) {
+        return [
+            404,
+            json_encode(["error" => "Not Found", "message" => "Entry $intId not found in vehicle_checklists."]),
+        ];
+    }
+    $stmt->close();
+
+    $stmt = $conn->prepare("DELETE FROM vehicles WHERE id_vehicles = ?");
+    $intId = (int) $vehicleId;
+    $stmt->bind_param("i", $intId);
+    if (!$stmt->execute()) {
+        return [404, json_encode(["error" => "Not Found", "message" => "Entry $intId not found in vehicles."])];
+    }
+
+    return true;
+}
+
 if (
     !in_array($uri[0], $listOfTables) ||
     ($uri[0] == $listOfTables[2] && $uri[1] == 8 && $_SERVER["REQUEST_METHOD"] != "GET") //prevent deletion of laughing cat
@@ -863,7 +910,6 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             heaDie($return[1], $return[2] ?? null);
         }
         heaDie(201, $return);
-
     case "PUT":
         if (isset($uri[1])) {
             switch (array_search($uri[0], $listOfTables)) {
@@ -938,16 +984,28 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         }
     case "DELETE":
         if (isset($uri[1])) {
-            if ($uri[0] == $listOfTables[0] && $uri[1] == 25) {
-                //prevent deletion of oil checklist (mandatory item)
-                heaDie(400, ["error" => "Bad Request", "message" => "Can't delete this checklist item."]);
-            }
-            if (isset($uri[2])) {
-                if ($uri[0] == $listOfTables[1]) {
-                    $return = removeChecklistFromVehicle($conn, $uri[1], $uri[2]);
-                }
+            if (
+                isset($_GET["type"]) &&
+                !is_null($_GET["type"]) &&
+                $_GET["type"] == "force" &&
+                in_array($uri[0], [$listOfTables[0], $listOfTables[1]])
+            ) {
+                $return = forceDeleteVehicle($conn, $uri[1]);
             } else {
-                $return = deleteEntry($conn, $uri[0], $uri[1]);
+                if (
+                    ($uri[0] == $listOfTables[0] && $uri[1] == 25) ||
+                    ($uri[0] == $listOfTables[1] && $uri[2] == 25)
+                ) {
+                    //prevent deletion of oil checklist (mandatory item)
+                    heaDie(400, ["error" => "Bad Request", "message" => "Can't delete this checklist item."]);
+                }
+                if (isset($uri[2])) {
+                    if ($uri[0] == $listOfTables[1]) {
+                        $return = removeChecklistFromVehicle($conn, $uri[1], $uri[2]);
+                    }
+                } else {
+                    $return = deleteEntry($conn, $uri[0], $uri[1]);
+                }
             }
             if (gettype($return) == "array") {
                 heaDie($return[0], $return[1] ?? null);
