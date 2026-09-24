@@ -1,6 +1,6 @@
 const navLinks = document.querySelectorAll("[data-view]");
 const viewSections = document.querySelectorAll("[data-view-content]");
-const languageSwitch = document.querySelector("[data-language-switch]");
+// langauge swtich
 const periodButtons = document.querySelectorAll(".pill");
 
 function render() {
@@ -12,10 +12,7 @@ function render() {
 
 window.addEventListener("hashchange", render);
 
-languageSwitch?.addEventListener("click", () => {
-    const targetPage = location.pathname.endsWith("Index_fi.html") ? "Index_en.html" : "Index_fi.html";
-    window.location.href = `${targetPage}${location.hash}`;
-});
+// language switch
 
 periodButtons.forEach((button) => {
     button.addEventListener("click", () => {
