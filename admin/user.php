@@ -38,20 +38,36 @@ require __DIR__ . "/../assets/sharedUserFunctions.php";
                 </div>
             </div>
             <div class="container-fluid gap-2 justify-content-center>
-        <input class="form-control" type="hidden" id='role'>
-        <input class="form-control" type="hidden" id='password'>
-        <label class="form-control" for="username" data-i18n="username">Username:</label>
-        <input class="form-control" type="text" id="username" name="username" />
-        <label class="form-control" for="email" data-i18n="email">Email:</label>
-        <input class="form-control" type="email" id="email" name="email" />
-        <label class="form-control" for="role" data-i18n="role">Role:</label>
-        <input class="form-control" type="radio" name="role" value="admin" id="roleAdmin" />
-        <label class="form-control" for="roleAdmin" data-i18n="roleAdmin">Admin</label>
-        <input class="form-control"type="radio" name="role" value="student" id="roleStudent" checked />
-        <label class="form-control" for="roleStudent" data-i18n="roleStudent">Student</label>
-        <input class="form-control" type="radio" name="role" value="teacher" id="roleTeacher" />
-        <label class="form-control" for="roleTeacher" data-i18n="roleTeacher">Teacher</label>
+        <input type="hidden" id='role'>
+        <input type="hidden" id='password'>
+        <label  for="username" data-i18n="username">Username:</label>
+        <input  type="text" id="username" name="username" />
+        <label  for="email" data-i18n="email">Email:</label>
+        <input  type="email" id="email" name="email" />
+        <label  for="role" data-i18n="role">Role:</label>
+        <input  type="radio" name="role" value="admin" id="roleAdmin" />
+        <label  for="roleAdmin" data-i18n="roleAdmin">Admin</label>
+        <input type="radio" name="role" value="student" id="roleStudent" checked />
+        <label  for="roleStudent" data-i18n="roleStudent">Student</label>
+        <input  type="radio" name="role" value="teacher" id="roleTeacher" />
+        <label  for="roleTeacher" data-i18n="roleTeacher">Teacher</label>
         <button id="save" class="button btn btn-link text-decoration-none" data-i18n="submit" disabled>Submit</button>
+</div>
+<div class="container-fluid gap-2 justify-content-center>
+<div class="input-group mb-3">
+  <span class="input-group-text" id="inputGroup-sizing-default">Username</span>
+  <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+</div>
+<div class="input-group mb-3">
+  <span class="input-group-text" id="inputGroup-sizing-default">Email</span>
+  <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+</div>
+<div class="input-group">
+  <div class="input-group-text">
+    <input class="form-check-input mt-0" type="radio" value="" aria-label="Radio button for following text input">
+  </div>
+  <input type="text" class="form-control" aria-label="Text input with radio button">
+</div>
 </div>
         <?php
         if (isset($_GET["id"])) {
