@@ -438,7 +438,7 @@ function setupProblemEditForm() {
 
     form.addEventListener("submit", event => {
         event.preventDefault();
-        saveProblem(problemId);
+        saveProblem(editingProblemId);
     });
 }
 
