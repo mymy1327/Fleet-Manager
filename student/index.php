@@ -8,7 +8,7 @@ CheckAccessSession(["student", "teacher", "admin"]);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name='data-i18n-url' content='../LANG/index.lang'>
+    <meta name='data-i18n-url' content='./index.lang'>
     <meta name='data-i18n-languages' content='fi;en'>
     <title>User dashboard</title>
     <link rel="stylesheet" href="/assets/style.css">
