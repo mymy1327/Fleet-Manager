@@ -1,21 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Anta&display=swap');
 body {
     margin: 0;
-    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    background-image: url("https://pub-9147a8a77c9a4d63a1142903a7f0e5ea.r2.dev/loginbackground.jpg");
-    background-size:cover ;
-    background-position: center;
-    background-repeat: no-repeat;
-
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    background: url(https://pub-9147a8a….r2.dev/loginbackground.jpg) center center / cover no-repeat;
     overflow: hidden;
+    min-height: 100vh;
 }
 .page {
-    position: relative;
-
-    width: calc(100% - 50px);
-    height: 835px;
-
     margin: 0;
+    position: fixed;
+    top: -10%;
+    left: 45%;
+    transform: translate(-50%, -50%);
 
 }
 .page-heading {
