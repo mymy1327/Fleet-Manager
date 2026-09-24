@@ -7,25 +7,8 @@ async function main() {
   if (id === false) {
     return;
   }
-  SetupListenForChanges(columns, ["save"]);
   const role = document.getElementById("role");
-
-role.addEventListener("change", () => {
-    const saveButton = document.getElementById("save");
-
-    if (role.value !== role.originalValue) {
-        saveButton.disabled = false;
-    } else {
-        saveButton.disabled = true;
-    }
-});
-
-console.log("Role element:", role);
-console.log("Initial:", role.value);
-
-role.addEventListener("change", function () {
-    console.log("Changed:", this.value);
-});
+  SetupListenForChanges(columns, ["save"]);
   const changePasswordButton = document.getElementById("changePassword");
   if (changePasswordButton != null) {
     changePasswordButton.disabled = false;

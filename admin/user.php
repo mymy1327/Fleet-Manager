@@ -48,7 +48,7 @@ require __DIR__ . "/../assets/sharedUserFunctions.php";
         <span class="input-group-text" id="inputGroup-sizing-default" for="email" data-i18n="email">Email</span>
         <input type="text" class="form-control" type="email" id="email" name="email">
         </div>
-        <<div class="input-group mb-3">
+        <div class="input-group mb-3">
         <label class="input-group-text" for="role" data-i18n="role">
             Role:
         </label>
