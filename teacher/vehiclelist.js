@@ -55,9 +55,9 @@ function getVehicleDetails(vehicleId) {
                 console.log(window.location.href)
                 console.log((window.location.href).search("index_en.html"))
                 if ((window.location.href).search("Index_en.html") != -1){
-                    clickableconnection.href = `details.html?code=${intelligeble[x].code}`    
+                    clickableconnection.href = `details_en.html?code=${intelligeble[x].code}`    
                 }else{
-                    clickableconnection.href = `details.html?code=${intelligeble[x].code}`
+                    clickableconnection.href = `details_fi.html?code=${intelligeble[x].code}`
                 }
                 
 
