@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . "/../../assets/sharedUserFunctions.php";
+require __DIR__ . "/../assets/sharedUserFunctions.php";
     CheckAccessSession(["user","teacher","admin"])
 ?>
 
@@ -11,8 +11,8 @@ require __DIR__ . "/../../assets/sharedUserFunctions.php";
 	<title>Get vehicle</title>
 	<meta name='data-i18n-url' content='../LANG/getVehicle.lang'>
     <meta name='data-i18n-languages' content='fi;en'>
-	<link rel="stylesheet" href="../../Teachers-view/main/CSS/style.css">
-	<link rel="stylesheet" href="../CSS/style.css">
+	<link rel="stylesheet" href="/assets/style.css">
+	<link rel="stylesheet" href="./style.css">
 </head>
 <body>
     <header class="topbar">
@@ -23,7 +23,7 @@ require __DIR__ . "/../../assets/sharedUserFunctions.php";
         <nav class="main-nav" aria-label="Main navigation"></nav>
         <div class="header-actions">
             <button class="language-switch" type="button" data-language-switch>EN</button>
-            <a href='../../userManagement/PHP/logout.php'> <button class="logout" type="button">↪&nbsp; Logout</button></a>
+            <a href='/assets/logout.php'> <button class="logout" type="button">↪&nbsp; Logout</button></a>
         </div>
     </header>
     <main id="app" class="page">
@@ -41,6 +41,6 @@ require __DIR__ . "/../../assets/sharedUserFunctions.php";
     </main>
     <script src="/assets/apiCommunication.js"></script>
     <script src="/assets/languageManager.js"></script>
-	<script src="../JS/getVehicle.js"></script>
+	<script src="./getVehicle.js"></script>
 </body>
 </html>

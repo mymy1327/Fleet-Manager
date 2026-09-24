@@ -1,5 +1,5 @@
+  const API = "developmenterasmus.kolojar.cz";
 document.addEventListener("DOMContentLoaded", async function () {
-  const ip = "developmenterasmus.kolojar.cz";
 
   //Get user ID
   const id = await GetLoggedInUserID();
@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   //Get vehicles in use
-  const [ok2, vehicles] = await SendGetAPIAndHandleErrors(`http://${ip}/api/vehicles?state=in_use`);
+  const [ok2, vehicles] = await SendGetAPIAndHandleErrors(`http://${API}/api/vehicles?state=in_use`);
   if (!ok2) {
     return;
   }
@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   const vehiclesInUseByCurrentUser = [];
   for (const vehicle of vehicles) {
     //Get inspections per user per vehicle
-    const [ok, inspections] = await SendGetAPIAndHandleErrors(`http://${ip}/api/inspections?id_users=${id}&id_vehicles=${vehicle.id_vehicles}&order_by=date&limit=1&order_way=DESC`);
+    const [ok, inspections] = await SendGetAPIAndHandleErrors(`http://${API}/api/inspections?id_users=${id}&id_vehicles=${vehicle.id_vehicles}&order_by=date&limit=1&order_way=DESC`);
     if (!ok) {
       return;
     }
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       //Create link
       let clickableconnection = document.createElement("a");
-      clickableconnection.href = `../../../returnForm/index.html?code=${vehicle.code}`;
+      clickableconnection.href = `/student/student-form.html?code=${vehicle.code}`;
 
       //Set the image
       let picture = document.createElement("img");

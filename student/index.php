@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . "/../../assets/sharedUserFunctions.php";
+require __DIR__ . "/../assets/sharedUserFunctions.php";
 CheckAccessSession(["user", "teacher", "admin"]);
 ?>
 
@@ -11,8 +11,7 @@ CheckAccessSession(["user", "teacher", "admin"]);
     <meta name='data-i18n-url' content='../LANG/index.lang'>
     <meta name='data-i18n-languages' content='fi;en'>
     <title>User dashboard</title>
-    <link rel="stylesheet" href="../../Teachers-view/main/CSS/style.css">
-    <link rel="stylesheet" href="../../VehicleList/vehiclelist.css">
+    <link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
     <header class="topbar">
@@ -24,7 +23,7 @@ CheckAccessSession(["user", "teacher", "admin"]);
         <div class="header-actions">
             <a href="./getVehicle.php"><button class='button'>Get vehicle</button></a>
             <button class="language-switch" type="button" data-language-switch>EN</button>
-            <a href='../../userManagement/PHP/logout.php'> <button class="logout" type="button">↪&nbsp; Logout</button></a>
+            <a href='/assets/logout.php'> <button class="logout" type="button">↪&nbsp; Logout</button></a>
         </div>
     </header>
 
@@ -46,6 +45,6 @@ CheckAccessSession(["user", "teacher", "admin"]);
     </main>
      <script src="/assets/apiCommunication.js"></script>
      <script src="/assets/languageManager.js"></script>
-    <script src="../JS/index.js"></script>
+    <script src="./index.js"></script>
 </body>
 </html>
