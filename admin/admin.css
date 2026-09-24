@@ -110,6 +110,8 @@ body {
     font-weight: 600;
     border-radius: 8px;
     padding: 10px 17px;
+    margin-bottom: 10px;
+    color: #e5e7eb;
 }
 
 .button:hover {
