@@ -2,7 +2,6 @@
   "en":{
     "title": "User management",
     "brand": "Hyria Garage Admin",
-    "logout": "↪&nbsp; Logout",
     "subTitle": "List of users that are registered in the system.",
     "uT1": "Name",
     "uT2": "Email",
@@ -13,7 +12,6 @@
   "fi":{
     "title": "User management",
     "brand": "Hyria Garage Admin",
-    "logout": "↪&nbsp; Logout",
     "subTitle": "List of users that are registered in the system.",
     "uT1": "Name",
     "uT2": "Email",
