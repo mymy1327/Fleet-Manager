@@ -410,8 +410,7 @@ async function patchProblemColumn(problemId, column, value) {
     return true;
 }
 
-async function saveProblem() {
-    const problemId = document.getElementById("editProblemId").value;
+async function saveProblem(problemId) {
     const state = document.getElementById("editProblemState").value;
     const priority = document.getElementById("editProblemPriority").value;
 
@@ -439,7 +438,7 @@ function setupProblemEditForm() {
 
     form.addEventListener("submit", event => {
         event.preventDefault();
-        saveProblem();
+        saveProblem(problemId);
     });
 }
 
