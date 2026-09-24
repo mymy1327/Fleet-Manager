@@ -1,0 +1,36 @@
+{
+  "400": {
+    "title": "400 - Bad request",
+    "desc": "User did not provide required arguments. Please retry it."
+  },
+  "401": {
+    "title": "401 - Unauthorized",
+    "desc": "User did not provide any authorization information. Please log in.",
+    "buttons": [
+      {
+        "libraryId": "login"
+      }
+    ]
+  },
+  "403": {
+    "title": "403 - Forbidden",
+    "desc": "User does not have access to this page. Navigate to other page or log out.",
+    "buttons": [
+      {
+        "libraryId": "logout"
+      }
+    ]
+  },
+  "404": {
+    "title": "404 - Not found",
+    "desc": "Required path or request on API was not found."
+  },
+  "500": {
+    "title": "500 - Internal server error",
+    "desc": "Server encountered error while processing request. Please try it again later."
+  },
+  "503": {
+    "title": "503 - Service unavailable",
+    "desc": "Server can not process the request or API is not available. Please try it again later."
+  }
+}

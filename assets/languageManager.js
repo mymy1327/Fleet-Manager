@@ -24,13 +24,13 @@ class TranslationData {
     }
 
     //Handle errors
+    document.documentElement.lang = resp["lang"];
     if (resp["code"] != 200) {
       console.warn("Failed to load language data: " + resp["message"]);
       return;
     }
 
     //Set data
-    document.documentElement.lang = resp["lang"];
     this.languageData = resp["data"];
   }
 

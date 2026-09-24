@@ -305,12 +305,12 @@ function HandleError(int $code, string|null $message = null, string|null $from =
  * @param int $code HTTP error code
  * @param string|null $message Status message, set to null for none
  * @param int|null $responceCode HTTP responce code
+ * @param mixed $responce Responce data that will be converted to JSON
  * @return string Echoes responce as JSON
  */
-function GenerateAPIError(int $code, string|null $message = null, int | null $responceCode = null)
+function GenerateAPIError(int $code, string|null $message = null, int | null $responceCode = null, $responce = [])
 {
     http_response_code($responceCode === null ? $code : $responceCode);
-    $responce = [];
     $responce["code"] = $code;
     if ($message !== null) {
         $responce["message"] = $message;
