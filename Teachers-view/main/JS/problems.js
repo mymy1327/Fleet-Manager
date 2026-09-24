@@ -8,7 +8,7 @@ let selectedProblemVehicle = null;
 let currentProblemSort = "priority-desc";
 let editingProblemId = null;
 
-function escapeProblemHtml(value) {
+function escapeProblemHtml(value) {api
     const div = document.createElement("div");
     div.textContent = value ?? "";
     return div.innerHTML;
@@ -328,7 +328,7 @@ function setupProblemSorting() {
     });
 }
 
-function openEditProblem(problemId) {
+async function openEditProblem(problemId) {
     const problem = problems.find(
         item => Number(item.id_problems) === Number(problemId)
     );
@@ -351,7 +351,7 @@ function openEditProblem(problemId) {
     }
 
     if (imageBox && image) {
-        const photo = problem.photo || problem.image || problem.photo_url;
+        const photo = await getProblemPhoto(problemId);
 
         if (photo) {
             image.src = photo;
@@ -368,6 +368,17 @@ function openEditProblem(problemId) {
 
     const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
     modal.show();
+}
+async function getProblemPhoto (problemId) {
+    const problemRespone = await fetch (
+        problemRestApi + `/api/problems/${problemId}`);
+        if (!response.ok) {
+        console.error("Get problem error:", response.status);
+        return null;
+    }
+    const problem = await response.json();
+    const photoUrl = `${restapi}/api/files/${problem.id_files}`;
+    return photoUrl;
 }
 async function updateProblem(problemId, state, priority) {
     await patchProblemColumn(problemId, "state", state);
