@@ -8,15 +8,23 @@ async function main() {
     return;
   }
   SetupListenForChanges(columns, ["save"]);
+  const role = document.getElementById("role");
 
-const role = document.getElementById("role");
+role.addEventListener("change", () => {
+    const saveButton = document.getElementById("save");
 
-console.log("role element:", role);
-console.log("before:", role.value);
+    if (role.value !== role.originalValue) {
+        saveButton.disabled = false;
+    } else {
+        saveButton.disabled = true;
+    }
+});
+
+console.log("Role element:", role);
+console.log("Initial:", role.value);
 
 role.addEventListener("change", function () {
-    console.log("SELECT CHANGED");
-    console.log("new value:", this.value);
+    console.log("Changed:", this.value);
 });
   const changePasswordButton = document.getElementById("changePassword");
   if (changePasswordButton != null) {
