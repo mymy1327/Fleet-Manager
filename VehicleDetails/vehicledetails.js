@@ -2,7 +2,7 @@ let carlist = document.getElementById("vehicle")
 const bob = new URLSearchParams(document.location.search)
 const name = bob.get("code")
 console.log(name)
-const ip = "10.1.17.107:5503"
+const ip = "developmenterasmus.kolojar.cz"
 function getVehicleDetails(getcode) {
     const xhr = new XMLHttpRequest();
     xhr.open("GET", `/api/vehicles?code=` + getcode, true);
@@ -72,20 +72,23 @@ function getVehicleDetails(getcode) {
             vehiclecode.textContent = intelligeble[x].code
 
              
-            let clickablevisualisedvehiclecode = document.createElement("button")
-            clickablevisualisedvehiclecode.style.display = "none";
-            clickablevisualisedvehiclecode.id = "qrcodepopup" //(refer to line 118)
+          //  let clickablevisualisedvehiclecode = document.createElement("button")
+           // clickablevisualisedvehiclecode.onclick = "popupcall()"
+            //clickablevisualisedvehiclecode.id = "qrcodepopup" //(refer to line 118)
 
-            let popupitself = document.createElement("div")
-            popupitself.innerHTML = `
-                visualizeqr("https://developmenterasmus.kolojar.cz/vehicle/" + ${intelligeble[x].code}, "visualisedvehiclecode", 12)
-            `
+
+           // let popupitself = document.createElement("div")
+           // popupitself.id = "popupitself"
+           // popupitself.style.display = "blcok";
+           // popupitself.innerHTML = `
+              //  visualizeqr("https://developmenterasmus.kolojar.cz/vehicle/" + ${intelligeble[x].code}, "visualisedvehiclecode", 12)
+            //`
 
             let visualisedvehiclecode = document.createElement("p")
             vehiclecode.classList.add("vehicle-code")
             console.log(parseInt(intelligeble[x].id_vehicles))
             console.log(`https://developmenterasmus.kolojar.cz/inspection-student-form/index.html?id=${intelligeble[x].code}`)
-            visualizeqr(`https://developmenterasmus.kolojar.cz/vehicle/${intelligeble[x].code}`, visualisedvehiclecode, 4)
+            visualizeqr(`https://developmenterasmus.kolojar.cz/vehicle/${intelligeble[x].code}`, visualisedvehiclecode, 12)
             //End of Card element
 
             //Appending
@@ -98,13 +101,13 @@ function getVehicleDetails(getcode) {
             vehicledetails.appendChild(vehicledistance)
             vehicledetails.appendChild(vehiclelicense)
             vehicledetails.appendChild(vehiclecode)
-            vehicledetails.appendChild(clickablevisualisedvehiclecode)
-            clickablevisualisedvehiclecode.appendChild(visualisedvehiclecode)
+            vehicledetails.appendChild(visualisedvehiclecode)
+          //clickablevisualisedvehiclecode.appendChild(visualisedvehiclecode)
             // "placeforit" being the id that it is placed upon
             placeforit.appendChild(newArticle)
             //Appending
-                
-                
+            
+            
             // add an extra 1fr for every div created
             neededfr += "1fr "
                 
@@ -118,15 +121,18 @@ function getVehicleDetails(getcode) {
 }
 getVehicleDetails(bob.get("code"))
 
+function popupcall(){
+    let popupitself = document.getElementById("popupitself")
+    console.log("ob")
+    if (popupitself.style.display == "none"){
+        popupitself.style.display == "block"
+    }else{
+        popupitself.style.display == "none"
+    }
+}
 
-document.getElementById("qrcodepopup").addEventListener("click", function() {
-  const popupitself = document.getElementById("popupitself");
-  if (popupitself.style.display == "none"){
-    popupitself.style.display = "block";
-  }else{
-    popupitself.style.display = "none"
-  }
-});
+
+
 
 // QR CODE 
 
