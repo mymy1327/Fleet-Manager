@@ -1869,7 +1869,7 @@ body {
 
 .previous-inspection-card strong {
     display: inline-block;
-    min-witdh: 95px;
+    min-width: 95px;
     font-weight: 600;
     color: #1f2937;
 }
