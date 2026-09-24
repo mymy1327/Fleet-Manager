@@ -1,0 +1,36 @@
+{
+  "en": {
+    "title": "User",
+    "brand": "Hyria Garage Admin",
+    "userTitleEdit": "Edit",
+    "userTitleAdd": "Add",
+    "userTitle": "user",
+    "subTitle": "Manage user - change name, email and role.",
+    "username": "Username:",
+    "email": "Email:",
+    "role": "Role:",
+    "roleAdmin": "Admin",
+    "roleStudent": "Student",
+    "roleTeacher": "Teacher",
+    "submit": "Submit",
+    "changePassword": "Change password",
+    "exit": "Exit without saving"
+  },
+  "fi": {
+    "title": "User",
+    "brand": "Hyria Garage Admin",
+    "userTitleEdit": "Edit",
+    "userTitleAdd": "Add",
+    "userTitle": "user",
+    "subTitle": "Manage user - change name, email and role.",
+    "username": "Username:",
+    "email": "Email:",
+    "role": "Role:",
+    "roleAdmin": "Admin",
+    "roleStudent": "Student",
+    "roleTeacher": "Teacher",
+    "submit": "Submit",
+    "changePassword": "Change password",
+    "exit": "Exit without saving"
+  }
+}

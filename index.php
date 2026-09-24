@@ -26,14 +26,15 @@ if($responce === false) {
 </head>
 <body>
     <header class="topbar">
-        <a class="brand" href="./index.php">
-            <span class="brand-mark" aria-hidden="true">&#x26DF;</span>
-            <strong>Hyria AutoTalli</strong>
-        </a>
-        <nav class="main-nav" aria-label="Main navigation"></nav>
-        <div class="header-actions">
-            <button class="language-switch" type="button" data-language-switch>EN</button>
-            <a href='/assets/logout.php'> <button class="logout" type="button">↪&nbsp; <span data-i18n='logout'>Logout</span></button></a>
+        <div class="topbar-row">
+            <a class="brand" href="/index.php" aria-label="Hyria Garage home">
+                <span class="brand-mark" aria-hidden="true">&#x26DF;</span>
+                <strong data-i18n='brand'>Hyria Garage</strong>
+            </a>
+            <div class="header-actions">
+                <button class="language-switch" type="button" data-language-switch>EN</button>
+                <a href='/assets/logout.php'> <button class="logout" type="button">&#x21AA;&nbsp; <span data-i18n='logout'>Logout</span></button></a>
+            </div>
         </div>
     </header>
     <main id="app" class="page">
