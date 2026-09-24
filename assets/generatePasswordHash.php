@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . "/../sharedUserFunctions.php";
+require __DIR__ . "/sharedUserFunctions.php";
 //Get data and validate
 $data = GetPOSTData();
 if(!isset($data["password"])) {

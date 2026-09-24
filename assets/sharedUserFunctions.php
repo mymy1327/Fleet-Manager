@@ -111,9 +111,9 @@ function HandleLogin(string $email, string $password, bool $rememberMe, string|n
                 $result = [];
                 if($next === null) {
                     if($user["role"] == "admin") {
-                        $result["next"] = "/admin/PHP/index.php";
+                        $result["next"] = "/admin/index.php";
                     } else if($user["role"] == "user") {
-                        $result["next"] = "/user/PHP/index.php";
+                        $result["next"] = "/user/index.php";
                     }
                 } else {
                     $result["next"] = $next;
@@ -279,7 +279,7 @@ function PathToURL(string $path)
 function HandleError(int $code, string|null $message = null, string|null $from = null, string $lang = "en", bool $redirect = false)
 {
     //Get paths
-    $path = __DIR__ . "/assets/PHP/handleError.php";
+    $path = __DIR__ . "/assets/handleError.php";
     $url = PathToURL($path);
 
     //Chceck if from is null
@@ -305,12 +305,12 @@ function HandleError(int $code, string|null $message = null, string|null $from =
  * @param int $code HTTP error code
  * @param string|null $message Status message, set to null for none
  * @param int|null $responceCode HTTP responce code
+ * @param mixed $responce Responce data that will be converted to JSON
  * @return string Echoes responce as JSON
  */
-function GenerateAPIError(int $code, string|null $message = null, int | null $responceCode = null)
+function GenerateAPIError(int $code, string|null $message = null, int | null $responceCode = null, $responce = [])
 {
     http_response_code($responceCode === null ? $code : $responceCode);
-    $responce = [];
     $responce["code"] = $code;
     if ($message !== null) {
         $responce["message"] = $message;

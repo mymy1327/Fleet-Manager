@@ -29,6 +29,6 @@ $_SESSION["login"] = "";
 </head>
 <body>
 	<h1>Please wait...</h1>
-	<script src='../JS/logout.js'></script>
+	<script src='./logout.js'></script>
 </body>
 </html>
