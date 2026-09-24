@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 const xhr = new XMLHttpRequest();
-const ip = "10.1.17.107:5503"
+const restapi = "developmenterasmus.kolojar.cz"
 function getInspections(editedvar){
     const xhr = new XMLHttpRequest();
     xhr.open("GET", `http://${ip}/api/inspections`, true);
@@ -42,7 +42,7 @@ function getFaults(editedvarr){
 }
 function getVehicleDetails(vehicleId) {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", `http://${ip}/api/vehicles`, true);
+        xhr.open("GET", "https://" +restapi+ "/api/vehicles", true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             let intelligeble = JSON.parse(xhr.responseText)

@@ -18,8 +18,8 @@ function HandleErrorPageLocal(bool $redirect, int $code, string|null $message = 
     $_SESSION["language"] = $lang;
 
     //Get JSON databases
-    $errors = json_decode(file_get_contents(__DIR__ . "/../JSON/errors_" . $lang . ".json"), true);
-    $buttonsLibrary = json_decode(file_get_contents(__DIR__ . "/../JSON/buttons_" . $lang . ".json"), true);
+    $errors = json_decode(file_get_contents(__DIR__ . "/error_pages/errors_" . $lang . ".json"), true);
+    $buttonsLibrary = json_decode(file_get_contents(__DIR__ . "/error_pages/buttons_" . $lang . ".json"), true);
 
     //Check for empty DB
     if ($errors === null) {
@@ -29,7 +29,7 @@ function HandleErrorPageLocal(bool $redirect, int $code, string|null $message = 
     }
 
     //Load and fill template
-    $template = file_get_contents(__DIR__ . "/../HTML/errorPageTemplate.html");
+    $template = file_get_contents(__DIR__ . "/errorPageTemplate.html");
     $error = $errors["" . $code . ""];
 
     //Check if error is emptu
