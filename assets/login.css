@@ -156,27 +156,6 @@ body {
 }
 @media (max-width: 500px) {
 
-    body {
-        margin: 0;
-        overflow-x: hidden;
-        
-        background-image: url("https://pub-9147a8a77c9a4d63a1142903a7f0e5ea.r2.dev/loginbackground(mobile).png");
-
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-
-        position: relative;
-    }
-
-    .page {
-        width: 100%;
-        min-height: 100vh;
-        min-height: 100dvh;
-
-        margin: 0;
-    }
-
     .page-heading {
         left: 10%;
         top: 14%;
@@ -192,7 +171,7 @@ body {
         position: absolute;
 
         left: 10%;
-        top: 30%;
+        top: 35%;
 
         width: 80%;
         max-width: none;
