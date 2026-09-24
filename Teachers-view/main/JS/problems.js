@@ -106,11 +106,8 @@ function sortProblems(items) {
 
         case "resolved":
             sorted.sort((a, b) => {
-                const aResolved =
-                    String(a.state).toLowerCase() === "resolved";
-                const bResolved =
-                    String(b.state).toLowerCase() === "resolved";
-
+                const aResolved =String(a.state).toLowerCase() === "resolved";
+                const bResolved =String(b.state).toLowerCase() === "resolved";
                 return Number(bResolved) - Number(aResolved);
             });
             break;
@@ -193,16 +190,6 @@ function renderProblems() {
                         "No description"
                     )}
                 </p>
-
-                <div class="problem-card-info">
-                    <span>
-                        Problem #${problem.id_problems}
-                    </span>
-
-                    <span>
-                        Inspection #${problem.id_inspections ?? "-"}
-                    </span>
-                </div>
             </article>
         `;
     }).join("");
@@ -245,12 +232,7 @@ function renderProblemVehicleList(vehicles) {
     if (!list) return;
 
     list.innerHTML = `
-        <button
-            type="button"
-            class="vehicle-filter-item ${selectedProblemVehicle === null ? "active" : ""}"
-            data-vehicle-id="">
-            All vehicles
-        </button>
+        <button type="button" class="vehicle-filter-item ${selectedProblemVehicle === null ? "active" : ""} data-vehicle-id=""> All vehicles</button>
 
         ${vehicles.map(vehicle => `
             <button
@@ -357,17 +339,27 @@ function openEditProblem(problemId) {
 
     const priorityInput = document.getElementById("editProblemPriority");
     const stateInput = document.getElementById("editProblemState");
+    const imageBox = document.getElementById("editProblemImageBox");
+    const image = document.getElementById("editProblemImage");
 
     if (priorityInput) {
-        priorityInput.value = String(
-            problem.priority || "low"
-        ).toLowerCase();
+        priorityInput.value = String(problem.priority || "low").toLowerCase();
     }
 
     if (stateInput) {
-        stateInput.value = String(
-            problem.state || "open"
-        ).toLowerCase();
+        stateInput.value = String(problem.state || "open").toLowerCase();
+    }
+
+    if (imageBox && image) {
+        const photo = problem.photo || problem.image || problem.photo_url;
+
+        if (photo) {
+            image.src = photo;
+            imageBox.classList.add("has-image");
+        } else {
+            image.src = "";
+            imageBox.classList.remove("has-image");
+        }
     }
 
     const modalElement = document.getElementById("editProblemModal");
@@ -377,94 +369,55 @@ function openEditProblem(problemId) {
     const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
     modal.show();
 }
+async function updateProblem(problemId, state, priority) {
+    await patchProblemColumn(problemId, "state", state);
+    await patchProblemColumn(problemId, "priority", priority);
+    return true;
+}
 
-async function saveProblem() {
-    if (!editingProblemId) return;
+async function patchProblemColumn(problemId, column, value) {
+    const data = {
+        [column]: value
+    };
 
-    const priorityInput =
-        document.getElementById("editProblemPriority");
-
-    const stateInput =
-        document.getElementById("editProblemState");
-
-    if (!priorityInput || !stateInput) return;
-
-    const problem = problems.find(
-        item => Number(item.id_problems) === Number(editingProblemId)
+    const response = await fetch(
+        restapi + "/api/problems/" + problemId,
+        {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        }
     );
 
-    if (!problem) return;
+    if (response.status !== 200 && response.status !== 201) {
+        const errorText = await response.text();
+        throw new Error(`${response.status}|${errorText}`);
+    }
 
-    const newPriority = priorityInput.value;
-    const newState = stateInput.value;
+    return true;
+}
+
+async function saveProblem() {
+    const problemId = document.getElementById("editProblemId").value;
+    const state = document.getElementById("editProblemState").value;
+    const priority = document.getElementById("editProblemPriority").value;
 
     try {
-        if (newPriority !== problem.priority) {
-            const priorityResponse = await fetch(
-                problemRestApi +
-                "/api/problems/" +
-                editingProblemId,
-                {
-                    method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        priority: newPriority
-                    })
-                }
-            );
+        await updateProblem(problemId, state, priority);
 
-            if (!priorityResponse.ok) {
-                throw new Error(
-                    "Failed to update priority: " +
-                    priorityResponse.status
-                );
-            }
-        }
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(
+            document.getElementById("editProblemModal")
+        );
+        modal?.hide();
 
-        if (newState !== problem.state) {
-            const stateResponse = await fetch(
-                problemRestApi +
-                "/api/problems/" +
-                editingProblemId,
-                {
-                    method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        state: newState
-                    })
-                }
-            );
-
-            if (!stateResponse.ok) {
-                throw new Error(
-                    "Failed to update state: " +
-                    stateResponse.status
-                );
-            }
-        }
-
-        problem.priority = newPriority;
-        problem.state = newState;
-
-        const modalElement =
-            document.getElementById("editProblemModal");
-
-        if (modalElement) {
-            bootstrap.Modal
-                .getOrCreateInstance(modalElement)
-                .hide();
-        }
-
-        editingProblemId = null;
-        renderProblems();
-
+        // Reload problems
+        getAllProblems();
     } catch (error) {
-        console.error("Error updating problem:", error);
-        alert("Ongelman päivittäminen epäonnistui.");
+        console.error("Failed to update problem:", error);
+        alert("Failed to update problem.");
     }
 }
 

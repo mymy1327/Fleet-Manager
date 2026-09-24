@@ -111,7 +111,7 @@ single-panel {
 
 .problem-card-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     gap: 14px;
 }
 
@@ -161,6 +161,7 @@ single-panel {
     color: #6c757d;
 
     display: -webkit-box;
+    line-clamp: 2;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
@@ -200,22 +201,22 @@ single-panel {
 
 .problem-card.priority-low {
     border: 1px solid #16a34a;
-    box-shadow: 2px 5px 10px 10px #20c15b;
+    box-shadow: 1px 1px 20px 2px #20cf6061;
 }
 
 .problem-card.priority-medium {
     border: 1px solid  #d97706;
-    box-shadow: 2px 5px 10px 10px #e99330;
+    box-shadow: 1px 1px 20px 2px #e9933071;
 }
 
 .problem-card.priority-high {
     border: 1px solid rgba(239, 68, 68, 0.25);
-    box-shadow: 2px 5px 10px 10px rgba(230, 11, 11, 0.25);
+    box-shadow: 1px 1px 20px 2px rgba(230, 11, 11, 0.25);
 }
 
 .problem-card.priority-critical {
     border: 1px solid rgba(255, 0, 0, 0.806);
-    box-shadow: 2px 5px 10px 10px rgba(68, 1, 1, 0.25);
+    box-shadow: 1px 1px 20px 2px rgba(161, 2, 2, 0.415);
 }
 
 .problem-card.priority-low .problem-priority-badge {
@@ -346,6 +347,37 @@ single-panel {
 .problem-header p {
     margin: 0;
     color: #6b7280;
+}
+.problem-image-container {
+    margin-bottom: 20px;
+}
+
+.problem-image-box {
+    width: 100%;
+    min-height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    color: #888;
+}
+
+.problem-image-box img {
+    display: none;
+    width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+}
+
+.problem-image-box.has-image img {
+    display: block;
+}
+
+.problem-image-box.has-image span {
+    display: none;
 }
 /*Loading and empty states*/
 
@@ -680,9 +712,6 @@ single-panel {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 16px;
     }
-    .problem-card-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
 
     .vehicle-card-image {
         height: 170px;
@@ -770,10 +799,6 @@ single-panel {
     .vehicle-filter-dropdown {
         width: 100%;
         max-width: 100%;
-    }
-    .problem-card-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
     }
 
     .problem-card {
