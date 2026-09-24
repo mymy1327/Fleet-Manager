@@ -9,7 +9,9 @@ require __DIR__ . "/../assets/sharedUserFunctions.php";
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title data-i18n="title">User</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="/assets/style.css" />
+        <link rel="stylesheet" href="admin.css">
     </head>
     <body>
         <header class="topbar">
