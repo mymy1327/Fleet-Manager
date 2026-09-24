@@ -1,11 +1,17 @@
-* {
-    box-sizing: border-box;
+:root {
+    --primary: #2868cb;
+    --primary-hover: #1554b5;
+    --text: #172033;
+    --muted: #7b8494;
+    --border: #e5e7eb;
+    --background: #f7f8fa;
 }
 
+/* General */
 body {
     margin: 0;
-    background: #f7f8fa;
-    color: #172033;
+    background: var(--background);
+    color: var(--text);
     font-family: Arial, sans-serif;
 }
 
@@ -13,34 +19,26 @@ body {
 .topbar {
     height: 64px;
     background: #fff;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
-}
-
-.topbar > * {
-    width: 100%;
 }
 
 .brand {
-    max-width: 1270px;
-    margin: 0 auto;
-    padding: 0 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: #172033;
-    text-decoration: none;
+    color: var(--text);
+    gap: 11px;
+}
+
+.brand:hover {
+    color: var(--text);
 }
 
 .brand-mark {
     width: 38px;
     height: 38px;
-    border-radius: 11px;
-    background: #2864d7;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: var(--primary);
 }
 
 .svg-icon {
@@ -50,59 +48,45 @@ body {
 }
 
 .brand strong {
-    font-size: 20px;
+    font-size: 19px;
     font-weight: 700;
-    white-space: nowrap;
-}
-
-/* Keep header items on the same row */
-.topbar {
-    position: relative;
-}
-
-.main-nav {
-    display: none;
 }
 
 .header-actions {
-    position: absolute;
-    right: max(20px, calc((100% - 1270px) / 2));
-    top: 0;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
+    gap: 8px !important;
 }
 
 .language-switch,
 .logout {
-    border: 0;
-    background: transparent;
-    color: #2864d7;
+    padding: 5px 7px !important;
     font-size: 14px;
-    cursor: pointer;
-    padding: 6px;
 }
 
 .language-switch {
+    color: var(--primary) !important;
     font-weight: 700;
 }
 
+.language-switch:hover {
+    color: var(--primary-hover) !important;
+}
+
 .logout {
-    color: #6b7280;
+    color: #7b8494 !important;
 }
 
 .logout:hover {
-    color: #2864d7;
+    color: var(--primary-hover) !important;
 }
 
-/* Main page */
+/* Main */
 .page {
-    width: min(1270px, calc(100% - 40px));
-    margin: 40px auto;
+    max-width: 1270px;
+    margin: 0 auto;
+    padding-top: 40px;
+    padding-bottom: 40px;
 }
 
-/* Page heading */
 .page-heading {
     margin-bottom: 24px;
 }
@@ -112,143 +96,88 @@ body {
     font-size: 30px;
     line-height: 1.2;
     font-weight: 700;
-    color: #172033;
 }
 
 .subtitle {
-    margin: 8px 0 0;
-    color: #7b8494;
+    margin: 7px 0 0;
+    color: var(--muted);
     font-size: 14px;
+    line-height: 1.5;
 }
 
 /* User table */
-#usersTable {
-    width: 100%;
-    margin: 0;
+.table-responsive {
     background: #fff;
-    border: 1px solid #e4e7ec;
+    border: 1px solid var(--border);
     border-radius: 12px;
-    border-collapse: separate;
-    border-spacing: 0;
-    overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, .03);
+}
+
+#usersTable {
+    min-width: 650px;
 }
 
 #usersTable th {
     padding: 15px 18px;
     background: #f8fafc;
-    border-bottom: 1px solid #e5e7eb;
     color: #6b7280;
+    border-bottom: 1px solid var(--border);
     font-size: 12px;
     font-weight: 700;
-    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: .03em;
 }
 
 #usersTable td {
     padding: 15px 18px;
-    border-bottom: 1px solid #edf0f3;
-    font-size: 14px;
     color: #374151;
+    font-size: 14px;
     vertical-align: middle;
 }
 
-#usersTable tr:last-child td {
-    border-bottom: 0;
-}
-
-#usersTable tbody tr:hover {
+#usersTable tbody tr:hover,
+#usersTable tr:hover {
     background: #f8fbff;
 }
 
-/* Action buttons */
+/* Table buttons */
 #usersTable button {
     border: 0;
     border-radius: 7px;
-    padding: 7px 12px;
-    margin-right: 5px;
+    padding: 6px 11px;
     font-size: 13px;
     cursor: pointer;
-    transition: .2s ease;
+    transition: .18s ease;
 }
 
 #usersTable button:hover {
     transform: translateY(-1px);
 }
 
-/* Add user */
+/* Add user button */
 .button {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 10px 17px;
-    border-radius: 8px;
-    background: #2864d7;
-    color: #fff;
-    text-decoration: none;
+    border: 0 !important;
+    border-radius: 8px !important;
+    background: var(--primary) !important;
+    color: #fff !important;
+    padding: 10px 17px !important;
     font-size: 14px;
     font-weight: 600;
-    border: 0;
-    transition: .2s ease;
+    transition: background .18s ease, transform .18s ease, box-shadow .18s ease;
 }
 
 .button:hover {
-    background: #1f55bd;
-    color: #fff;
+    background: var(--primary-hover) !important;
+    color: #fff !important;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(40, 100, 215, .18);
+    box-shadow: 0 4px 12px rgba(40, 104, 203, .2);
 }
 
-/* Tablet */
-@media (max-width: 768px) {
-
-    .topbar {
-        height: 60px;
-    }
-
-    .brand {
-        padding: 0 16px;
-    }
-
-    .brand strong {
-        font-size: 18px;
-    }
-
-    .brand-mark {
-        width: 36px;
-        height: 36px;
-    }
-
-    .header-actions {
-        right: 16px;
-        height: 60px;
-        gap: 6px;
-    }
-
-    .page {
-        width: calc(100% - 24px);
-        margin: 30px auto;
-    }
-
-    .page-heading h1 {
-        font-size: 26px;
-    }
-
-    #usersTable {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-}
-
-/* Phone */
+/* Mobile */
 @media (max-width: 576px) {
 
     .topbar {
         height: 58px;
-    }
-
-    .brand {
-        padding: 0 12px;
-        gap: 8px;
     }
 
     .brand-mark {
@@ -267,20 +196,18 @@ body {
     }
 
     .header-actions {
-        right: 10px;
-        height: 58px;
-        gap: 2px;
+        gap: 2px !important;
     }
 
     .language-switch,
     .logout {
         font-size: 13px;
-        padding: 5px;
+        padding: 4px 5px !important;
     }
 
     .page {
-        width: calc(100% - 20px);
-        margin: 25px auto;
+        padding-top: 25px;
+        padding-bottom: 30px;
     }
 
     .page-heading {
@@ -293,7 +220,6 @@ body {
 
     .subtitle {
         font-size: 13px;
-        line-height: 1.5;
     }
 
     #usersTable th,
