@@ -141,13 +141,13 @@ function renderProblemStatus() {
         problem => String(problem.state).toLowerCase() === "open"
     ).length;
 
-    const closed = reportProblems.filter(
-        problem => String(problem.state).toLowerCase() === "closed"
+    const resolved = reportProblems.filter(
+        problem => String(problem.state).toLowerCase() === "resolved"
     ).length;
 
     renderResultChart(container, [
         { name: "Open", value: open },
-        { name: "Closed", value: closed }
+        { name: "Resolved", value: resolved }
     ]);
 }
 
