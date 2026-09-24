@@ -968,10 +968,23 @@ button:disabled, button:hover:disabled {
     padding: 0 14px;
     border: 1px solid var(--line);
     border-radius: 8px;
-    background: #f3f5f8;
-    color: #58667c;
-    font-size: 11px;
+    background: var(--blue);
+    color: #fafafa;
+    font-size: 15px;
     cursor: pointer;
+    box-shadow: 2px 2px #0026ff49;
+}
+.vehicle-inspection-delete-button {
+    /* Individual inspection tab; behavior is intentionally disabled above. */
+    height: 30px;
+    padding: 0 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #ff0000;
+    color: #ffffff;
+    font-size: 15px;
+    cursor: pointer;
+    box-shadow: 2px 2px #ff000049;
 }
 
 .vehicle-inspection-edit-button.is-active {
