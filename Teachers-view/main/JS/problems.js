@@ -8,7 +8,7 @@ let selectedProblemVehicle = null;
 let currentProblemSort = "priority-desc";
 let editingProblemId = null;
 
-function escapeProblemHtml(value) {api
+function escapeProblemHtml(value) {
     const div = document.createElement("div");
     div.textContent = value ?? "";
     return div.innerHTML;
@@ -370,8 +370,8 @@ async function openEditProblem(problemId) {
     modal.show();
 }
 async function getProblemPhoto (problemId) {
-    const problemRespone = await fetch (
-        problemRestApi + `/api/problems/${problemId}`);
+    const response = await fetch (
+        restapi + `/api/problems/${problemId}`);
         if (!response.ok) {
         console.error("Get problem error:", response.status);
         return null;
