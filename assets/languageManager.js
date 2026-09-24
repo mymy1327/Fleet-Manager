@@ -18,19 +18,19 @@ class TranslationData {
     const cleanPath = urlObj.pathname + urlObj.search + urlObj.hash;
 
     //Send request
-    const [ok, resp] = await SendGetAPIAndHandleErrors("/assets/PHP/languageManager.php?file=" + encodeURIComponent(cleanPath));
+    const [ok, resp] = await SendGetAPIAndHandleErrors("/assets/languageManager.php?file=" + encodeURIComponent(cleanPath));
     if (!ok) {
       return;
     }
 
     //Handle errors
+    document.documentElement.lang = resp["lang"];
     if (resp["code"] != 200) {
       console.warn("Failed to load language data: " + resp["message"]);
       return;
     }
 
     //Set data
-    document.documentElement.lang = resp["lang"];
     this.languageData = resp["data"];
   }
 
@@ -79,7 +79,7 @@ class TranslationData {
  * @param {string} language New language
  */
 async function ChangeLanguage(language) {
-  await SendPostAPIAndHandleErrors("/assets/PHP/languageManager.php", { "language": language });
+  await SendPostAPIAndHandleErrors("/assets/languageManager.php", { "language": language });
   window.location.reload();
 }
 

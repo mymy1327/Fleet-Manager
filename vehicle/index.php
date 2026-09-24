@@ -13,7 +13,7 @@ if (!$code) {
     die("Missing vehicle code");
 }
 
-$newUrl = "https://developmenterasmus.kolojar.cz/inspection-student-form/index.html?code=".$code;
+$newUrl = "https://developmenterasmus.kolojar.cz/student/student-form.html?code=".$code;
 header("Location: ".$newUrl);
 die();
 ?>

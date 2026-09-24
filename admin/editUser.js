@@ -1,8 +1,9 @@
 const columns = ["username", "email", "role", "password"];
+const API = "https://developmenterasmus.kolojar.cz/api"
 
 async function main() {
   //Get URL search params + check if id present
-  const id = await SendGetOfColumsAndHandleErrors("../../api/users", columns, "id");
+  const id = await SendGetOfColumsAndHandleErrors(API + "/users", columns, "id");
   if (id === false) {
     return;
   }
@@ -34,26 +35,26 @@ async function main() {
     document.getElementById("role").value = document.querySelector('input[name="role"]:checked').value;
     if (id === true) {
       //POST - generate hash
-      const [ok, resp2] = await SendPostAPIAndHandleErrors("/assets/PHP/generatePasswordHash.php", { password: document.getElementById("username").value });
+      const [ok, resp2] = await SendPostAPIAndHandleErrors("/assets/generatePasswordHash.php", { password: document.getElementById("username").value });
       if (!ok) {
         return;
       }
       document.getElementById("password").value = resp2["hash"];
 
       //Send POST
-      const resp = await SendPostOfColumns("../../api/users", columns);
+      const resp = await SendPostOfColumns(API + "/users", columns);
       if (resp === true) {
         alert("Password for user is: " + document.getElementById("username").value)
-        window.location.href = "../PHP/admin.php";
+        window.location.href = "./admin.php";
       } else {
         alert("Failed to save changes: " + resp);
         btnSave.disabled = false;
       }
     } else {
       //PATCH
-      const resp = await SendPatchOfColumns("../../api/users", columns, id, true);
+      const resp = await SendPatchOfColumns(API + "/users", columns, id, true);
       if (resp === true) {
-        window.location.href = "../PHP/admin.php";
+        window.location.href = "./admin.php";
       } else {
         alert("Failed to save changes: " + resp);
         btnSave.disabled = false;
@@ -72,7 +73,7 @@ async function main() {
     }
 
     //Get password hash
-    const [ok, resp2] = await SendPostAPIAndHandleErrors("/assets/PHP/generatePasswordHash.php", { password: password });
+    const [ok, resp2] = await SendPostAPIAndHandleErrors("/assets/generatePasswordHash.php", { password: password });
     if (!ok) {
       return;
     }
@@ -80,7 +81,7 @@ async function main() {
     //Change password
     const data = {};
     data["password"] = resp2["hash"];
-    const [ok2, _] = await SendPatchAPIAndHandleErrors("/api/users/" + id, data);
+    const [ok2, _] = await SendPatchAPIAndHandleErrors(API + "/users/" + id, data);
     if (!ok2) {
       return;
     }
