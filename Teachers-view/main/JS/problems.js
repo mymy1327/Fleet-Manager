@@ -106,11 +106,8 @@ function sortProblems(items) {
 
         case "resolved":
             sorted.sort((a, b) => {
-                const aResolved =
-                    String(a.state).toLowerCase() === "resolved";
-                const bResolved =
-                    String(b.state).toLowerCase() === "resolved";
-
+                const aResolved =String(a.state).toLowerCase() === "resolved";
+                const bResolved =String(b.state).toLowerCase() === "resolved";
                 return Number(bResolved) - Number(aResolved);
             });
             break;
