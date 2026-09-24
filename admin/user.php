@@ -19,8 +19,7 @@ require __DIR__ . "/../assets/sharedUserFunctions.php";
                 <div class="d-flex align-items-center justify-content-between" style="height: 64px;">
             <a class="brand d-flex align-items-center gap-2 text-decoration-none" href="./index.php">
                 <span class="brand-mark d-flex align-items-center justify-content-center rounded-3" aria-hidden="true"
-                    ><svg viewBox="0 0 24 24" class="svg-icon"><path d="M3 6h12a2 2 0 0 1 2 2v2h2.5a2 2 0 0 1 1.7 1l1.8 3.1V17h-2.2a2.5 2.5 0 0 1-4.6 0H8.1a2.5 2.5 0 0 1-4.6 0H1V8a2 2 0 0 1 2-2Zm1 2v7h.4a2.5 2.5 0 0 1 4.6 0H16v-5h-1V8H4Zm14 4v3h.1a2.5 2.5 0 0 1 4.6 0h.1v-.5L19.5 12H18ZM5.8 18a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2Zm12 0a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2Z" /></svg
-                ></span>
+                    ><svg viewBox="0 0 24 24" class="svg-icon"><path d="M3 6h12a2 2 0 0 1 2 2v2h2.5a2 2 0 0 1 1.7 1l1.8 3.1V17h-2.2a2.5 2.5 0 0 1-4.6 0H8.1a2.5 2.5 0 0 1-4.6 0H1V8a2 2 0 0 1 2-2Zm1 2v7h.4a2.5 2.5 0 0 1 4.6 0H16v-5h-1V8H4Zm14 4v3h.1a2.5 2.5 0 0 1 4.6 0h.1v-.5L19.5 12H18ZM5.8 18a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2Zm12 0a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2Z" /></svg></span>
                 <strong class="brand-name d-none d-sm-inline" data-i18n="brand">Hyria AutoTalli Admin</strong>
             </a>
             <nav class="main-nav d-none" aria-label="Main navigation"></nav>
@@ -38,6 +37,7 @@ require __DIR__ . "/../assets/sharedUserFunctions.php";
                     <p class="subtitle mb-0" data-i18n="subTitle">Manage user - change name, email and role.</p>
                 </div>
             </div>
+            <div class="container-fluid gap-2 justify-content-center>
         <input class="form-control" type="hidden" id='role'>
         <input class="form-control" type="hidden" id='password'>
         <label class="form-control" for="username" data-i18n="username">Username:</label>
@@ -52,6 +52,7 @@ require __DIR__ . "/../assets/sharedUserFunctions.php";
         <input class="form-control" type="radio" name="role" value="teacher" id="roleTeacher" />
         <label class="form-control" for="roleTeacher" data-i18n="roleTeacher">Teacher</label>
         <button id="save" class="button btn btn-link text-decoration-none" data-i18n="submit" disabled>Submit</button>
+</div>
         <?php
         if (isset($_GET["id"])) {
             echo "<button class='button' id='changePassword' data-i18n='changePassword' disabled>Change password</button>";
