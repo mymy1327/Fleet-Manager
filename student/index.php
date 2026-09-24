@@ -8,6 +8,8 @@ CheckAccessSession(["user", "teacher", "admin"]);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name='data-i18n-url' content='../LANG/index.lang'>
+    <meta name='data-i18n-languages' content='fi;en'>
     <title>User dashboard</title>
     <link rel="stylesheet" href="../../Teachers-view/main/CSS/style.css">
     <link rel="stylesheet" href="../../VehicleList/vehiclelist.css">
@@ -33,7 +35,7 @@ CheckAccessSession(["user", "teacher", "admin"]);
                 <p class="subtitle">Please wait, list will be loaded in any moment.</p>
             </div>
             <div id='noUsedByYou' hidden>
-                <h1>No vehicles used by you</h1>
+                <h1 data-i18n='noVehicles'>No vehicles used by you</h1>
                 <p class="subtitle">Scan QR Code in the vehicle using your mobile phone QR code app or click Get vehicle button.</p>
             </div>
             <section class="panel table-panel" id='carsCardsPanel' hidden>
@@ -43,6 +45,7 @@ CheckAccessSession(["user", "teacher", "admin"]);
         </section>
     </main>
      <script src="/assets/apiCommunication.js"></script>
+     <script src="/assets/languageManager.js"></script>
     <script src="../JS/index.js"></script>
 </body>
 </html>

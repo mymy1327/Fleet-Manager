@@ -5,19 +5,17 @@
  * @param int $code HTTP error code
  * @param string|null $message Status message, set to null for none
  * @param string|null $from Overwrite source URL
- * @param string $lang Language of page
  */
-function HandleErrorPageLocal(bool $redirect, int $code, string|null $message = null, string|null $from = null, string $lang = "en")
+function HandleErrorPageLocal(bool $redirect, int $code, string|null $message = null, string|null $from = null)
 {
     //Check if message not empty
     if($message === "") {
         $message = null;
     }
 
-    //Check if language not emptu
-    if($lang === "") {
-        $lang = "en";
-    }
+    //Select language
+    $lang = (isset($_SESSION["language"]) && $_SESSION["language"] !== "") ? $_SESSION["language"] : "en";
+    $_SESSION["language"] = $lang;
 
     //Get JSON databases
     $errors = json_decode(file_get_contents(__DIR__ . "/../JSON/errors_" . $lang . ".json"), true);

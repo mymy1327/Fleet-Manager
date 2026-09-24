@@ -328,7 +328,7 @@ function setupProblemSorting() {
     });
 }
 
-function openEditProblem(problemId) {
+async function openEditProblem(problemId) {
     const problem = problems.find(
         item => Number(item.id_problems) === Number(problemId)
     );
@@ -351,7 +351,7 @@ function openEditProblem(problemId) {
     }
 
     if (imageBox && image) {
-        const photo = problem.photo || problem.image || problem.photo_url;
+        const photo = await getProblemPhoto(problemId);
 
         if (photo) {
             image.src = photo;
@@ -369,15 +369,21 @@ function openEditProblem(problemId) {
     const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
     modal.show();
 }
-async function updateProblem(problemId, state, priority) {
-    await patchProblemColumn(problemId, "state", state);
-    await patchProblemColumn(problemId, "priority", priority);
-    return true;
+async function getProblemPhoto (problemId) {
+    const response = await fetch (
+        restapi + `/api/problems/${problemId}`);
+        if (!response.ok) {
+        console.error("Get problem error:", response.status);
+        return null;
+    }
+    const problem = await response.json();
+    const photoUrl = `${restapi}/api/files/${problem.id_files}`;
+    return photoUrl;
 }
-
-async function patchProblemColumn(problemId, column, value) {
+async function updateProblem(problemId, state, priority) {
     const data = {
-        [column]: value
+        state: state,
+        priority: priority
     };
 
     const response = await fetch(
@@ -391,7 +397,7 @@ async function patchProblemColumn(problemId, column, value) {
         }
     );
 
-    if (response.status !== 200 && response.status !== 201) {
+    if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`${response.status}|${errorText}`);
     }
@@ -399,22 +405,27 @@ async function patchProblemColumn(problemId, column, value) {
     return true;
 }
 
-async function saveProblem() {
-    const problemId = document.getElementById("editProblemId").value;
+async function saveProblem(problemId) {
+    console.log("Problem ID:", problemId);
+
     const state = document.getElementById("editProblemState").value;
     const priority = document.getElementById("editProblemPriority").value;
+
+    console.log("Payload:", {
+        state,
+        priority
+    });
 
     try {
         await updateProblem(problemId, state, priority);
 
-        // Close modal
         const modal = bootstrap.Modal.getInstance(
             document.getElementById("editProblemModal")
         );
+
         modal?.hide();
 
-        // Reload problems
-        getAllProblems();
+        loadProblems();
     } catch (error) {
         console.error("Failed to update problem:", error);
         alert("Failed to update problem.");
@@ -428,7 +439,7 @@ function setupProblemEditForm() {
 
     form.addEventListener("submit", event => {
         event.preventDefault();
-        saveProblem();
+        saveProblem(editingProblemId);
     });
 }
 
