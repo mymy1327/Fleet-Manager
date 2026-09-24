@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/PHP/errorManager.php";
+require_once __DIR__ . "/errorManager.php";
 $API = "https://developmenterasmus.kolojar.cz/api";
 /**
  * Checks if user id in session is possible to login

@@ -1,8 +1,14 @@
+const API = "https://developmenterasmus.kolojar.cz/api";
 async function main() {
   //Get users from API
   const usersTable = document.getElementById("usersTable");
-  const data = await fetch("../../api/users");
-  for (const user of await data.json()) {
+  const [ok, users] = await SendGetAPIAndHandleErrors(API + "/users")
+  if (!ok) {
+    return;
+  }
+
+  //List users
+  for (const user of users) {
     //Create table row for each user
     const row = document.createElement("tr");
     usersTable.appendChild(row);
@@ -40,7 +46,7 @@ async function main() {
       }
 
       //Get password hash
-      const [ok, resp2] = await SendPostAPIAndHandleErrors("/assets/PHP/generatePasswordHash.php", { password: password });
+      const [ok, resp2] = await SendPostAPIAndHandleErrors("/assets/generatePasswordHash.php", { password: password });
       if (!ok) {
         return;
       }
@@ -48,7 +54,7 @@ async function main() {
       //Change password
       const data = {};
       data["password"] = resp2["hash"];
-      const [ok2, _] = await SendPatchAPIAndHandleErrors("/api/users/" + user.id_users, data);
+      const [ok2, _] = await SendPatchAPIAndHandleErrors(API + "/users/" + user.id_users, data);
       if (!ok2) {
         return;
       }
@@ -72,7 +78,7 @@ async function main() {
     btnDelete.innerText = "Delete";
     btnDelete.addEventListener("click", async () => {
       if (confirm("Are you sure you want to delete: " + user.username)) {
-        const [ok, _] = await SendDeleteAPIAndHandleErrors("/api/users/" + user.id_users);
+        const [ok, _] = await SendDeleteAPIAndHandleErrors(API + "/users/" + user.id_users);
         if (ok) {
           window.location.reload();
         } else {
