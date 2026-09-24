@@ -20,8 +20,12 @@ if(!isset($_GET["file"])) {
 
 //Get path
 $path = ConvertToAbsolutePath($_GET["file"]);
-if($path === false) {
+if($path === true) {
     GenerateAPIError(400,"Invalid file path!");
+    die();
+}
+if($path === false) {
+    GenerateAPIError(404,"Language file not found!",200);
     die();
 }
 

@@ -16,7 +16,6 @@ class TranslationData {
     //Get root URL
     const urlObj = new URL(this.langFileURL, document.location);
     const cleanPath = urlObj.pathname + urlObj.search + urlObj.hash;
-    console.log(cleanPath)
 
     //Send request
     const [ok, resp] = await SendGetAPIAndHandleErrors("/assets/PHP/languageManager.php?file=" + encodeURIComponent(cleanPath));

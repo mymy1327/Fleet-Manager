@@ -322,21 +322,26 @@ function GenerateAPIError(int $code, string|null $message = null, int | null $re
 /**
  * Converts path to absolute with safety checks
  * @param string $relative Relative path to be resolved
- * @return string|false Resolved path or false as error
+ * @return string|bool Returns resolved path, false on non existent path or true on escape
  */
-function ConvertToAbsolutePath(string $relative): string|false {
+function ConvertToAbsolutePath(string $relative): string|bool {
     //Gets root and merges it
     $root = realpath($_SERVER['DOCUMENT_ROOT']);
     $resolved = realpath($root . DIRECTORY_SEPARATOR . $relative);
 
-    // Deny if path escaped the root
-    if ($resolved === false || !str_starts_with($resolved, $root . DIRECTORY_SEPARATOR)) {
+    //Check if exists
+    if($resolved === false) {
         return false;
+    }
+
+    // Deny if path escaped the root
+    if (!str_starts_with($resolved, $root . DIRECTORY_SEPARATOR)) {
+        return true;
     }
 
     // Reject null bytes
     if (str_contains($relative, "\0")) {
-        return false;
+        return true;
     }
     return $resolved;
 }
