@@ -2,8 +2,8 @@
 document.addEventListener('DOMContentLoaded', function() {
 let carlist = document.getElementById("vehicle")
 
-const xhr = new XMLHttpRequest();
-const ip = "10.1.17.107:5503"
+
+const restapi = "developmenterasmus.kolojar.cz"
 function getAllInspections(changing, vehicleId = null) {
         const xhr = new XMLHttpRequest();
         xhr.open("GET", "/api/inspections?id_vehicles=" + vehicleId, true); // ?id_vehicles can be removed
@@ -28,7 +28,7 @@ function getAllInspections(changing, vehicleId = null) {
 
 function getVehicleDetails(vehicleId) {
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", `http://${ip}/api/vehicles`, true);
+        xhr.open("GET", "https://"+restapi+"/api/vehicles", true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
 
@@ -55,9 +55,9 @@ function getVehicleDetails(vehicleId) {
                 console.log(window.location.href)
                 console.log((window.location.href).search("index_en.html"))
                 if ((window.location.href).search("Index_en.html") != -1){
-                    clickableconnection.href = `../../../VehicleDetails/index_en.html?code=${intelligeble[x].code}`    
+                    clickableconnection.href = `details.html?code=${intelligeble[x].code}`    
                 }else{
-                    clickableconnection.href = `../../../VehicleDetails/index_fi.html?code=${intelligeble[x].code}`
+                    clickableconnection.href = `details.html?code=${intelligeble[x].code}`
                 }
                 
 
