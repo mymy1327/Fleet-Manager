@@ -142,6 +142,7 @@ body {
 
 /* Table buttons */
 #usersTable button {
+    display: block;
     border: 0;
     border-radius: 7px;
     padding: 6px 11px;
@@ -174,7 +175,7 @@ body {
 }
 
 /* Mobile */
-@media (max-width: 576px) {
+@media (max-width: 600px) {
 
     .topbar {
         height: 58px;
@@ -230,5 +231,6 @@ body {
     .button {
         width: 100%;
         text-align: center;
+        margin-bottom: 10px;
     }
 }
