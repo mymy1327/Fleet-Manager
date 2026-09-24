@@ -244,7 +244,7 @@ function renderResultChart(container, data) {
 let inspectionHistoryPage = 1;
 const inspectionHistoryPerPage = 10;
 
-function renderInspectionHistory() {
+async function renderInspectionHistory() {
     const container = document.getElementById("inspectionHistoryBody");
     if (!container) return;
 
@@ -267,27 +267,32 @@ function renderInspectionHistory() {
     const start = (inspectionHistoryPage - 1) * inspectionHistoryPerPage;
     const pageItems = sorted.slice(start, start + inspectionHistoryPerPage);
 
-    container.innerHTML = pageItems.map(async inspection => {
-        const vehicle = reportVehicles.find(
-            item => Number(item.id_vehicles) === Number(inspection.id_vehicles)
-        );
+    const rows = await Promise.all(
+        pageItems.map(async inspection => {
+            const vehicle = reportVehicles.find(
+                item => Number(item.id_vehicles) === Number(inspection.id_vehicles)
+            );
 
-        const passed = Number(inspection.passed) === 1;
-        const studentName = await getUserName(inspection);
-        return `
-            <tr>
-                <td>${formatReportDate(inspection.date)}</td>
-                <td>${escapeReportHtml(vehicle?.name || "-")}</td>
-                <td>${escapeReportHtml(studentName)}</td>
-                <td>${inspection.km ?? "-"} km</td>
-                <td>
-                    <span class="${passed ? "report-result report-result-passed" : "report-result report-result-failed"}">
-                        ${passed ? "Hyväksytty" : "Hylätty"}
-                    </span>
-                </td>
-            </tr>
-        `;
-    }).join("");
+            const passed = Number(inspection.passed) === 1;
+            const studentName = await getUserName(inspection);
+
+            return `
+                <tr>
+                    <td>${formatReportDate(inspection.date)}</td>
+                    <td>${escapeReportHtml(vehicle?.name || "-")}</td>
+                    <td>${escapeReportHtml(studentName)}</td>
+                    <td>${inspection.km ?? "-"} km</td>
+                    <td>
+                        <span class="${passed ? "report-result report-result-passed" : "report-result report-result-failed"}">
+                            ${passed ? "Hyväksytty" : "Hylätty"}
+                        </span>
+                    </td>
+                </tr>
+            `;
+        })
+    );
+
+    container.innerHTML = rows.join("");
 
     renderInspectionHistoryPagination(totalPages);
 }
