@@ -71,11 +71,21 @@ function getVehicleDetails(getcode) {
             vehiclecode.classList.add("vehicle-code")
             vehiclecode.textContent = intelligeble[x].code
 
+             
+            let clickablevisualisedvehiclecode = document.createElement("button")
+            clickablevisualisedvehiclecode.style.display = "none";
+            clickablevisualisedvehiclecode.id = "qrcodepopup" //(refer to line 118)
+
+            let popupitself = document.createElement("div")
+            popupitself.innerHTML = `
+                visualizeqr("https://developmenterasmus.kolojar.cz/vehicle/" + ${intelligeble[x].code}, "visualisedvehiclecode", 12)
+            `
+
             let visualisedvehiclecode = document.createElement("p")
             vehiclecode.classList.add("vehicle-code")
             console.log(parseInt(intelligeble[x].id_vehicles))
             console.log(`https://developmenterasmus.kolojar.cz/inspection-student-form/index.html?id=${intelligeble[x].code}`)
-            visualizeqr(`https://developmenterasmus.kolojar.cz/vehicle/${intelligeble[x].code}`, visualisedvehiclecode)
+            visualizeqr(`https://developmenterasmus.kolojar.cz/vehicle/${intelligeble[x].code}`, visualisedvehiclecode, 4)
             //End of Card element
 
             //Appending
@@ -88,7 +98,8 @@ function getVehicleDetails(getcode) {
             vehicledetails.appendChild(vehicledistance)
             vehicledetails.appendChild(vehiclelicense)
             vehicledetails.appendChild(vehiclecode)
-            vehicledetails.appendChild(visualisedvehiclecode)
+            vehicledetails.appendChild(clickablevisualisedvehiclecode)
+            clickablevisualisedvehiclecode.appendChild(visualisedvehiclecode)
             // "placeforit" being the id that it is placed upon
             placeforit.appendChild(newArticle)
             //Appending
@@ -106,6 +117,16 @@ function getVehicleDetails(getcode) {
     xhr.send();
 }
 getVehicleDetails(bob.get("code"))
+
+
+document.getElementById("qrcodepopup").addEventListener("click", function() {
+  const popupitself = document.getElementById("popupitself");
+  if (popupitself.style.display == "none"){
+    popupitself.style.display = "block";
+  }else{
+    popupitself.style.display = "none"
+  }
+});
 
 // QR CODE 
 
@@ -132,11 +153,11 @@ getVehicleDetails(bob.get("code"))
  *   Software.
  */
 
-function visualizeqr(code, changing) {
+function visualizeqr(code, changing,size) {
         const text = code; // User-supplied Unicode text
         const errCorLvl = qrcodegen.QrCode.Ecc.LOW; // Error correction level
         const qr = qrcodegen.QrCode.encodeText(text, errCorLvl); // Make the QR Code symbol
-        drawCanvas(qr, 1, 4, "#FFFFFF", "#000000", appendCanvas("", changing)); // Draw it on screen
+        drawCanvas(qr, 1, size, "#FFFFFF", "#000000", appendCanvas("", changing)); // Draw it on screen
     }
     // Creates a variety of QR Codes that exercise different features of the library, and appends each one to the document.
     
