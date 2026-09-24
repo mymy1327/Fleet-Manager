@@ -425,7 +425,7 @@ async function saveProblem(problemId) {
 
         modal?.hide();
 
-        getAllProblems();
+        loadProblems();
     } catch (error) {
         console.error("Failed to update problem:", error);
         alert("Failed to update problem.");
