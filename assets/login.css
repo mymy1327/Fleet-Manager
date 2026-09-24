@@ -9,7 +9,7 @@ body {
 .page {
     margin: 0;
     position: fixed;
-    top: -10%;
+    top: 50%;
     left: 45%;
     transform: translate(-50%, -50%);
 
