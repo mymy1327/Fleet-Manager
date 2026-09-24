@@ -7,21 +7,20 @@ async function main() {
   if (id === false) {
     return;
   }
-  const role = document.getElementById("role");
   SetupListenForChanges(columns, ["save"]);
 
-  console.log("role.value:", role.value);
-    console.log("role.originalValue:", role.originalValue);
-    
-role.addEventListener("change", () => {
-    const saveButton = document.getElementById("save");
+  const role = document.getElementById("role");
 
-    if (role.value !== role.originalValue) {
-        saveButton.disabled = false;
-    } else {
-        saveButton.disabled = true;
-    }
-});
+console.log("ROLE:", role);
+console.log("ROLE VALUE:", role.value);
+console.log("ROLE ORIGINAL:", role.originalValue);
+
+role.onchange = function () {
+    console.log("CHANGE EVENT FIRED!");
+    console.log("NEW VALUE:", this.value);
+
+    document.getElementById("save").disabled = false;
+};
 
   const changePasswordButton = document.getElementById("changePassword");
   if (changePasswordButton != null) {
