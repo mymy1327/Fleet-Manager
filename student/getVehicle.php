@@ -34,7 +34,7 @@ CheckAccessSession(["student", "teacher", "admin"]);
                 <p data-i18n='getVehicleSubtitle' class="subtitle">Scan QR Code in the vehicle using your mobile phone QR code app or enter vehicle code below.</p>
             </div>
         </div>
-    <label for="vehicle" data-i18n='vehicleCode' >Vehicle code:</label><br>
+    <label for="vehicle" data-i18n='vehicleCode'>Vehicle code:</label><br>
 	<input type="text" id="vehicle" name='vehicle'><br>
 	<button id='submit' class='button' data-i18n='continue'>Continue</button>
 	<a href="./index.php"><button class='button' data-i18n='back'>Back</button></a>
