@@ -304,7 +304,7 @@ function getUserName (inspection) {
         try {
             const data = JSON.parse(xhr.responseText);
             console.log(data);
-            return data.name;
+            return data.username;
         } catch (error) {
             console.error("JSON parse error:", error);
         }
