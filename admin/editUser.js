@@ -8,21 +8,9 @@ async function main() {
     return;
   }
   SetupListenForChanges(columns, ["save"]);
-
   const role = document.getElementById("role");
-  console.log("ROLE ELEMENT:", role);
-console.log("ROLE TAG:", role.tagName);
-console.log("ROLE ID:", role.id);
-console.log("ROLE OPTIONS:", role.options.length);
-
-console.log("ROLE:", role);
-console.log("ROLE VALUE:", role.value);
-console.log("ROLE ORIGINAL:", role.originalValue);
 
 role.onchange = function () {
-    console.log("CHANGE EVENT FIRED!");
-    console.log("NEW VALUE:", this.value);
-
     document.getElementById("save").disabled = false;
 };
 
