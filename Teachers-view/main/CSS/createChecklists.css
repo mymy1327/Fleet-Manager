@@ -451,24 +451,18 @@
         display: flex;
         align-items: center;
         justify-content: center;
-
         position: absolute;
         right: 0;
         top: 50%;
         transform: translateY(-50%);
-
         width: 20px;
         height: 20px;
-
         border: none;
         border-radius: 50%;
-
         background: #2869cbc7;
         color: white;
-
         font-size: 24px;
         line-height: 1;
-
         cursor: pointer;
         flex-shrink: 0;
     }
@@ -515,6 +509,62 @@
 }
 
 @media (max-width: 1400px) {
+    
+    .checklist-add-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        border: none;
+        border-radius: 50%;
+        background: #2869cbc7;
+        color: white;
+        font-size: 24px;
+        line-height: 1;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .checklist-add-button:active {
+        background: #1554b5;
+        transform: translateY(-50%) scale(0.95);
+    }
+
+    .checklist-item-content {
+        padding-right: 45px;
+    }
+
+    .checklist-item {
+        cursor: default;
+    }
+    .checklist-remove-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        border: none;
+        border-radius: 50%;
+        background: #e32822dc;
+        color: white;
+        font-size: 24px;
+        line-height: 1;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .checklist-remove-button:active {
+        transform: translateY(-50%) scale(0.95);
+    }
     .checklist-lists {
         grid-template-columns: 1fr;
     }
