@@ -25,6 +25,10 @@
     "title": "404 - Not found",
     "desc": "Required path or request on API was not found."
   },
+  "500": {
+    "title": "500 - Internal server error",
+    "desc": "Server encountered error while processing request. Please try it again later."
+  },
   "503": {
     "title": "503 - Service unavailable",
     "desc": "Server can not process the request or API is not available. Please try it again later."

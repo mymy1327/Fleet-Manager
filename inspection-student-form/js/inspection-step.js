@@ -6,6 +6,7 @@ let inspections = [];
 let allQuestions = [];
 let currentQuestionIndex = 0;
 let answers = [];
+let inspectionNote = null;
 let previousKilometers = null;
 let previousInspection = null;
 let vehicleId = null;
@@ -229,6 +230,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setupNavigation();
         setupBackButton();
         setupSummaryModal();
+        setupInspectionNote();
 
         getInspections(vehicle.id_vehicles);
     });
@@ -262,7 +264,14 @@ function renderQuestion() {
 
     const questionName = checklist.name || "Tarkastus";
     const description = checklist.description || "";
-    const isOilQuestion = questionName.toLowerCase().includes("öljy");
+    const normalizedQuestionName = questionName
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+    const isOilQuestion =
+    normalizedQuestionName.includes("oljy") ||
+    normalizedQuestionName.includes("oil");
     const currentAnswer = answers[currentQuestionIndex]?.answer;
     const hasFault = currentAnswer === "Report Faults";
 
@@ -291,6 +300,7 @@ function renderQuestion() {
     restoreCurrentAnswer();
     renderProgress();
     updateNavigationButtons();
+    updateInspectionNoteVisibility();
 }
 
 function restoreCurrentAnswer() {
@@ -489,33 +499,26 @@ function renderAnswerOptions(checklist) {
         return;
     }
 
-    const options = [
-        "Hyvä",
-        "Kunnossa",
-        "Huono",
-        "En tiedä"
-    ];
+   const goodButton = document.createElement("button");
 
-    options.forEach(option => {
-        const button = document.createElement("button");
+    goodButton.type = "button";
+    goodButton.className = "question-option";
+    goodButton.dataset.value = "Hyvä";
+    goodButton.textContent = "Hyvä";
 
-        button.type = "button";
-        button.className = "question-option";
-        button.dataset.value = option;
-        button.textContent = option;
-
-        button.addEventListener("click", () => {
-            selectAnswer(option);
-        });
-
-        container.appendChild(button);
+    goodButton.addEventListener("click", () => {
+        selectAnswer("Hyvä");
     });
+
+        container.appendChild(goodButton);
 
     // Report fault
     const faultButton = document.createElement("button");
-
+    const current = answers[currentQuestionIndex];
     faultButton.type = "button";
-    faultButton.className = "question-option report-fault";
+    faultButton.className = `question-option report-fault"; ${
+        current.answer === "Report Faults" ? "selected" : ""
+    }`;
     faultButton.dataset.value = "Report Faults";
 
     faultButton.innerHTML = `
@@ -526,6 +529,7 @@ function renderAnswerOptions(checklist) {
     `;
 
     faultButton.addEventListener("click", () => {
+
         selectFault();
     });
 
@@ -2001,41 +2005,37 @@ function createProblem(inspectionId, checklistId, note, fileId, priority) {
         xhr.send(JSON.stringify(data));
     });
 }
-
-function buildInspectionNote() {
-    const notes = [];
-
-    checklists.forEach((checklist, index) => {
-        const answer = answers[index]?.answer;
-
-        if (answer === "Huono" || answer === "En tiedä" || answer === "Report Faults") {
-            notes.push(`${checklist.name} - ${answer}`);
-        }
-    });
-    if (notes.length == 0) {
-        return null;
-    }
-    return notes.join(", ");
-}
-
 function getInspectionPassed() {
-    if (answers.some(answer => answer?.answer === "Report Faults")) {
-        return 0;
-    }
-
-    return checklists.every((checklist, index) => {
-        if (
-            checklist.name === "Polttoaineen määrä" ||
-            checklist.name === "Kilometrilukema"
-        ) {
-            return true;
-        }
-
-        return answers[index]?.answer === "Hyvä" ||
-               answers[index]?.answer === "Kunnossa";
-    }) ? 1 : 0;
+    return answers.some(
+        answer => answer?.answer === "Report Faults"
+    )
+        ? 0
+        : 1;
 }
+function updateInspectionNoteVisibility() {
+    const container =
+        document.getElementById("inspectionNoteContainer");
 
+    if (!container) return;
+
+    const isLastQuestion =
+        currentQuestionIndex === checklists.length - 1;
+
+    container.style.display =
+        isLastQuestion ? "block" : "none";
+}
+function setupInspectionNote() {
+    const noteInput =
+        document.getElementById("inspectionNote");
+
+    if (!noteInput) return;
+
+    noteInput.value = inspectionNote;
+
+    noteInput.addEventListener("input", () => {
+        inspectionNote = noteInput.value;
+    });
+}
 function validateInspectionAnswers() {
     for (let i = 0; i < checklists.length; i++) {
         if (!answers[i]?.answer) {
@@ -2115,7 +2115,7 @@ async function submitInspection (inspectionResult) {
         }
         const km = getAnswerByChecklistName("Kilometrilukema") ?? vehicle.km;
         const fuel = getAnswerByChecklistName("Polttoaineen määrä") ?? 0;
-        const note = buildInspectionNote();
+        const note = inspectionNote.trim() || null;
         const passed = getInspectionPassed();
 
         let oilPictureId = 0;
