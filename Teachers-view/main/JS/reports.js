@@ -267,13 +267,13 @@ function renderInspectionHistory() {
     const start = (inspectionHistoryPage - 1) * inspectionHistoryPerPage;
     const pageItems = sorted.slice(start, start + inspectionHistoryPerPage);
 
-    container.innerHTML = pageItems.map(inspection => {
+    container.innerHTML = pageItems.map(async inspection => {
         const vehicle = reportVehicles.find(
             item => Number(item.id_vehicles) === Number(inspection.id_vehicles)
         );
 
         const passed = Number(inspection.passed) === 1;
-        const studentName = getUserName(inspection);
+        const studentName = await getUserName(inspection);
         return `
             <tr>
                 <td>${formatReportDate(inspection.date)}</td>
