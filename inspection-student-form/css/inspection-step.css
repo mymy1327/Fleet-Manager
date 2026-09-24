@@ -102,6 +102,7 @@ body {
     min-height: 450px;
     padding: 45px 40px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
@@ -113,8 +114,8 @@ body {
     max-width: 600px;
     margin: 0 auto;
     text-align: center;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    display: flex;
+    flex-direction: column;
     gap: 24px;
     justify-content: center;
     align-items:center ;
@@ -195,9 +196,8 @@ body {
     align-items: center;
 }
 .question-layout {
-    display: grid;
-    grid-column: 1/-1;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 10px;
     width: 100%;
     justify-content: center;
@@ -278,10 +278,6 @@ body {
     font-size: 14px;
     font-weight: 700;
     color: #475569;
-}
-
-.fault-priority .question-option {
-    margin-bottom: 8px;
 }
 /*NUMBER INPUT*/
 
@@ -1920,4 +1916,70 @@ body {
     line-height: 1;
     cursor: pointer;
     z-index: 2;
+}
+/* Inspection note */
+.inspection-note-container {
+    display: none;
+    width: 100%;
+    margin-top: 24px;
+    margin-bottom: 24px;
+    padding: 20px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    box-sizing: border-box;
+}
+
+.inspection-note-container label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.inspection-note {
+    display: block;
+    width: 100%;
+    min-height: 120px;
+    padding: 12px 14px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    background: #fff;
+    color: #333;
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1.5;
+    resize: vertical;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.inspection-note::placeholder {
+    color: #999;
+}
+
+.inspection-note:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.12);
+}
+
+@media (max-width: 600px) {
+    .inspection-note-container {
+        margin-top: 18px;
+        margin-bottom: 18px;
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    .inspection-note-container label {
+        font-size: 15px;
+    }
+
+    .inspection-note {
+        min-height: 110px;
+        font-size: 14px;
+        padding: 10px 12px;
+    }
 }

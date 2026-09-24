@@ -16,7 +16,7 @@ if(isset($_GET["getUserId"])) {
 $_SESSION["login"] = "";
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $data = GetPOSTData();
-    echo (json_encode(HandleLogin($data["username"],$data["password"],$data["rememberMe"] == "true", isset($data["next"]) ? $data["next"] : null)));
+    echo (json_encode(HandleLogin($data["email"],$data["password"],$data["rememberMe"] == "true", isset($data["next"]) ? $data["next"] : null)));
     die();
 }
 ?>
@@ -37,14 +37,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <div class="page-heading">
             <h1>Login</h1>
             <p class="sub">
-                Enter your username and password for continue.
+                Enter your email and password for continue.
             </p>
         </div>
 
         <div class="login-container">
 
-            <label for="username">Username</label>
-            <input type="text" name="username" id="username">
+            <label for="email">Email</label>
+            <input type="text" name="email" id="email">
 
             <label for="password">Password</label>
             <input type="password" name="password" id="password">

@@ -3,7 +3,6 @@ require __DIR__ . "/../../assets/sharedUserFunctions.php";
     CheckAccessSession(["admin"])
 ?>
 
-
 <!doctype html>
 <html lang="en">
     <head>
@@ -35,6 +34,7 @@ require __DIR__ . "/../../assets/sharedUserFunctions.php";
                 </div>
             </div>
         <input type="hidden" id='role'>
+        <input type="hidden" id='password'>
         <label for="username">Username:</label> <br />
         <input type="text" id="username" name="username" /> <br />
         <label for="email">Email:</label><br />
@@ -42,7 +42,7 @@ require __DIR__ . "/../../assets/sharedUserFunctions.php";
         <label for="role">Role:</label> <br />
         <input type="radio" name="role" value="admin" id="roleAdmin" />
         <label for="roleAdmin">Admin</label><br />
-        <input type="radio" name="role" value="student" id="roleStudent" checked />
+        <input type="radio" name="role" value="user" id="roleStudent" checked />
         <label for="roleStudent">Student</label><br />
         <input type="radio" name="role" value="teacher" id="roleTeacher" />
         <label for="roleTeacher">Teacher</label><br />

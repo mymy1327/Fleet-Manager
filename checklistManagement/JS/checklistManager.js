@@ -1,8 +1,8 @@
 async function main() {
   //Load library from API
-  const libraryResponce = await fetch("../../api/checklists")
+  const libraryResponce = await fetch("/api/checklists")
   if (!libraryResponce.ok) {
-    window.location.href = ("../../errorPages/PHP/handleError.php?code=503&message=" + encodeURIComponent(await libraryResponce.text()) + "&from="+encodeURIComponent(window.location.href));
+    window.location.href = ("/assets/PHP/handleError.php?code=503&message=" + encodeURIComponent(await libraryResponce.text()) + "&from="+encodeURIComponent(window.location.href));
     return
   }
 
