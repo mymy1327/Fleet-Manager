@@ -11,8 +11,50 @@ if($responce === false) {
     HandleError(500);
     die();
 }
-
-//Reload
-header("Location: " . PathToURL($_SERVER["DOCUMENT_ROOT"] . GetURLBasedOnRole($responce["role"])), true, 302);
-die();
 ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Get vehicle</title>
+	<meta name='data-i18n-url' content='./index.lang'>
+    <meta name='data-i18n-languages' content='fi;en'>
+	<link rel="stylesheet" href="/assets/style.css">
+	<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="./index.php">
+            <span class="brand-mark" aria-hidden="true">&#x26DF;</span>
+            <strong>Hyria AutoTalli</strong>
+        </a>
+        <nav class="main-nav" aria-label="Main navigation"></nav>
+        <div class="header-actions">
+            <button class="language-switch" type="button" data-language-switch>EN</button>
+            <a href='/assets/logout.php'> <button class="logout" type="button">↪&nbsp; <span data-i18n='logout'>Logout</span></button></a>
+        </div>
+    </header>
+    <main id="app" class="page">
+        <div class="page-heading">
+            <div>
+                <h1 data-i18n='mainMenu'>Main menu</h1>
+                <p  data-i18n='subtitle' class="subtitle">Select the option bellow where do you want to go.</p>
+            </div>
+        </div>
+    <?php
+        if($responce["role"] === "admin") {
+            echo "<a href='/admin/index.php'><button class='button' data-i18n='admin'>Admin</button></a>";
+        }
+        if($responce["role"] === "admin" || $responce["role"] === "teacher") {
+            echo "<a href='/teacher/index.php'><button class='button' data-i18n='teacher'>Teacher</button></a>";
+        }
+        if($responce["role"] === "admin" || $responce["role"] === "teacher" || $responce["role"] === "student") {
+            echo "<a href='/student/index.php'><button class='button' data-i18n='student'>Student</button></a>";
+        }
+    ?>
+    <script src="/assets/apiCommunication.js"></script>
+    <script src="/assets/languageManager.js"></script>
+</body>
+</html>
