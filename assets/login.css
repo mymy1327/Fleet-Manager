@@ -40,7 +40,10 @@ body {
     color: #4d4d4d;
 }
 .login-container {
-    display: flex;
+    position: absolute;
+
+    left: 35%;
+    top: 385px;
 
     width: 397px;
 
@@ -120,6 +123,27 @@ body {
 }
 @media (min-width: 501px) and (max-width: 1100px) {
 
+    body {
+        margin: 0;
+        background-image: url("https://pub-9147a8a77c9a4d63a1142903a7f0e5ea.r2.dev/loginbackground(mobile).png");
+
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+
+        position: relative;
+    }
+
+    .page {
+        width: 100%;
+        min-height: 100vh;
+        height: 100dvh;
+
+        margin: 0;
+
+        display: flex;
+        justify-content: center;
+    }
 
     .page-heading {
         left: 10%;
