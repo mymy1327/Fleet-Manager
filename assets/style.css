@@ -407,14 +407,6 @@ button:disabled, button:hover:disabled {
     overflow: hidden;
 }
 
-.vehicle-model {
-    display: block;
-    white-space: pre;
-    overflow: auto;
-    margin: 0;
-    font-size: 9cqi;
-}
-
 .vehicle-status {
     /* Compact pill showing the vehicle's current state. */
     flex-shrink: 0;

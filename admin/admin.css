@@ -1,0 +1,179 @@
+:root {
+    --primary: #2868cb;
+    --primary-hover: #1554b5;
+    --text: #172033;
+    --muted: #7b8494;
+    --border: #e5e7eb;
+    --background: #f7f8fa;
+}
+
+body {
+    background: var(--background);
+    color: var(--text);
+}
+
+/* Header */
+.topbar {
+    height: 64px;
+}
+
+.brand {
+    color: var(--text);
+}
+
+.brand:hover {
+    color: var(--text);
+}
+
+.brand-mark {
+    width: 38px;
+    height: 38px;
+    background: var(--primary);
+    flex-shrink: 0;
+}
+
+.svg-icon {
+    width: 22px;
+    height: 22px;
+    fill: #fff;
+}
+
+.brand-name {
+    font-size: 19px;
+}
+
+.language-switch {
+    color: var(--primary) !important;
+    font-weight: 700;
+}
+
+.language-switch:hover {
+    color: var(--primary-hover) !important;
+}
+
+.logout {
+    color: var(--muted) !important;
+}
+
+.logout:hover {
+    color: var(--primary-hover) !important;
+}
+
+/* Main */
+.page {
+    max-width: 1270px;
+    margin: 0 auto;
+}
+
+.page-heading h1 {
+    color: var(--text);
+    font-size: 30px;
+}
+
+.subtitle {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+/* Table */
+.users-table-wrapper {
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .03);
+}
+
+#usersTable {
+    min-width: 650px;
+}
+
+#usersTable th {
+    padding: 14px 18px;
+    background: #f8fafc;
+    color: #6b7280;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+}
+
+#usersTable td {
+    padding: 14px 18px;
+    color: #374151;
+    font-size: 14px;
+}
+
+/* Buttons */
+.button {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 10px 17px;
+    margin-bottom: 10px;
+    color: #e5e7eb;
+}
+
+.button:hover {
+    background: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+}
+
+/* Buttons created by admin.js */
+#usersTable button {
+    border-radius: 7px;
+    font-size: 13px;
+    margin-bottom: 10px;
+    color: #e5e7eb;
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+
+    .topbar {
+        height: 58px;
+    }
+
+    .topbar .d-flex.align-items-center.justify-content-between {
+        height: 58px !important;
+    }
+
+    .brand-mark {
+        width: 34px;
+        height: 34px;
+    }
+
+    .svg-icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    .header-actions {
+        gap: 0 !important;
+    }
+
+    .language-switch,
+    .logout {
+        padding: 4px 6px !important;
+        font-size: 13px;
+    }
+
+    .page-heading h1 {
+        font-size: 24px;
+    }
+
+    .subtitle {
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    #usersTable th,
+    #usersTable td {
+        padding: 12px 14px;
+    }
+
+    .button {
+        width: 100%;
+        text-align: center;
+    }
+}
