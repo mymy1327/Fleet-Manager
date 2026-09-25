@@ -19,7 +19,7 @@ CheckAccessSession(["teacher", "admin"]);
 <body>
     <header class="topbar">
         <div class="topbar-row">
-            <a class="brand" href="#home" aria-label="Hyria Garage home">
+            <a class="brand" href="/" aria-label="Hyria Garage home">
                 <span class="brand-mark" aria-hidden="true">&#x26DF;</span>
                 <strong>Hyria Garage</strong>
             </a>
