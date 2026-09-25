@@ -1,6 +1,11 @@
 {
   "en": {
-    
+    "title": "Vehicle inspection",
+    "brand": "Hyria Garage",
+    "km": "Kilometers",
+    "problem": "Open issues",
+    "inspection": "Start inspection",
+    "history": "Most recent inspection"
   },
   "fi": {
     "title": "Ajoneuvon tarkastus",
