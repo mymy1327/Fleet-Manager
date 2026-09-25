@@ -5,7 +5,7 @@ async function deleteVehicle(vehicleCode){
     console.log("blats")
         const xhr = new XMLHttpRequest();
         
-        xhr.open("GET", `/api/vehicles?code=` + vehicleCode, true);
+        xhr.open("GET", restapi + "/api/vehicles?code=" + vehicleCode, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
             console.log(vehicleCode)
