@@ -1983,7 +1983,7 @@ async function submitInspection(inspectionResult) {
     }
 
 alert("Tarkastus lähetetty onnistuneesti.");
-window.location.href = `studentForm.html?code=${encodeURIComponent(vehicleCode)}`;
+window.location.href = `student-form.php?code=${encodeURIComponent(vehicleCode)}`;
 
     alert("Tarkastus lähetetty onnistuneesti.");
     window.location.href = `student-form.php?code=${encodeURIComponent(vehicleCode)}`;
