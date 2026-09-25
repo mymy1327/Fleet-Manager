@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
         newArticle.id = newId;
 
         let clickableconnection = document.createElement("a");
-        clickableconnection.href = `details.html?code=${intelligeble[x].code}`;
+        clickableconnection.href = `details.php?code=${intelligeble[x].code}`;
 
         //set the image
         let picture = document.createElement("img");
