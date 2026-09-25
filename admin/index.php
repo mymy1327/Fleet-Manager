@@ -19,7 +19,7 @@ CheckAccessSession(["admin"]);
     <header class="topbar">
         <div class="container-fluid px-3 px-md-4">
             <div class="d-flex align-items-center justify-content-between">
-                <a class="brand d-flex align-items-center text-decoration-none" href="./index.php">
+                <a class="brand d-flex align-items-center text-decoration-none" href="/">
                     <span class="brand-mark d-flex align-items-center justify-content-center"
                         aria-hidden="true">
                         <svg viewBox="0 0 24 24" class="svg-icon">

@@ -90,6 +90,13 @@ class TranslationData {
       //Translate
       element.textContent = await this.Translate(element.getAttribute("data-i18n"), element.textContent);
     }
+
+    //Get all placeholder elements to translate
+    const elements2 = document.querySelectorAll("[data-i18n-placeholder]");
+    for (const element of elements2) {
+      //Translate
+      element.placeholder = await this.Translate(element.getAttribute("data-i18n-placeholder"), element.placeholder);
+    }
   }
 
   /**
@@ -198,10 +205,13 @@ function automaticTranslate() {
 //Automatic object detection
 const observer = new MutationObserver((mutations) => {
   mutations.forEach((mutation) => {
-    mutation.addedNodes.forEach((node) => {
+    mutation.addedNodes.forEach(async (node) => {
       if (node.nodeType === 1) { // Element node
         if(node.hasAttribute("data-i18n")) {
-          node.textContent = window.GetTranslationData().Translate(node.getAttribute("data-i18n"), node.textContent)
+          node.textContent = await window.GetTranslationData().Translate(node.getAttribute("data-i18n"), node.textContent)
+        }
+          if(node.hasAttribute("data-i18n-placeholder")) {
+          element.placeholder = await this.Translate(element.getAttribute("data-i18n-placeholder"), element.placeholder);
         }
       }
     });

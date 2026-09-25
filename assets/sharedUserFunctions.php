@@ -125,7 +125,8 @@ function HandleLogin(string $email, string $password, bool $rememberMe, string|n
                 $_SESSION["login"] = $user["id_users"];
                 $result = [];
                 if($next === null) {
-                    $result["next"] = GetURLBasedOnRole($user["role"]);
+                    //$result["next"] = GetURLBasedOnRole($user["role"]);
+                     $result["next"] ="/";
                 } else {
                     $result["next"] = $next;
                 }
