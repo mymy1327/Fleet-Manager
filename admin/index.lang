@@ -7,7 +7,10 @@
     "uT2": "Email",
     "uT3": "Role",
     "uT4": "Actions",
-    "newUser": "Add new user"
+    "newUser": "Add new user",
+    "student": "Student",
+    "admin": "Admin",
+    "teacher": "Teacher"
   },
   "fi":{
     "title": "User management",
@@ -17,6 +20,9 @@
     "uT2": "Email",
     "uT3": "Role",
     "uT4": "Actions",
-    "newUser": "Add new user"
+    "newUser": "Add new user",
+    "student": "Student",
+    "admin": "Admin",
+    "teacher": "Teacher"
   }
 }
