@@ -18,9 +18,9 @@ function getAllInspections(changing, vehicleId = null) {
                 }
             }
             newestkm = unintelligeble.id_inpsection
-            console.log(unintelligeble)
+            
             // work with response here (code: xhr.status, json response: xhr.responseText)
-            console.log(unintelligeble.km)
+           
             changing.textContent = unintelligeble.km
         };
         xhr.send();
@@ -32,12 +32,9 @@ function getVehicleDetails(vehicleId) {
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
 
-            console.log(`/api/vehicles`)
-            console.log(xhr.status)
-            console.log(1)
-            console.log(xhr.responseText)
+            
             intelligeble = JSON.parse(xhr.responseText)
-            console.log(intelligeble)
+           
             const placeforit = document.getElementById("car");
             let neededfr = ""
             for (x in intelligeble){
@@ -52,13 +49,9 @@ function getVehicleDetails(vehicleId) {
                 newArticle.id = newId;
 
                 let clickableconnection = document.createElement("a")
-                console.log(window.location.href)
-                console.log((window.location.href).search("index_en.html"))
-                if ((window.location.href).search("Index_en.html") != -1){
-                    clickableconnection.href = `details.html?code=${intelligeble[x].code}`    
-                }else{
-                    clickableconnection.href = `details.html?code=${intelligeble[x].code}`
-                }
+                clickableconnection.href = `details.html?code=${intelligeble[x].code}`    
+                
+                  
                 
 
                 //set the image
@@ -129,8 +122,8 @@ function getVehicleDetails(vehicleId) {
                 neededfr += "1fr "
 
             }
+            // how many cards in own column/row
             carlist.style.gridTemplateColumns = neededfr/2
-            console.log(carlist.style.gridTemplateColumns)
             carlist.style.gridTemplateRows = neededfr/4
             //document.getElementById("demo1").innerHTML = xhr.status + "<br>" + xhr.responseText;
         };

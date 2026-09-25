@@ -6,9 +6,9 @@
     "title": "Ajoneuvon tarkastus",
     "brand": "Hyria AutoTalli",
     "km": "Kilometrit",
-    "problem": "Avoit viat",
+    "problem": "Avoimet viat",
     "inspection": "Aloita tarkastus",
-    "history": "Viimeisin tarkasts",
+    "history": "Viimeisin tarkastus"
     
   }
 }
