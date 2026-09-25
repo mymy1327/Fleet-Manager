@@ -1205,7 +1205,7 @@ function setupBackButton() {
 
   backButton.onclick = () => {
     if (code) {
-      window.location.href = `studentForm.html?code=${encodeURIComponent(code)}`;
+      window.location.href = `student-form.php?code=${encodeURIComponent(code)}`;
     } else {
       window.history.back();
     }
@@ -1983,7 +1983,10 @@ async function submitInspection(inspectionResult) {
     }
 
 alert("Tarkastus lähetetty onnistuneesti.");
-window.location.href = `studentForm.html?code=${encodeURIComponent(vehicleCode)}`;
+window.location.href = `student-form.php?code=${encodeURIComponent(vehicleCode)}`;
+
+    alert("Tarkastus lähetetty onnistuneesti.");
+    window.location.href = `student-form.php?code=${encodeURIComponent(vehicleCode)}`;
   } catch (error) {
     console.error("Inspection submission error:", error);
     alert("Tarkastuksen lähettäminen epäonnistui.");

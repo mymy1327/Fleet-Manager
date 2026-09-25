@@ -104,7 +104,7 @@ function openStudentInspection(vehicle) {
     }
 
     const url =
-        "../student/studentForm.html?code=" +
+        "../student/student-form.php?code=" +
         encodeURIComponent(vehicle.code);
 
     window.location.href = url;
