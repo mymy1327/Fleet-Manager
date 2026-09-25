@@ -1,5 +1,6 @@
 <?php
 require __DIR__ . "/assets/sharedUserFunctions.php";
+
 //Check access
 if(!CheckAccessSession(["admin","teacher","student"], true)) {
     die();
