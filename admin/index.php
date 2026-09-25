@@ -9,6 +9,8 @@ CheckAccessSession(["admin"]);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-i18n="title">User management</title>
+    <meta name='data-i18n-url' content='./index.lang'>
+    <meta name='data-i18n-languages' content='fi;en'>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/assets/style.css" />
     <link rel="stylesheet" href="admin.css" />
@@ -64,11 +66,12 @@ CheckAccessSession(["admin"]);
                 </tr>
             </table>
         </div>
-        <a href="../PHP/user.php" class="button btn btn-primary mt-3" data-i18n="newUser"> Add new user
+        <a href="./user.php" class="button btn btn-primary mt-3" data-i18n="newUser"> Add new user
         </a>
     </main>
     <script src="/assets/apiCommunication.js"></script>
-    <script src="admin.js"></script>
+    <script src="/assets/languageManager.js"></script>
+    <script src="./admin.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

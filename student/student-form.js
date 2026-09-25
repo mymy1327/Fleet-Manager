@@ -120,7 +120,7 @@ function setupInspectionButton(state) {
         }
 
         window.location.href =
-            `inspection-step.html?code=${encodeURIComponent(vehicleCode)}`;
+            `inspection-step.php?code=${encodeURIComponent(vehicleCode)}`;
     };
 }
 

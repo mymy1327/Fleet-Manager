@@ -1,3 +1,7 @@
+<?php
+require __DIR__ . "/../assets/sharedUserFunctions.php";
+CheckAccessSession(["teacher", "admin"]);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,16 +13,16 @@
 </head>
 <body>
     <header class="topbar">
-        <a class="brand" href="/teacher/Index_en.html#home" aria-label="Hyria Garage home">
+        <a class="brand" href="/teacher/index.php#home" aria-label="Hyria Garage home">
             <span class="brand-mark" aria-hidden="true">&#x26DF;</span>
             <strong>Hyria Garage</strong>
         </a>
         <nav class="main-nav" aria-label="Main navigation">
-            <a href="/teacher/Index_en.html#home" data-view="home"><span>&#x2317;</span>Home</a>
-            <a href="/teacher/Index_en.html#fleet" data-view="fleet"><span class="nav-icon" aria-hidden="true">&#x26DF;</span>Fleet</a>
-            <a href="/teacher/Index_en.html#inspections" data-view="inspections"><span>&#x1F5B9;</span>Inspections</a>
-            <a href="/teacher/Index_en.html#faults" data-view="faults"><span>&#x25B3;</span>Faults</a>
-            <a href="/teacher/Index_en.html#reports" data-view="reports"><span>&#x25A5;</span>Reports</a>
+            <a href="/teacher/index.php#home" data-view="home"><span>&#x2317;</span>Home</a>
+            <a href="/teacher/index.php#fleet" data-view="fleet"><span class="nav-icon" aria-hidden="true">&#x26DF;</span>Fleet</a>
+            <a href="/teacher/index.php#inspections" data-view="inspections"><span>&#x1F5B9;</span>Inspections</a>
+            <a href="/teacher/index.php#faults" data-view="faults"><span>&#x25B3;</span>Faults</a>
+            <a href="/teacher/index.php#reports" data-view="reports"><span>&#x25A5;</span>Reports</a>
         </nav>
         <div class="header-actions">
             <button class="language-switch" type="button" data-language-switch>En</button>
@@ -36,7 +40,6 @@
                         <button class="inspection-tab" type="button" role="tab" aria-selected="false">Faults (0)</button>
                         <button class="inspection-tab" type="button" role="tab" aria-selected="false">Inspection list</button>
                     </div>
-                    <button class="button inspection-action" type="button">New inspection</button>
                     <div class="inspection-box"><div class="inspection-empty">No inspections yet</div></div>
                 </section>
             </div>

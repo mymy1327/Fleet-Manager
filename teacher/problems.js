@@ -332,16 +332,17 @@ async function openEditProblem(problemId) {
     const problem = problems.find(
         item => Number(item.id_problems) === Number(problemId)
     );
-
+    console.log("found problem:", problem);
     if (!problem) return;
 
     editingProblemId = problemId;
-
+    const descriptionInput = document.getElementById("problemDescription");
     const priorityInput = document.getElementById("editProblemPriority");
     const stateInput = document.getElementById("editProblemState");
     const imageBox = document.getElementById("editProblemImageBox");
     const image = document.getElementById("editProblemImage");
-
+    console.log(problem);
+    console.log("description", problem.note);
     if (priorityInput) {
         priorityInput.value = String(problem.priority || "low").toLowerCase();
     }
@@ -360,6 +361,10 @@ async function openEditProblem(problemId) {
             image.src = "";
             imageBox.classList.remove("has-image");
         }
+    }
+    
+    if (descriptionInput) {
+        descriptionInput.innerHTML = problem.note || "No description.";
     }
 
     const modalElement = document.getElementById("editProblemModal");
