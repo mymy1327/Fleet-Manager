@@ -19,13 +19,13 @@ CheckAccessSession(["teacher", "admin"]);
 <body>
     <header class="topbar">
         <div class="topbar-row">
-            <a class="brand" href="#home" aria-label="Hyria Garage home">
+            <a class="brand" href="/" aria-label="Hyria Garage home">
                 <span class="brand-mark" aria-hidden="true">&#x26DF;</span>
                 <strong>Hyria Garage</strong>
             </a>
             <div class="header-actions">
                 <button class="language-switch" type="button" data-language-switch>EN</button>
-                <button class="logout" type="button">&#x21AA;&nbsp; Logout</button>
+                <a href='/assets/logout.php'> <button class="logout" type="button">&#x21AA;&nbsp; <span data-i18n='logout'>Logout</span></button></a>
             </div>
         </div>
         <div class="topbar-row">

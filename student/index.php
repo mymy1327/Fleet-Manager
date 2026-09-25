@@ -21,6 +21,7 @@ CheckAccessSession(["student", "teacher", "admin"]);
                 <strong data-i18n='brand'>Hyria Garage</strong>
             </a>
             <div class="header-actions">
+                <a href="./getVehicle.php"><button class='button' data-i18n='getVehicle'>Get vehicle</button></a>
                 <button class="language-switch" type="button" data-language-switch>EN</button>
                 <a href='/assets/logout.php'> <button class="logout" type="button">&#x21AA;&nbsp; <span data-i18n='logout'>Logout</span></button></a>
             </div>

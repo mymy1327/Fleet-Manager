@@ -19,7 +19,7 @@ if($responce === false) {
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Get vehicle</title>
+	<title data-i18n='brand'>Hyria Garage</title>
 	<meta name='data-i18n-url' content='./index.lang'>
     <meta name='data-i18n-languages' content='fi;en'>
 	<link rel="stylesheet" href="/assets/style.css">
@@ -42,7 +42,7 @@ if($responce === false) {
         <div class="page-heading">
             <div>
                 <h1 data-i18n='mainMenu'>Main menu</h1>
-                <p  data-i18n='subtitle' class="subtitle">Select the option bellow where do you want to go.</p>
+                <p  data-i18n='subtitle' class="subtitle">Select the option below where do you want to go.</p>
             </div>
         </div>
     <?php

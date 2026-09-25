@@ -3,7 +3,7 @@ const closeVehicleModal = document.getElementById("closeVehicleModal");
 const cancelVehicleButton = document.getElementById("cancelVehicleButton");
 const addVehicleForm = document.getElementById("addVehicleForm");
 const imagePreview = document.getElementById("imagePreview");
-let restapi = "https://developmenterasmus.kolojar.cz";
+//let restapi = "https://developmenterasmus.kolojar.cz";
 document.getElementById("editmanagement").addEventListener("click", openAddVehicleModal);
 // Open modal
 function openAddVehicleModal() {

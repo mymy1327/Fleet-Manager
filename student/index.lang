@@ -6,7 +6,8 @@
     "loadingSubtitle": "Please wait, list will be loaded in any moment.",
     "noVehicles": "No vehicles used by you",
     "noVehiclesSubtitle": "Scan QR Code in the vehicle using your mobile phone QR code app or click Get vehicle button.",
-    "vehiclesTitle": "Vehicles used by you"
+    "vehiclesTitle": "Vehicles used by you",
+    "getVehicle": "Get vehicle"
   },
   "fi": {
     "brand": "Hyria AutoTalli",
@@ -15,6 +16,7 @@
     "loadingSubtitle": "Odota hetki, luettelo latautuu pian.",
     "noVehicles": "Ei sinun käyttämiäsi ajoneuvoja",
     "noVehiclesSubtitle": "Skannaa ajoneuvossa oleva QR-koodi puhelimesi QR-koodisovelluksella tai napsauta ”Hae ajoneuvo” -painiketta.",
-    "vehiclesTitle": "Sinun käytössäsi olevat ajoneuvot."
+    "vehiclesTitle": "Sinun käytössäsi olevat ajoneuvot.".
+    "getVehicle": ”Hae ajoneuvo”
   }
 }

@@ -88,8 +88,8 @@ function getVehicleDetails(getcode) {
       // add an extra 1fr for every div created
       neededfr += "1fr ";
     }
-    vehicle.style.gridTemplateColumns = neededfr / 2;
-    vehicle.style.gridTemplateRows = neededfr / 4;
+    carlist.style.gridTemplateColumns = neededfr / 2;
+    carlist.style.gridTemplateRows = neededfr / 4;
     //document.getElementById("demo1").innerHTML = xhr.status + "<br>" + xhr.responseText;
   };
   xhr.send();

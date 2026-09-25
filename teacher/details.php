@@ -20,7 +20,7 @@ CheckAccessSession(["teacher", "admin"]);
             </a>
             <div class="header-actions">
                 <button class="language-switch" type="button" data-language-switch>EN</button>
-                <button class="logout" type="button">&#x21AA;&nbsp; Logout</button>
+                <a href='/assets/logout.php'> <button class="logout" type="button">&#x21AA;&nbsp; <span data-i18n='logout'>Logout</span></button></a>
             </div>
         </div>
         <div class="topbar-row">

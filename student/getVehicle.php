@@ -8,7 +8,7 @@ CheckAccessSession(["student", "teacher", "admin"]);
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Get vehicle</title>
+	<title data-i18n='getVehicle'>Get vehicle</title>
 	<meta name='data-i18n-url' content='./getVehicle.lang'>
     <meta name='data-i18n-languages' content='fi;en'>
 	<link rel="stylesheet" href="/assets/style.css">
@@ -17,9 +17,9 @@ CheckAccessSession(["student", "teacher", "admin"]);
 <body>
     <header class="topbar">
         <div class="topbar-row">
-            <a class="brand" href="#home" aria-label="Hyria Garage home">
+            <a class="brand" href="./index.php" aria-label="Hyria Garage home">
                 <span class="brand-mark" aria-hidden="true">&#x26DF;</span>
-                <a href="/index.php"><strong data-i18n='brand'>Hyria Garage</strong></a>
+                <strong data-i18n='brand'>Hyria Garage</strong>
             </a>
             <div class="header-actions">
                 <button class="language-switch" type="button" data-language-switch>EN</button>
