@@ -21,47 +21,47 @@ CheckAccessSession(["teacher", "admin"]);
         <div class="topbar-row">
             <a class="brand" href="#home" aria-label="Hyria Garage home">
                 <span class="brand-mark" aria-hidden="true">&#x26DF;</span>
-                <strong>Hyria Garage</strong>
+                <strong data-i18n="title">Hyria Garage</strong>
             </a>
             <div class="header-actions">
-                <button class="language-switch" type="button" data-language-switch>EN</button>
-                <button class="logout" type="button">&#x21AA;&nbsp; Logout</button>
+                <button class="language-switch" type="button"  data-i18n="langswitch" data-language-switch>EN</button>
+                <button class="logout" type="button" data-i18n="logout">&#x21AA;&nbsp; Logout</button>
             </div>
         </div>
         <div class="topbar-row">
             <nav class="main-nav" aria-label="Main navigation">
-                <a href="#home" data-view="home"><span>&#x2317;</span>Home</a>
-                <a href="#fleet" data-view="fleet"><span class="nav-icon" aria-hidden="true">&#x26DF;</span>Fleet</a>
-                <a href="#inspections" data-view="inspections"><span>&#x1F5B9;</span>Inspections</a>
-                <a href="#faults" data-view="faults"><span>&#x25B3;</span>Faults</a>
-                <a href="#reports" data-view="reports"><span>&#x25A5;</span>Reports</a>
+                <a href="#home" data-view="home"><span>&#x2317;</span data-i18n="home">Home</a>
+                <a href="#fleet" data-view="fleet"><span class="nav-icon" aria-hidden="true">&#x26DF;</span data-i18n="garage">Garage</a>
+                <a href="#inspections" data-view="inspections"><span>&#x1F5B9;</span data-i18n="inspections">Inspections</a>
+                <a href="#faults" data-view="faults"><span>&#x25B3;</span data-i18n="faults">Faults</a>
+                <a href="#reports" data-view="reports"><span>&#x25A5;</span data-i18n="reports">Reports</a>
             </nav>
         </div>
     </header>
 
     <main id="app" class="page">
         <section data-view-content="home">
-            <div class="page-heading"><div><h1>Home</h1><p class="subtitle">Overview of the fleet and recent events</p></div></div>
+            <div class="page-heading"><div><h1 data-i18n="home">Home</h1><p class="subtitle"data-i18n="overviewoffleet">Overview of the fleet and recent events</p></div></div>
             <div class="cards">
-                <article class="card-teacher-main-page"><span class="card-icon" aria-hidden="true">&#x26DF;</span><strong id="totalvehicles" class="card-value"></strong><span class="card-label">Total vehicles</span></article>
-                <article class="card-teacher-main-page"><span class="card-icon green">&#x2713;</span><strong id="totalavailable"class="card-value"></strong><span class="card-label">Available</span></article>
-                <article class="card-teacher-main-page"><span class="card-icon">&#x1F5B9;</span><strong id="totalinspections" class="card-value"></strong><span class="card-label">Total inspections</span></article>
-                <article class="card-teacher-main-page"><span class="card-icon green">&#x25B3;</span><strong id="totalfaults" class="card-value"></strong><span class="card-label">Open faults</span></article>
+                <article class="card-teacher-main-page"><span class="card-icon" aria-hidden="true">&#x26DF;</span><strong id="totalvehicles" class="card-value"></strong><span class="card-label" data-18n="totalvehicle">Total vehicles</span></article>
+                <article class="card-teacher-main-page"><span class="card-icon green">&#x2713;</span><strong id="totalavailable"class="card-value"></strong><span class="card-label" data-i18n="availablevehicle">Available</span></article>
+                <article class="card-teacher-main-page"><span class="card-icon">&#x1F5B9;</span><strong id="totalinspections" class="card-value"></strong><span class="card-label" data-i18n="totalinspection">Total inspections</span></article>
+                <article class="card-teacher-main-page"><span class="card-icon green">&#x25B3;</span><strong id="totalfaults" class="card-value"></strong><span class="card-label" data-i18n="openfault">Open faults</span></article>
             </div>
             <div class="grid-2">
-                <section class="panel large"><h2 class="panel-title">Recent inspections<a class="panel-action" href="#inspections">View all</a></h2><div class="empty">No inspections yet</div></section>
-                <section class="panel large"><h2 class="panel-title">Open faults<a class="panel-action" href="#faults">View all</a></h2><div class="empty">No open faults - all good!</div></section>
+                <section class="panel large"><h2 class="panel-title" data-i18n="recentinspection">Recent inspections<a class="panel-action" href="#inspections">View all</a></h2><div class="empty" data-i18n="noinspection">No inspections yet</div></section>
+                <section class="panel large"><h2 class="panel-title" data-i18n="openfault">Open faults<a class="panel-action" href="#faults">View all</a></h2><div class="empty" data-i18n="noopenfault">No open faults - all good!</div></section>
             </div>
         </section>
 
         <section data-view-content="fleet" hidden>
-            <div class="page-heading"><div><h1>Garage</h1><p class="subtitle">Manage your fleet</p></div>
-            <button class="button" id="addVehicleButton" type="button">&#xFF0B;&nbsp; Add vehicle</button>
+            <div class="page-heading"><div><h1>Garage</h1><p class="subtitle" data-i18n="managefleet">Manage your fleet</p></div>
+            <button class="button" id="addVehicleButton" type="button" data-i18n="addvehicle">&#xFF0B;&nbsp; Add vehicle</button>
             <div id="addVehicleModal" class="vehicle-modal">
     <div class="vehicle-modal-content">
 
         <div class="vehicle-modal-header">
-            <h2>Add Vehicle</h2>
+            <h2 data-i18n="naddvehicle">Add Vehicle</h2>
             <button type="button" class="vehicle-modal-close" id="closeVehicleModal">
                 &times;
             </button>
@@ -71,32 +71,32 @@ CheckAccessSession(["teacher", "admin"]);
 
             <!-- Vehicle information -->
             <div class="vehicle-form-section">
-                <h3>Vehicle Information</h3>
+                <h3 data-i18n="vehicleinformation">Vehicle Information</h3>
 
                 <div class="vehicle-form-grid">
 
                     <div class="vehicle-form-group">
-                        <label for="vehicleName">
+                        <label for="vehicleName" data-i18n="vehiclename">
                             Vehicle name
                         </label>
-                        <input type="text" id="vehicleName" name="name" placeholder="Enter vehicle name" required>
+                        <input type="text" id="vehicleName" name="name" data-i18n-placeholder="entervehicle" placeholder="Enter vehicle name" required>
                     </div>
 
                     <div class="vehicle-form-group">
-                        <label for="vehicleType">Vehicle type</label>
-                        <input type="text" id="vehicleType" name="type" placeholder="Enter vehicle type" required>
+                        <label for="vehicleType" data-i18n="vehicletype">Vehicle type</label>
+                        <input type="text" id="vehicleType" name="type" data-i18n-placeholder="entervehicle"placeholder="Enter vehicle type" required>
                     </div>
 
                     <div class="vehicle-form-group">
-                        <label for="licensePlate">License plate</label>
-                        <input type="text" id="licensePlate" name="license_plate" placeholder="Enter license plate" required>
+                        <label for="licensePlate" data-i18n="licenseplate">License plate</label>
+                        <input type="text" id="licensePlate" name="license_plate" data-i18n-placeholder="enterlicenseplate" placeholder="Enter license plate" required>
                     </div>
 
                     <div class="vehicle-form-group">
-                        <label for="vehicleCode">
+                        <label for="vehicleCode" data-i18n="vehiclecode">
                             Vehicle code
                         </label>
-                        <input type="text" id="vehicleCode" name="code" placeholder="Enter vehicle code" required>
+                        <input type="text" id="vehicleCode" name="code" data-i18n-placeholder="entervehiclecode" placeholder="Enter vehicle code" required>
                     </div>
 
                 </div>
@@ -105,29 +105,29 @@ CheckAccessSession(["teacher", "admin"]);
 
             <!-- Maintenance information -->
             <div class="vehicle-form-section">
-                <h3>Maintenance</h3>
+                <h3 data-i18n="maintenance">Maintenance</h3>
 
                 <div class="vehicle-form-grid">
 
                     <div class="vehicle-form-group">
-                        <label for="lastMaintenance">Last maintenance</label>
+                        <label for="lastMaintenance" data-i18n="lastmaintenance">Last maintenance</label>
                         <input type="date" id="lastMaintenance" name="last_maintenance">
                     </div>
 
                     <div class="vehicle-form-group">
-                        <label for="lastMaintenanceKm">Last maintenance (km)</label>
+                        <label for="lastMaintenanceKm" data-i18n="lastmaintenancekm" >Last maintenance (km)</label>
                         <input type="number" id="lastMaintenanceKm" name="last_maintenance_km" placeholder="e.g. 125000" min="0">
                     </div>
 
                     <div class="vehicle-form-group">
-                        <label for="nextMaintenance">
+                        <label for="nextMaintenance" data-i18n="nextmaintenace">
                             Next maintenance
                         </label>
                         <input type="date" id="nextMaintenance" name="next_maintenance">
                     </div>
 
                     <div class="vehicle-form-group">
-                        <label for="maintenanceIntervalKm">
+                        <label for="maintenanceIntervalKm" data-i18n="maintenanceinterval">
                             Maintenance interval (km)
                         </label>
                         <input type="number" id="maintenanceIntervalKm" name="maintenance_interval_km" placeholder="e.g. 10000" min="0" >
@@ -139,16 +139,16 @@ CheckAccessSession(["teacher", "admin"]);
 
             <!-- Vehicle state -->
             <div class="vehicle-form-section">
-                <h3>Status</h3>
+                <h3 data-i18n="status" >Status</h3>
 
                 <div class="vehicle-form-group">
-                    <label for="vehicleState">State</label>
+                    <label for="vehicleState" data-i18n="vehiclestate">State</label>
 
                     <select id="vehicleState" name="state" required>
-                        <option value="">Select state</option>
-                        <option value="available">Available</option>
-                        <option value="in use">In Use</option>
-                        <option value="disable">Disable</option>
+                        <option value="" data-i18n="selectstate">Select state</option>
+                        <option value="available" data-i18n="available">Available</option>
+                        <option value="in use" data-i18n="inuse">In Use</option>
+                        <option value="disable" data-i18n="disable">Disable</option>
                     </select>
                 </div>
             </div>
@@ -156,15 +156,15 @@ CheckAccessSession(["teacher", "admin"]);
 
             <!-- Vehicle file -->
             <div class="vehicle-form-section">
-                <h3>Vehicle Image</h3>
+                <h3 data-i18n="vehicleimage">Vehicle Image</h3>
 
                 <div class="vehicle-form-group">
 
-                    <label for="vehicleFile">Vehicle image</label>
+                    <label for="vehicleFile" data-i18n="vehicleimage">Vehicle image</label>
 
                     <input type="file" id="vehicleFile" name="id_files" accept="image/*">
                     <div id="imagePreview" class="image-preview"></div>
-                    <small class="vehicle-file-info">Upload an image of the vehicle.</small>
+                    <small class="vehicle-file-info" data-i18n="uploadimagevehicle">Upload an image of the vehicle.</small>
 
                 </div>
             </div>
@@ -173,11 +173,11 @@ CheckAccessSession(["teacher", "admin"]);
             <!-- Buttons -->
             <div class="vehicle-modal-actions">
 
-                <button type="button" class="vehicle-btn vehicle-btn-cancel" id="cancelVehicleButton">
+                <button type="button" class="vehicle-btn vehicle-btn-cancel" id="cancelVehicleButton" data-i18n="cancel">
                     Cancel
                 </button>
 
-                <button type="submit" class="vehicle-btn vehicle-btn-add">
+                <button type="submit" class="vehicle-btn vehicle-btn-add" data-i18n="addvehicle">
                     Add Vehicle
                 </button>
 
@@ -188,21 +188,21 @@ CheckAccessSession(["teacher", "admin"]);
 </div>
         </div>
             <section id="car" class="garage-list">
-                <div class="empty"><span class="empty-icon" aria-hidden="true">&#x26DF;</span>No vehicles yet. Add the first one!</div>
+                <div class="empty"><span class="empty-icon" aria-hidden="true">&#x26DF;</span data-i18n="novehiclesyet">No vehicles yet. Add the first one!</div>
             </section>
         </section>
 
         <section data-view-content="inspections" hidden>
-            <div class="page-heading"><div><h1>Inspections</h1><p class="subtitle">All vehicle departure inspections</p></div>
-            <button class="button" id="assignChecklistButton" type="button">&#xFF0B;&nbsp; Assign Checklist</button>
+            <div class="page-heading"><div><h1 data-i18n="inspections">Inspections</h1><p class="subtitle" data-i18n="allvehicledeparture">All vehicle departure inspections</p></div>
+            <button class="button" id="assignChecklistButton" type="button" data-i18n="assignchecklist">&#xFF0B;&nbsp; Assign Checklist</button>
             <div id="vehicleChecklistModal" class="checklist-modal">
         <div class="checklist-modal-content">
             <div class="checklist-modal-header">
-                <h2>Assign Checklists</h2>
+                <h2 data-i18n="nassignchecklists">Assign Checklists</h2>
                 <button type="button" class="checklist-modal-close" id="closeChecklistModal">&times;</button>
             </div>
             <div class="vehicle-selector">
-                <label for="vehicleSelect">Vehicle</label>
+                <label for="vehicleSelect" data-i18n="vehicle">Vehicle</label>
                 <select id="vehicleSelect"></select>
             </div>
 
@@ -214,11 +214,11 @@ CheckAccessSession(["teacher", "admin"]);
                 <div class="selected-vehicle-info">
                     <h3 id="selectedVehicleName"></h3>
                     <p>
-                        <span>License:</span>
+                        <span data-i18n="license:">License:</span>
                         <strong id="selectedVehicleLicense"></strong>
                     </p>
                     <p>
-                        <span>Type:</span>
+                        <span data-i18n="type:">Type:</span>
                         <strong id="selectedVehicleType"></strong>
                     </p>
                 </div>
@@ -228,7 +228,7 @@ CheckAccessSession(["teacher", "admin"]);
                 <div class="checklist-list-container">
                     <div class="checklist-list-header">
                         <div>
-                            <h3>Assigned Checklists</h3>
+                            <h3 data-i18n="assignedchecklists">Assigned Checklists</h3>
 
                             <span id="assignedChecklistCount">
                                 0
@@ -237,7 +237,7 @@ CheckAccessSession(["teacher", "admin"]);
                     </div>
 
                     <div id="assignedChecklistList" class="checklist-list assigned-list">
-                        <div class="checklist-empty">
+                        <div class="checklist-empty" data-i18n="dragchecklsits">
                             Drag checklists here
                         </div>
                     </div>
@@ -246,14 +246,14 @@ CheckAccessSession(["teacher", "admin"]);
                 <div class="checklist-list-container">
                     <div class="checklist-list-header">
                         <div>
-                            <h3>Available Checklists</h3>
+                            <h3 data-i18n="availablechecklists">Available Checklists</h3>
                             <span id="availableChecklistCount">0</span>
                         </div>
-                        <button type="button" id="addChecklistButton" class="add-checklist-button">+ Add Checklist</button>
+                        <button type="button" id="addChecklistButton" class="add-checklist-button" data-i18n="+addchecklist">+ Add Checklist</button>
                     </div>
 
                     <div id="availableChecklistList" class="checklist-list available-list">
-                        <div class="checklist-empty">
+                        <div class="checklist-empty" data-i18n="loadingchecklists">
                             Loading checklists...
                         </div>
                     </div>
@@ -261,11 +261,11 @@ CheckAccessSession(["teacher", "admin"]);
             </div>
 
             <div class="checklist-modal-actions">
-                <button type="button" id="cancelChecklistButton" class="checklist-btn checklist-btn-cancel">
+                <button type="button" id="cancelChecklistButton" class="checklist-btn checklist-btn-cancel" data-i18n="cancel">
                     Cancel
                 </button>
 
-                <button type="button" id="submitChecklistButton" class="checklist-btn checklist-btn-submit">
+                <button type="button" id="submitChecklistButton" class="checklist-btn checklist-btn-submit" data-i18n="submit">
                     Submit
                 </button>
             </div>
@@ -275,7 +275,7 @@ CheckAccessSession(["teacher", "admin"]);
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editChecklistModalLabel">
+                <h5 class="modal-title" id="editChecklistModalLabel" data-i18n="editchecklist">
                     Edit Checklist
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -283,17 +283,17 @@ CheckAccessSession(["teacher", "admin"]);
             <form id="editChecklistForm">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="editChecklistName" class="form-label">Name</label>
+                        <label for="editChecklistName" class="form-label" data-i18n="name">Name</label>
                         <input type="text" class="form-control" id="editChecklistName" required>
                     </div>
                     <div class="mb-3">
-                        <label for="editChecklistDescription" class="form-label">Description</label>
+                        <label for="editChecklistDescription" class="form-label" data-i18n="description">Description</label>
                         <textarea class="form-control" id="editChecklistDescription" rows="5"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="saveEditChecklistButton" >Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveEditChecklistButton" data-i18n="save">Save</button>
                 </div>
             </form>
 
@@ -303,22 +303,22 @@ CheckAccessSession(["teacher", "admin"]);
     <div id="addChecklistModal" class="checklist-modal checklist-modal-small">
         <div class="checklist-modal-content">
             <div class="checklist-modal-header">
-                <h2>Add Checklist</h2>
+                <h2 data-i18n="addchecklist">Add Checklist</h2>
                 <button type="button" class="checklist-modal-close" id="closeAddChecklistModal">&times;</button>
             </div>
             <form id="addChecklistForm">
                 <div class="checklist-form-group">
-                    <label for="newChecklistName">Checklist name</label>
-                    <input type="text" id="newChecklistName" placeholder="Enter checklist name" required>
+                    <label for="newChecklistName" data-i18n="checklistname">Checklist name</label>
+                    <input type="text" id="newChecklistName" data-i18n-placeholder="enterchecklistname" placeholder="Enter checklist name" required>
                 </div>
                 <div class="checklist-form-group">
-                    <label for="newChecklistDescription">Description</label>
-                    <textarea id="newChecklistDescription" placeholder="Enter checklist description" rows="5" required></textarea>
+                    <label for="newChecklistDescription" data-i18n="description" >Description</label>
+                    <textarea id="newChecklistDescription" data-i18n-placeholder="enterchecklistdescription" placeholder="Enter checklist description" rows="5" required></textarea>
                 </div>
                 <div class="checklist-modal-actions">
                     <button type="button" id="cancelAddChecklistButton" class="checklist-btn checklist-btn-cancel">Cancel</button>
 
-                    <button type="submit" class="checklist-btn checklist-btn-submit"> Add Checklist</button>
+                    <button type="submit" class="checklist-btn checklist-btn-submit" data-i18n=" addchecklist"> Add Checklist</button>
                 </div>
             </form>
         </div>
@@ -327,14 +327,14 @@ CheckAccessSession(["teacher", "admin"]);
             <section class="panel single-panel">
     <div class="inspection-header">
         <div>
-            <h2 class="inspection-header-h2">Vehicles</h2>
-            <p>Click a vehicle to start the departure inspection</p>
+            <h2 class="inspection-header-h2" data-i18n="vehicles">Vehicles</h2>
+            <p data-i18n="clickavehicletodeparture">Click a vehicle to start the departure inspection</p>
         </div>
-        <button type="button" class="inspection-refresh btn btn-primary btn-sm" id="refreshInspections">↻ Refresh</button>
+        <button type="button" class="inspection-refresh btn btn-primary btn-sm" id="refreshInspections" data-i18n="refresh">↻ Refresh</button>
     </div>
 
     <div id="inspectionList" class="vehicle-card-grid">
-        <div class="inspection-loading">Loading vehicles...</div>
+        <div class="inspection-loading" data-i18n="loadingvehicles">Loading vehicles...</div>
     </div>
 </section>
         </section>
@@ -342,43 +342,43 @@ CheckAccessSession(["teacher", "admin"]);
         <section data-view-content="faults" hidden>
     <div class="page-heading">
         <div>
-            <h1>Problems</h1>
-            <p class="subtitle">Track and resolve vehicle problems</p>
+            <h1 data-i18n="problems">Problems</h1>
+            <p class="subtitle" data-i18n="trackandresolveproblems">Track and resolve vehicle problems</p>
         </div>
 
         <div class="problem-toolbar">
             <div class="vehicle-filter">
-                <button type="button" class="btn btn-outline-secondary" id="vehicleFilterButton">
+                <button type="button" class="btn btn-outline-secondary" id="vehicleFilterButton" data-i18n="vehicle">
                     Vehicle
                 </button>
 
                 <div id="vehicleFilterDropdown" class="vehicle-filter-dropdown" hidden>
-                    <input type="text" id="vehicleSearchInput" class="form-control" placeholder="Search vehicle...">
+                    <input type="text" id="vehicleSearchInput" class="form-control" data-i18n-placeholder="searchvehicle" placeholder="Search vehicle...">
                     <div id="vehicleFilterList" class="vehicle-filter-list"></div>
                 </div>
             </div>
 
             <div class="dropdown">
-                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="problemSortButton" data-bs-toggle="dropdown" aria-expanded="false">Sort</button>
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="problemSortButton" data-bs-toggle="dropdown" aria-expanded="false" data-i18n="sort">Sort</button>
 
                 <ul class="dropdown-menu dropdown-menu-end" id="problemSortMenu">
                     <li>
-                        <button class="dropdown-item" type="button" data-sort="priority-desc">
+                        <button class="dropdown-item" type="button" data-sort="priority-desc" data-i18n="priorityhigh">
                             Priority: High ↓
                         </button>
                     </li>
                     <li>
-                        <button class="dropdown-item" type="button" data-sort="priority-asc">
+                        <button class="dropdown-item" type="button" data-sort="priority-asc" data-i18n="prioritylow">
                             Priority: Low ↑
                         </button>
                     </li>
                     <li>
-                        <button class="dropdown-item" type="button" data-sort="open">
+                        <button class="dropdown-item" type="button" data-sort="open" data-i18n="open">
                             Open
                         </button>
                     </li>
                     <li>
-                        <button class="dropdown-item" type="button" data-sort="resolved">
+                        <button class="dropdown-item" type="button" data-sort="resolved" data-i18n="resolved">
                             Resolved
                         </button>
                     </li>
@@ -390,7 +390,7 @@ CheckAccessSession(["teacher", "admin"]);
     <section class="panel single-panel">
         <div class="problem-header">
             <div>
-                <h2>Problems</h2>
+                <h2 data-i18n="problems">Problems</h2>
                 <p>All reported vehicle problems</p>
             </div>
 
@@ -398,7 +398,7 @@ CheckAccessSession(["teacher", "admin"]);
         </div>
 
         <div id="problemList" class="problem-card-grid">
-            <div class="inspection-loading">Loading problems...</div>
+            <div class="inspection-loading" data-i18n="loadingproblems">Loading problems...</div>
         </div>
     </section>
 </section>
@@ -406,8 +406,8 @@ CheckAccessSession(["teacher", "admin"]);
         <section data-view-content="reports" hidden>
     <div class="page-heading">
         <div>
-            <h1>Reports</h1>
-            <p class="subtitle">Fleet usage and inspection reports</p>
+            <h1 data-i18n="reports">Reports</h1>
+            <p class="subtitle" data-i18n="fleetusageandinspection">Fleet usage and inspection reports</p>
         </div>
     </div>
 
@@ -415,76 +415,76 @@ CheckAccessSession(["teacher", "admin"]);
         <article class="card-teacher-main-page">
             <span class="card-icon">&#x25A3;</span>
             <strong id="reportTotalInspections" class="card-value">0</strong>
-            <span class="card-label">Total inspections</span>
+            <span class="card-label" data-i18n="totalinspection">Total inspections</span>
         </article>
 
         <article class="card-teacher-main-page">
             <span class="card-icon green">&#x2713;</span>
             <strong id="reportPassedInspections" class="card-value">0</strong>
-            <span class="card-label">Passed inspections</span>
+            <span class="card-label" data-i18n="passedinspections" >Passed inspections</span>
         </article>
 
         <article class="card-teacher-main-page">
             <span class="card-icon orange">&#x1F5B9;</span>
             <strong id="reportTotalProblems" class="card-value">0</strong>
-            <span class="card-label">Total problems</span>
+            <span class="card-label" data-i18n="totalproblems">Total problems</span>
         </article>
 
         <article class="card-teacher-main-page">
             <span class="card-icon red">&#x25B3;</span>
             <strong id="reportOpenProblems" class="card-value">0</strong>
-            <span class="card-label">Open problems</span>
+            <span class="card-label" data-i18n="openproblems">Open problems</span>
         </article>
     </div>
 
     <div class="grid-2 report-charts">
         <section class="panel large">
-            <h2 class="panel-title">
+            <h2 class="panel-title" data-i18n="inspectionspervehicle">
                 <span class="icon">&#x25A3;</span>
                 Inspections per vehicle
             </h2>
 
             <div id="inspectionsPerVehicleChart" class="report-chart">
-                <div class="empty">No inspection data</div>
+                <div class="empty" data-i18n="noinspectiondata">No inspection data</div>
             </div>
         </section>
 
         <section class="panel large">
-            <h2 class="panel-title">
+            <h2 class="panel-title" data-i18n="inspectionresults">
                 <span class="icon">&#x2713;</span>
                 Inspection results
             </h2>
 
             <div id="inspectionResultsChart" class="report-chart">
-                <div class="empty">No inspection data</div>
+                <div class="empty" data-i18n="noinspectiondata">No inspection data</div>
             </div>
         </section>
 
         <section class="panel large">
-            <h2 class="panel-title">
+            <h2 class="panel-title" data-i18n="problemspervehicle">
                 <span class="icon">&#x1F5B9;</span>
                 Problems per vehicle
             </h2>
 
             <div id="problemsPerVehicleChart" class="report-chart">
-                <div class="empty">No problem data</div>
+                <div class="empty" data-i18n="noproblemdata">No problem data</div>
             </div>
         </section>
 
         <section class="panel large">
-            <h2 class="panel-title">
+            <h2 class="panel-title" data-i18n="problemstatus">
                 <span class="icon">&#x25A3;</span>
                 Problem status
             </h2>
 
             <div id="problemStatusChart" class="report-chart">
-                <div class="empty">No problem data</div>
+                <div class="empty" data-i18n="noproblemdata">No problem data</div>
             </div>
         </section>
     </div>
 
     <section class="panel table-panel">
-        <h2 class="panel-title">
+        <h2 class="panel-title" data-i18n="inspectionhistory">
             <span class="icon">&#x25A3;</span>
             Inspection history
         </h2>
@@ -493,17 +493,17 @@ CheckAccessSession(["teacher", "admin"]);
             <table class="table" id="inspectionHistoryTable">
                 <thead>
                     <tr>
-                        <th>Date</th>
-                        <th>Vehicle</th>
-                        <th>Student</th>
-                        <th>Odometer</th>
-                        <th>Result</th>
+                        <th data-i18n="date">Date</th>
+                        <th data-i18n="vehicle">Vehicle</th>
+                        <th data-i18n="student">Student</th>
+                        <th data-i18n="odometer">Odometer</th>
+                        <th data-i18n="result">Result</th>
                     </tr>
                 </thead>
 
                 <tbody id="inspectionHistoryBody">
                     <tr>
-                        <td colspan="5">No inspection data</td>
+                        <td colspan="5" data-i18n="noinspectiondata">No inspection data</td>
                     </tr>
                 </tbody>
             </table>
@@ -522,39 +522,39 @@ CheckAccessSession(["teacher", "admin"]);
             <form id="editProblemForm">
                 <div class="modal-body">
                      <div class="problem-image-container">
-                        <label class="form-label">Problem Image</label>
+                        <label class="form-label" data-i18n="problemimage">Problem Image</label>
                         <div id="editProblemImageBox" class="problem-image-box">
-                            <span>No image</span>
+                            <span data-i18n="noimage">No image</span>
                             <img id="editProblemImage" src="" alt="Problem image">
                         </div>
-                        <label class="form-label">Description</label>
+                        <label class="form-label" data-i18n="description">Description</label>
                         <div id="problemDescription" class="container-fluid justify-content-start text-left border rounded-1 fs-6">description goes here</div>
                     </div>
                     <div class="mb-3">
-                        <label for="editProblemPriority" class="form-label">Priority</label>
+                        <label for="editProblemPriority" class="form-label" data-i18n="priority">Priority</label>
                         <select id="editProblemPriority" class="form-select">
-                            <option value="low">Low</option>
-                            <option value="medium">Medium</option>
-                            <option value="high">High</option>
-                            <option value="critical">Critical</option>
+                            <option value="low" data-i18n="low">Low</option>
+                            <option value="medium" data-i18n="medium">Medium</option>
+                            <option value="high" data-i18n="high">High</option>
+                            <option value="critical" data-i18n="critical">Critical</option>
                         </select>
                     </div>
 
                     <div class="mb-3">
-                        <label for="editProblemState" class="form-label">State</label>
+                        <label for="editProblemState" class="form-label" data-i18n="state">State</label>
                         <select id="editProblemState" class="form-select">
-                            <option value="open">Open</option>
-                            <option value="resolved">Resolved</option>
+                            <option value="open" data-i18n="open">Open</option>
+                            <option value="resolved" data-i18n="resolved">Resolved</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="cancel">
                         Cancel
                     </button>
 
-                    <button type="submit" class="btn btn-primary" id="saveProblemButton">
+                    <button type="submit" class="btn btn-primary" id="saveProblemButton" data-i18n="save">
                         Save
                     </button>
                 </div>
