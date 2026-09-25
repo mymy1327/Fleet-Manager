@@ -17,28 +17,12 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       newestkm = unintelligeble.id_inpsection;
 
-const restapi = "developmenterasmus.kolojar.cz"
-function getAllInspections(changing, vehicleId = null) {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", "/api/inspections?id_vehicles=" + vehicleId, true); // ?id_vehicles can be removed
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.onload = () => {
+      // work with response here (code: xhr.status, json response: xhr.responseText)
 
-            unintelligeble = JSON.parse(xhr.responseText)
-            let temp = 0
-            for (x in unintelligeble){
-                if (x.id_inspections > temp){
-                    temp = x.id_inspections
-                }
-            }
-            newestkm = unintelligeble.id_inpsection
-
-            // work with response here (code: xhr.status, json response: xhr.responseText)
-
-            changing.textContent = unintelligeble.km
-        };
-        xhr.send();
-    }
+      changing.textContent = unintelligeble.km;
+    };
+    xhr.send();
+  }
 
   function getVehicleDetails(vehicleId) {
     const xhr = new XMLHttpRequest();
