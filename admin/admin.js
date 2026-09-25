@@ -25,7 +25,7 @@ async function main() {
 
     //Add role cell
     const role = document.createElement("td");
-    role.innerText = user.role;
+    role.innerText = await GetTranslationData().Translate(user.role, user.role);
     row.appendChild(role);
 
     //Add action buttons

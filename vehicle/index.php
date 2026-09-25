@@ -1,4 +1,6 @@
 <?php
+require __DIR__ . "/../assets/sharedUserFunctions.php";
+CheckAccessSession(["student", "teacher", "admin"]);
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, Origin");
@@ -13,7 +15,7 @@ if (!$code) {
     die("Missing vehicle code");
 }
 
-$newUrl = "https://developmenterasmus.kolojar.cz/student/student-form.html?code=".$code;
+$newUrl = "https://developmenterasmus.kolojar.cz/student/student-form.php?code=".$code;
 header("Location: ".$newUrl);
 die();
 ?>

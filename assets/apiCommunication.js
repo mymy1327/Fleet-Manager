@@ -78,7 +78,11 @@ async function SendRequestAPI(url, data, method) {
     xhr.onload = () => {
       //Handle request data
       if (xhr.status == 200 || xhr.status == 201 || xhr.status == 202 || xhr.status == 203 || xhr.status == 204) {
-        resolve([true,JSON.parse(xhr.responseText)]);
+        try {
+          resolve([true, JSON.parse(xhr.responseText)]);
+        } catch {
+          resolve([true, null]);
+        }
       } else {
         resolve([xhr.status + "|" + parseApiErrorMessage(xhr.responceText),null]);
       }

@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       //Create link
       let clickableconnection = document.createElement("a");
-      clickableconnection.href = `/student/student-form.html?code=${vehicle.code}`;
+      clickableconnection.href = `/student/student-form.php?code=${vehicle.code}`;
 
       //Set the image
       let picture = document.createElement("img");
