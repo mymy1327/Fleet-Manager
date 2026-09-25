@@ -1,112 +1,102 @@
-let carlist = document.getElementById("vehicle")
-const bob = new URLSearchParams(document.location.search)
+let carlist = document.getElementById("vehicle");
+const bob = new URLSearchParams(document.location.search);
 
-const restapi = "developmenterasmus.kolojar.cz"
+const restapi = "https://developmenterasmus.kolojar.cz";
 function getVehicleDetails(getcode) {
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", `/api/vehicles?code=` + getcode, true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.onload = () => {
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", restapi + "/api/vehicles?code=" + getcode, true);
+  xhr.setRequestHeader("Content-Type", "application/json");
+  xhr.onload = () => {
+    intelligeble = JSON.parse(xhr.responseText);
 
-        
-        intelligeble = JSON.parse(xhr.responseText)
-        
-        // the id location where the card element is placed
-        const placeforit = document.getElementById("vehicle");
-            
-        // defining a variable to set the amount of cards in one column (and rows)
-        let neededfr = ""
-            
-        // create unique id to be safe
-        for (x in intelligeble){
-            let newId = /item-${i+1}/;
-            //create div
-            
-            //Entire card element
-            let newArticle = document.createElement("article")
-            newArticle.classList.add("card-garage");
-            newArticle.id = newId;
+    // the id location where the card element is placed
+    const placeforit = document.getElementById("vehicle");
 
-            let picture = document.createElement("img")
-            picture.src = `/api/files/${(parseInt(intelligeble[x].id_files))}`;
-            picture.classList.add("Vehicle-image")
-            
-            let vehicledetails = document.createElement("div")
-            vehicledetails.classList.add("vehicle-details")
-            
-            let vehicleheading = document.createElement("div")
-            vehicleheading.classList.add("vehicle-heading")
-            
-            let vehiclemodel = document.createElement("h2")
-            vehiclemodel.classList.add("vehicle-model")
-            vehiclemodel.textContent = intelligeble[x].name
-            
-            let vehiclestatus = document.createElement("span")
-            vehiclestatus.classList.add("vehicle-status")
-            vehiclestatus.textContent = intelligeble[x].state
+    // defining a variable to set the amount of cards in one column (and rows)
+    let neededfr = "";
 
-            let vehicletype = document.createElement("p")
-            vehicletype.textContent = intelligeble[x].type
-            vehicletype.classList.add("vehicle-type")
-            
-            let vehicledistance = document.createElement("p")
-                vehicledistance.classList.add("vehicle-distance")
-                if (typeof(intelligeble[x].km) === "number"){
-                    vehicledistance.textContent = `${intelligeble[x].km} km`
-                }else{
-                    vehicledistance.textContent = "km ei saatavilla"
-                }
-                
+    // create unique id to be safe
+    for (x in intelligeble) {
+      let newId = /item-${i+1}/;
+      //create div
 
-            let vehiclelicense = document.createElement("span")
-            vehiclelicense.classList.add("vehicle-license")
-            vehiclelicense.textContent = intelligeble[x].license_plate
-                
-            let vehiclecode = document.createElement("p")
-            vehiclecode.classList.add("vehicle-code")
-            vehiclecode.textContent = intelligeble[x].code
+      //Entire card element
+      let newArticle = document.createElement("article");
+      newArticle.classList.add("card-garage");
+      newArticle.id = newId;
 
-            let visualisedvehiclecode = document.createElement("p")
-            vehiclecode.classList.add("vehicle-code")
-            
-            visualizeqr(`https://${restapi}/vehicle/${intelligeble[x].code}`, visualisedvehiclecode, 12)
-            //End of Card element
+      let picture = document.createElement("img");
+      picture.src = restapi + `/api/files/${parseInt(intelligeble[x].id_files)}`;
+      picture.classList.add("Vehicle-image");
 
-            //Appending
-            newArticle.appendChild(picture)
-            newArticle.appendChild(vehicledetails)
-            vehicledetails.appendChild(vehicleheading)
-            vehicleheading.appendChild(vehiclemodel)
-            vehicleheading.appendChild(vehiclestatus)
-            vehicledetails.appendChild(vehicletype)
-            vehicledetails.appendChild(vehicledistance)
-            vehicledetails.appendChild(vehiclelicense)
-            vehicledetails.appendChild(vehiclecode)
-            vehicledetails.appendChild(visualisedvehiclecode)
-          //clickablevisualisedvehiclecode.appendChild(visualisedvehiclecode)
-            // "placeforit" being the id that it is placed upon
-            placeforit.appendChild(newArticle)
-            //Appending
-            
-            
-            // add an extra 1fr for every div created
-            neededfr += "1fr "
-                
-        }
-        vehicle.style.gridTemplateColumns = neededfr/2 
-        vehicle.style.gridTemplateRows = neededfr/4
-        //document.getElementById("demo1").innerHTML = xhr.status + "<br>" + xhr.responseText;
-    };
-    xhr.send();
+      let vehicledetails = document.createElement("div");
+      vehicledetails.classList.add("vehicle-details");
+
+      let vehicleheading = document.createElement("div");
+      vehicleheading.classList.add("vehicle-heading");
+
+      let vehiclemodel = document.createElement("h2");
+      vehiclemodel.classList.add("vehicle-model");
+      vehiclemodel.textContent = intelligeble[x].name;
+
+      let vehiclestatus = document.createElement("span");
+      vehiclestatus.classList.add("vehicle-status");
+      vehiclestatus.textContent = intelligeble[x].state;
+
+      let vehicletype = document.createElement("p");
+      vehicletype.textContent = intelligeble[x].type;
+      vehicletype.classList.add("vehicle-type");
+
+      let vehicledistance = document.createElement("p");
+      vehicledistance.classList.add("vehicle-distance");
+      if (typeof intelligeble[x].km === "number") {
+        vehicledistance.textContent = `${intelligeble[x].km} km`;
+      } else {
+        vehicledistance.textContent = "km ei saatavilla";
+      }
+
+      let vehiclelicense = document.createElement("span");
+      vehiclelicense.classList.add("vehicle-license");
+      vehiclelicense.textContent = intelligeble[x].license_plate;
+
+      let vehiclecode = document.createElement("p");
+      vehiclecode.classList.add("vehicle-code");
+      vehiclecode.textContent = intelligeble[x].code;
+
+      let visualisedvehiclecode = document.createElement("p");
+      vehiclecode.classList.add("vehicle-code");
+
+      visualizeqr(restapi + `/vehicle/${intelligeble[x].code}`, visualisedvehiclecode, 12);
+      //End of Card element
+
+      //Appending
+      newArticle.appendChild(picture);
+      newArticle.appendChild(vehicledetails);
+      vehicledetails.appendChild(vehicleheading);
+      vehicleheading.appendChild(vehiclemodel);
+      vehicleheading.appendChild(vehiclestatus);
+      vehicledetails.appendChild(vehicletype);
+      vehicledetails.appendChild(vehicledistance);
+      vehicledetails.appendChild(vehiclelicense);
+      vehicledetails.appendChild(vehiclecode);
+      vehicledetails.appendChild(visualisedvehiclecode);
+      //clickablevisualisedvehiclecode.appendChild(visualisedvehiclecode)
+      // "placeforit" being the id that it is placed upon
+      placeforit.appendChild(newArticle);
+      //Appending
+
+      // add an extra 1fr for every div created
+      neededfr += "1fr ";
+    }
+    vehicle.style.gridTemplateColumns = neededfr / 2;
+    vehicle.style.gridTemplateRows = neededfr / 4;
+    //document.getElementById("demo1").innerHTML = xhr.status + "<br>" + xhr.responseText;
+  };
+  xhr.send();
 }
-getVehicleDetails(bob.get("code"))
+getVehicleDetails(bob.get("code"));
 
-
-
-
-
-
-// QR CODE 
+// QR CODE
 
 /*
  * QR Code generator output demo (TypeScript)
@@ -131,50 +121,47 @@ getVehicleDetails(bob.get("code"))
  *   Software.
  */
 
-function visualizeqr(code, changing,size) {
-        const text = code; // User-supplied Unicode text
-        const errCorLvl = qrcodegen.QrCode.Ecc.LOW; // Error correction level
-        const qr = qrcodegen.QrCode.encodeText(text, errCorLvl); // Make the QR Code symbol
-        drawCanvas(qr, 1, size, "#FFFFFF", "#000000", appendCanvas("", changing)); // Draw it on screen
+function visualizeqr(code, changing, size) {
+  const text = code; // User-supplied Unicode text
+  const errCorLvl = qrcodegen.QrCode.Ecc.LOW; // Error correction level
+  const qr = qrcodegen.QrCode.encodeText(text, errCorLvl); // Make the QR Code symbol
+  drawCanvas(qr, 1, size, "#FFFFFF", "#000000", appendCanvas("", changing)); // Draw it on screen
+}
+// Creates a variety of QR Codes that exercise different features of the library, and appends each one to the document.
+
+function appendCanvas(caption, theonetochange) {
+  let result = document.createElement("canvas");
+  theonetochange.appendChild(result);
+  return result;
+}
+// Draws the given QR Code, with the given module scale and border modules, onto the given HTML
+// canvas element. The canvas's width and height is resized to (qr.size + border * 2) * scale.
+// The drawn image is purely dark and light, and fully opaque.
+// The scale must be a positive integer and the border must be a non-negative integer.
+function drawCanvas(qr, scale, border, lightColor, darkColor, canvas) {
+  if (scale <= 0 || border < 0) throw new RangeError("Value out of range");
+  const width = (qr.size + border * 2) * scale;
+  canvas.width = width;
+  canvas.height = width;
+  let ctx = canvas.getContext("2d");
+  for (let y = -border; y < qr.size + border; y++) {
+    for (let x = -border; x < qr.size + border; x++) {
+      ctx.fillStyle = qr.getModule(x, y) ? darkColor : lightColor;
+      ctx.fillRect((x + border) * scale, (y + border) * scale, scale, scale);
     }
-    // Creates a variety of QR Codes that exercise different features of the library, and appends each one to the document.
-    
-   
-    function appendCanvas(caption, theonetochange) {
-        let result = document.createElement("canvas");
-        theonetochange.appendChild(result);
-        return result;
+  }
+}
+function toUtf8ByteArray(str) {
+  str = encodeURI(str);
+  let result = [];
+  for (let i = 0; i < str.length; i++) {
+    if (str.charAt(i) != "%") result.push(str.charCodeAt(i));
+    else {
+      result.push(parseInt(str.substring(i + 1, i + 3), 16));
+      i += 2;
     }
-    // Draws the given QR Code, with the given module scale and border modules, onto the given HTML
-    // canvas element. The canvas's width and height is resized to (qr.size + border * 2) * scale.
-    // The drawn image is purely dark and light, and fully opaque.
-    // The scale must be a positive integer and the border must be a non-negative integer.
-    function drawCanvas(qr, scale, border, lightColor, darkColor, canvas) {
-        if (scale <= 0 || border < 0)
-            throw new RangeError("Value out of range");
-        const width = (qr.size + border * 2) * scale;
-        canvas.width = width;
-        canvas.height = width;
-        let ctx = canvas.getContext("2d");
-        for (let y = -border; y < qr.size + border; y++) {
-            for (let x = -border; x < qr.size + border; x++) {
-                ctx.fillStyle = qr.getModule(x, y) ? darkColor : lightColor;
-                ctx.fillRect((x + border) * scale, (y + border) * scale, scale, scale);
-            }
-        }
-    }
-    function toUtf8ByteArray(str) {
-        str = encodeURI(str);
-        let result = [];
-        for (let i = 0; i < str.length; i++) {
-            if (str.charAt(i) != "%")
-                result.push(str.charCodeAt(i));
-            else {
-                result.push(parseInt(str.substring(i + 1, i + 3), 16));
-                i += 2;
-            }
-        }
-        return result;
-    }
+  }
+  return result;
+}
 
 // insert the langauge switch here
