@@ -33,9 +33,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const placeforit = document.getElementById("car");
       let neededfr = "";
-      for (x in intelligeble) {
+      for (x of intelligeble) {
         // create id
-        let newId = /item-${i+1}/;
+        let newId = `item-${x.id_vehicles}`;
 
         //create div
         let newArticle = document.createElement("article");
@@ -45,11 +45,11 @@ document.addEventListener("DOMContentLoaded", function () {
         newArticle.id = newId;
 
         let clickableconnection = document.createElement("a");
-        clickableconnection.href = `details.php?code=${intelligeble[x].code}`;
+        clickableconnection.href = `details.php?code=${x.code}`;
 
         //set the image
         let picture = document.createElement("img");
-        picture.src = restapi + `/api/files/${parseInt(intelligeble[x].id_files)}`;
+        picture.src = restapi + `/api/files/${parseInt(x.id_files)}`;
         picture.classList.add("Vehicle-image");
         //set the div for everything else
         let vehicledetails = document.createElement("div");
@@ -63,37 +63,37 @@ document.addEventListener("DOMContentLoaded", function () {
 
         let vehiclemodel = document.createElement("h2");
         vehiclemodel.classList.add("vehicle-model");
-        vehiclemodel.textContent = intelligeble[x].name;
-        if (intelligeble[x].name.length > 9) {
+        vehiclemodel.textContent = x.name;
+        if (x.name.length > 9) {
           vehiclemodel.classList.add("long");
         }
         let vehiclestatus = document.createElement("span");
         vehiclestatus.classList.add(`vehicle-status`);
-        vehiclestatus.classList.add(`${intelligeble[x].state}`);
-        vehiclestatus.textContent = intelligeble[x].state;
+        vehiclestatus.classList.add(`${x.state}`);
+        vehiclestatus.textContent = x.state;
         // to be done
 
         let vehicletype = document.createElement("p");
-        vehicletype.textContent = intelligeble[x].type;
+        vehicletype.textContent = x.type;
         vehicletype.classList.add("vehicle-type");
         //set the type
         let vehicledistance = document.createElement("p");
         vehicledistance.classList.add("vehicle-distance");
-        if (typeof intelligeble[x].km === "number") {
-          vehicledistance.textContent = `${intelligeble[x].km} km`;
+        if (typeof x.km === "number") {
+          vehicledistance.textContent = `${x.km} km`;
         } else {
-          vehicledistance.textContent = await GetTranslationData().Translate("kmNotAvailable","km ei saatavilla");
+          vehicledistance.textContent = await GetTranslationData().Translate("kmNotAvailable", "km ei saatavilla");
         }
 
         let vehiclelicense = document.createElement("span");
         vehiclelicense.classList.add("vehicle-license");
-        if(intelligeble[x] != undefined) {
-          vehiclelicense.textContent = intelligeble[x].license_plate;
+        if (x != undefined) {
+          vehiclelicense.textContent = x.license_plate;
         }
 
         let vehiclecode = document.createElement("p");
         vehiclecode.classList.add("vehicle-code");
-        vehiclecode.textContent = intelligeble[x].code;
+        vehiclecode.textContent = x.code;
 
         //append in div
         newArticle.appendChild(clickableconnection);
