@@ -18,9 +18,9 @@ function getAllInspections(changing, vehicleId = null) {
                 }
             }
             newestkm = unintelligeble.id_inpsection
-            
+
             // work with response here (code: xhr.status, json response: xhr.responseText)
-           
+
             changing.textContent = unintelligeble.km
         };
         xhr.send();
@@ -32,9 +32,9 @@ function getVehicleDetails(vehicleId) {
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = () => {
 
-            
+
             intelligeble = JSON.parse(xhr.responseText)
-           
+
             const placeforit = document.getElementById("car");
             let neededfr = ""
             for (x in intelligeble){
@@ -49,10 +49,10 @@ function getVehicleDetails(vehicleId) {
                 newArticle.id = newId;
 
                 let clickableconnection = document.createElement("a")
-                clickableconnection.href = `details.html?code=${intelligeble[x].code}`    
-                
-                  
-                
+                clickableconnection.href = `details.php?code=${intelligeble[x].code}`
+
+
+
 
                 //set the image
                 let picture = document.createElement("img")
@@ -67,7 +67,7 @@ function getVehicleDetails(vehicleId) {
 
                 let vehicleheadingh = document.createElement("div")
                 vehicleheadingh.classList.add("box")
-                
+
 
                 let vehiclemodel = document.createElement("h2")
                 vehiclemodel.classList.add("vehicle-model")

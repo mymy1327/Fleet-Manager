@@ -1,3 +1,7 @@
+<?php
+require __DIR__ . "/../assets/sharedUserFunctions.php";
+CheckAccessSession(["teacher", "admin"]);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
