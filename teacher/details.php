@@ -13,20 +13,24 @@ CheckAccessSession(["teacher", "admin"]);
 </head>
 <body>
     <header class="topbar">
-        <a class="brand" href="/teacher/index.php#home" aria-label="Hyria Garage home">
-            <span class="brand-mark" aria-hidden="true">&#x26DF;</span>
-            <strong>Hyria Garage</strong>
-        </a>
-        <nav class="main-nav" aria-label="Main navigation">
-            <a href="/teacher/index.php#home" data-view="home"><span>&#x2317;</span>Home</a>
-            <a href="/teacher/index.php#fleet" data-view="fleet"><span class="nav-icon" aria-hidden="true">&#x26DF;</span>Fleet</a>
-            <a href="/teacher/index.php#inspections" data-view="inspections"><span>&#x1F5B9;</span>Inspections</a>
-            <a href="/teacher/index.php#faults" data-view="faults"><span>&#x25B3;</span>Faults</a>
-            <a href="/teacher/index.php#reports" data-view="reports"><span>&#x25A5;</span>Reports</a>
-        </nav>
-        <div class="header-actions">
-            <button class="language-switch" type="button" data-language-switch>En</button>
-            <button class="logout" type="button">&#x21AA;&nbsp; Logout</button>
+        <div class="topbar-row">
+            <a class="brand" href="/teacher/index.php#home" aria-label="Hyria Garage home">
+                <span class="brand-mark" aria-hidden="true">&#x26DF;</span>
+                <strong>Hyria Garage</strong>
+            </a>
+            <div class="header-actions">
+                <button class="language-switch" type="button" data-language-switch>EN</button>
+                <button class="logout" type="button">&#x21AA;&nbsp; Logout</button>
+            </div>
+        </div>
+        <div class="topbar-row">
+            <nav class="main-nav" aria-label="Main navigation">
+                <a href="/teacher/index.php#home" data-view="home"><span>&#x2317;</span>Home</a>
+                <a href="/teacher/index.php#fleet" data-view="fleet"><span class="nav-icon" aria-hidden="true">&#x26DF;</span>Garage</a>
+                <a href="/teacher/index.php#inspections" data-view="inspections"><span>&#x1F5B9;</span>Inspections</a>
+                <a href="/teacher/index.php#faults" data-view="faults"><span>&#x25B3;</span>Faults</a>
+                <a href="/teacher/index.php#reports" data-view="reports"><span>&#x25A5;</span>Reports</a>
+            </nav>
         </div>
     </header>
     <main id="app" class="page">
