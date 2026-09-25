@@ -303,10 +303,11 @@ function SetupListenForChanges(columns, targets) {
 
   //Add event listeners
   for (const column of columns) {
-    document.getElementById(column).addEventListener("input", () => {
-      updateStatus();
-    });
-  }
+    const element = document.getElementById(column);
+
+    element.addEventListener("input", updateStatus);
+    element.addEventListener("change", updateStatus);
+}
   updateStatus();
 }
 

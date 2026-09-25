@@ -1,6 +1,21 @@
 <?php
 require_once __DIR__ . "/errorManager.php";
 $API = "https://developmenterasmus.kolojar.cz/api";
+
+/**
+ * Gets URL based on role
+ * @param string $role User role
+ * @return string URL
+ */
+function GetURLBasedOnRole(string $role): string {
+    if($role == "admin") {
+        return "/admin/index.php";
+    } else if($role == "teacher") {
+        return "/teacher/index.php";
+    }
+    return "/user/index.php";
+}
+
 /**
  * Checks if user id in session is possible to login
  * @param array $roles Array of allowed roles
@@ -110,11 +125,7 @@ function HandleLogin(string $email, string $password, bool $rememberMe, string|n
                 $_SESSION["login"] = $user["id_users"];
                 $result = [];
                 if($next === null) {
-                    if($user["role"] == "admin") {
-                        $result["next"] = "/admin/index.php";
-                    } else if($user["role"] == "user") {
-                        $result["next"] = "/user/index.php";
-                    }
+                    $result["next"] = GetURLBasedOnRole($user["role"]);
                 } else {
                     $result["next"] = $next;
                 }

@@ -130,7 +130,7 @@ async function loadVehicles() {
         console.error("Error loading vehicles:", error);
     }
 }
-
+vehicleSelect.addEventListener("change", selectVehicle);
 function renderVehicles() {
     vehicleSelect.innerHTML = "";
 
@@ -141,8 +141,6 @@ function renderVehicles() {
         vehicleSelect.appendChild(option);
     });
 
-    vehicleSelect.addEventListener("change", selectVehicle);
-
     if (vehicles.length > 0) {
         vehicleSelect.value = vehicles[0].id_vehicles;
         selectVehicle();
@@ -150,7 +148,12 @@ function renderVehicles() {
 }
 
 async function selectVehicle() {
+    console.log("CHANGE EVENT");
+    console.log("vehicleSelect.value:", vehicleSelect.value);
+
     selectedVehicleId = Number(vehicleSelect.value);
+
+    console.log("selectedVehicleId:", selectedVehicleId);
 
     const vehicle = vehicles.find(
         item => Number(item.id_vehicles) === selectedVehicleId
@@ -176,25 +179,43 @@ async function selectVehicle() {
 
     await loadVehicleChecklists(selectedVehicleId);
 }
-
 async function loadVehicleChecklists(vehicleId) {
     try {
         const response = await fetch(
             `${restapi}/api/checklists?id_vehicles=${vehicleId}`
         );
 
-        assignedChecklists = await response.json();
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        console.log("Vehicle ID:", vehicleId);
+        console.log("API checklists:", data);
+
+        assignedChecklists = Array.isArray(data)
+            ? data
+            : data.checklists || data.data || [];
+
+        console.log("New assignedChecklists:", assignedChecklists);
 
         originalAssignedChecklists = assignedChecklists.map(item => ({
             ...item
         }));
 
         updateAvailableChecklists();
+
+        console.log("Before render:", assignedChecklists);
+
         renderChecklists();
+
     } catch (error) {
         console.error("Error loading vehicle checklists:", error);
+
         assignedChecklists = [];
         originalAssignedChecklists = [];
+
         updateAvailableChecklists();
         renderChecklists();
     }
@@ -223,6 +244,8 @@ function updateAvailableChecklists() {
 }
 
 function renderChecklists() {
+    console.log("RENDERING:", assignedChecklists);
+
     assignedChecklistList.innerHTML = "";
     availableChecklistList.innerHTML = "";
 
@@ -240,6 +263,7 @@ function renderChecklists() {
     }
 
         assignedChecklists.forEach(checklist => {
+            console.log("Rendering checklist:", checklist);
         assignedChecklistList.appendChild(
             createChecklistElement(checklist, false)
         );
