@@ -361,7 +361,9 @@ async function openEditProblem(problemId) {
             imageBox.classList.remove("has-image");
         }
     }
+    console.log("description",descriptionInput);
     if (descriptionInput) {
+        
         descriptionInput.innerHTML = `${problem.description || "No description."}`;
     }
 
