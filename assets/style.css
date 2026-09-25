@@ -14,6 +14,10 @@
     --lightBlue: #3b86ff;
 }
 
+html {
+    scrollbar-gutter: stable;
+}
+
 /* Apply predictable sizing to every element and remove browser defaults. */
 * {
     box-sizing: border-box;
