@@ -50,7 +50,7 @@ class TranslationData {
     }
 
     //Check if key is present
-    if (this.languageData[key] === null) {
+    if (this.languageData[key] == null || this.languageData[key] == "") {
       if (fallback === "") {
         return "#" + key;
       }
