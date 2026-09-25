@@ -267,20 +267,20 @@ function getUsername(userId) {
         xhr.send();
     });
 }
-async function renderInspectionHistory(inspections) {
+async function renderInspectionHistory() {
     const container = document.querySelector(".inspection-history");
     if (!container) return;
-        console.log(inspections);
+    console.log("inspection" ,inspections);
     container.innerHTML = `
         <div class="inspection-history-icon">
             <span class="material-symbols-outlined">history</span>
             <p class="inspection-history-text">Aikaisemmat tarkastukset</p>
         </div>
     `;
-    if (!inspections.length) {
-        container.innerHTML += `<p class="no-inspections">Ei aikaisempia tarkastuksia.</p>`;
-        return;
-    }
+    //if (!inspections.length) {
+        //container.innerHTML += `<p class="no-inspections">Ei aikaisempia tarkastuksia.</p>`;
+        //return;
+    //}
 
     const recentInspections = inspections.slice(0, 5);
 
