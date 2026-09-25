@@ -336,7 +336,7 @@ async function openEditProblem(problemId) {
     if (!problem) return;
 
     editingProblemId = problemId;
-
+    const descriptionInput = document.querySelector(".problemDescription");
     const priorityInput = document.getElementById("editProblemPriority");
     const stateInput = document.getElementById("editProblemState");
     const imageBox = document.getElementById("editProblemImageBox");
@@ -360,6 +360,9 @@ async function openEditProblem(problemId) {
             image.src = "";
             imageBox.classList.remove("has-image");
         }
+    }
+    if (descriptionInput) {
+        descriptionInput.innerHTML = `${problem.description || "No description."}`;
     }
 
     const modalElement = document.getElementById("editProblemModal");
