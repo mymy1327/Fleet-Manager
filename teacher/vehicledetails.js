@@ -8,13 +8,9 @@ function getVehicleDetails(getcode) {
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onload = () => {
 
-        // debug
-        console.log(xhr.status)
-        console.log(xhr.responseText)
+        
         intelligeble = JSON.parse(xhr.responseText)
-        console.log(intelligeble)
-        //debug
-            
+        
         // the id location where the card element is placed
         const placeforit = document.getElementById("vehicle");
             
@@ -98,7 +94,6 @@ function getVehicleDetails(getcode) {
                 
         }
         vehicle.style.gridTemplateColumns = neededfr/2 
-        console.log(carlist.style.gridTemplateColumns)
         vehicle.style.gridTemplateRows = neededfr/4
         //document.getElementById("demo1").innerHTML = xhr.status + "<br>" + xhr.responseText;
     };
@@ -106,15 +101,7 @@ function getVehicleDetails(getcode) {
 }
 getVehicleDetails(bob.get("code"))
 
-function popupcall(){
-    let popupitself = document.getElementById("popupitself")
-    console.log("ob")
-    if (popupitself.style.display == "none"){
-        popupitself.style.display == "block"
-    }else{
-        popupitself.style.display == "none"
-    }
-}
+
 
 
 
