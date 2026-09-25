@@ -1,0 +1,28 @@
+{
+  "en":{
+    "title": "User management",
+    "brand": "Hyria Garage Admin",
+    "subTitle": "List of users that are registered in the system.",
+    "uT1": "Name",
+    "uT2": "Email",
+    "uT3": "Role",
+    "uT4": "Actions",
+    "newUser": "Add new user",
+    "student": "Student",
+    "admin": "Admin",
+    "teacher": "Teacher"
+  },
+  "fi":{
+    "title": "käyttäjähallinta",
+    "brand": "Hyria AutoTalli Admin",
+    "subTitle": "Luettelo järjestelmään rekisteröidyistä käyttäjistä.",
+    "uT1": "Nimi",
+    "uT2": "Sähköposti",
+    "uT3": "Rooli",
+    "uT4": "Toiminnot",
+    "newUser": "Lisää uusi käyttäjä",
+    "student": "oppilas",
+    "admin": "Admin",
+    "teacher": "opettaja"
+  }
+}

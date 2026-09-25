@@ -1,0 +1,36 @@
+{
+  "400": {
+    "title": "400 - Epäonnistunut pyyntö",
+    "desc": "Käyttäjä ei tarjonnut vaadittuja argumentteja. Yritä uudelleen."
+  },
+  "401": {
+    "title": "401 - Luvaton pääsy",
+    "desc": "Käyttäjä ei tarjonnut valtuutustietoja. Kirjaudu sisään.",
+    "buttons": [
+      {
+        "libraryId": "Kirjaudu sisään"
+      }
+    ]
+  },
+  "403": {
+    "title": "403 - Kielletty pääsy",
+    "desc": "Käyttäjä ei ole valtuutettu tälle sivulle. Siirry toiselle sivulle tai kirjaudu ulos.",
+    "buttons": [
+      {
+        "libraryId": "Kirjaudu ulos"
+      }
+    ]
+  },
+  "404": {
+    "title": "404 - Ei löydy",
+    "desc": "Vaadittua polkua tai pyyntöä API:ssa ei löydy."
+  },
+  "500": {
+    "title": "500 - Sisäinen palvelinvirhe",
+    "desc": "Palvelin kohtasi virheen käsitellessään pyyntöä. Yritä uudelleen myöhemmin."
+  },
+  "503": {
+    "title": "503 - Palvelu ei ole käytettävissä",
+    "desc": "Palvelin ei voi käsitellä pyyntöä, tai API ei ole käytettävissä. Yritä myöhemmin uudelleen."
+  }
+}

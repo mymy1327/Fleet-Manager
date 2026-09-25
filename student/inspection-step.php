@@ -1,0 +1,111 @@
+
+<?php
+require __DIR__ . "/../assets/sharedUserFunctions.php";
+CheckAccessSession(["student", "teacher", "admin"]);
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajoneuvon tarkastus</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="student-form.css">
+    <link rel="stylesheet" href="inspection-step.css">
+</head>
+<body>
+    <main class="inspection-page">
+        <!---Header--->
+        <header class="inspection-header">
+            <button class="back-button" type="button">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <h1>Ajoneuvon tarkastus</h1>
+            <div class="vehicle-info">
+                <div class="vehicle-icon">
+                    <span class="material-symbols-outlined">local_shipping</span>
+                     <p class="form-icon"><strong> Hyria Auto Talli</strong></p>
+                </div>
+                <h2 class="vehicle-name"></h2>
+                <p class="vehicle-license"></p>
+                <p class="vehicle-kilometer"></p>
+            </div>
+        </header>
+    <div class="inspection-container">
+    <!-- Progress -->
+    <div class="inspection-progress">
+        <div class="progress-info">
+            <span id="questionNumber"></span>
+            <span id="progressPercent"></span>
+        </div>
+        <div class="progress-segments" id="progressSegments">
+            <!-- JS render progress bar base on questions's length -->
+        </div>
+    </div>
+    <!-- Question -->
+    <main class="inspection-question">
+        <div id="questionContainer">
+            <!-- JS render question -->
+        </div>
+        <div id="inspectionNoteContainer" class="inspection-note-container">
+    <label for="inspectionNote">
+        Huomio
+    </label>
+    <textarea id="inspectionNote" class="inspection-note" placeholder="Kirjoita tähän tarkastukseen liittyvät huomiot..." rows="5"></textarea>
+</div>
+    </main>
+    <!-- Navigation -->
+    <div class="inspection-navigation">
+        <button id="previousButton" class="inspection-back" type="button">Takaisin</button>
+        <button id="nextButton" class="inspection-next" type="button">Seuraava</button>
+    </div>
+</div>
+<!-- Summary overlay -->
+<div id="summaryModal" class="summary-overlay">
+    <!-- Summary modal -->
+    <div class="summary-modal">
+        <!-- Header -->
+        <div class="summary-header">
+            <h2>Tarkastuksen yhteenveto</h2>
+            <button type="button" class="summary-close" id="summary-close" aria-label="Sulje">×</button>
+        </div>
+        <!-- Vehicle information -->
+        <div class="summary-vehicle">
+            <div>
+                <span class="material-symbols-outlined">directions_car</span>
+            </div>
+            <div>
+                <strong class="summary-vehicle-name">Ajoneuvo</strong>
+                <p class="summary-vehicle-details">
+                    <!-- Vehicle information -->
+                </p>
+            </div>
+        </div>
+        <!-- Answers -->
+        <div class="summary-answers">
+            <!-- JavaScript will generate answers here -->
+        </div>
+        <!-- Confirmation -->
+        <label class="summary-confirmation">
+            <input type="checkbox" id="summary-confirmation">
+            <span> Olen tarkistanut vastaukseni ja ne ovat oikein.</span>
+        </label>
+        <!-- Submit -->
+        <button type="button" id="summary-submit" class="summary-submit" disabled >
+            Lähetä tarkastus
+        </button>
+    </div>
+</div>
+</main>
+<div id="previousInspection" class="previous-inspection"></div>
+<div id="photoViewer" class="photo-viewer">
+    <button id="photoViewerClose" class="photo-viewer-close">×</button>
+    <img id="photoViewerImage" src="" alt="Kuva">
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+<script src="camera.js"></script>
+<script src="/assets/apiCommunication.js"></script>
+<script src="inspection-step.js"></script>
+</body>
+</html>

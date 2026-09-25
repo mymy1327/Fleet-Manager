@@ -30,7 +30,7 @@ $currentHour = date("H");
 $currentDate = date("Y-m-d");
 if ($currentHour >= 16) {
     $conn->query("UPDATE `vehicles` SET `state`='available' WHERE state = 'in_use'");
-}else{
+} else {
     $conn->query("UPDATE `vehicles` v
     JOIN inspections i
         ON v.id_vehicles = i.id_vehicles
@@ -42,7 +42,7 @@ if ($currentHour >= 16) {
         ON i.id_vehicles = latest.id_vehicles
         AND i.`date` = latest.latest_date
     SET `state`='available'
-    WHERE DATE(i.`date`) < CURDATE() 
+    WHERE DATE(i.`date`) < CURDATE()
     AND `state` = 'in_use'");
 }
 
@@ -52,31 +52,72 @@ if ($currentHour >= 16) {
  * @param string $table db table name
  * @param string[] $filterColumn filtered column
  * @param string[] $filter filtering value
+ * @param string|null $orderBy order field
+ * @param string|null $orderWay[ASC | DESC]
+ * @param int|null $offset offset to limit rows
+ * @param int|null $limit number of rows to return
  * @return json|array[int, string|null] list of entries | array with error code on failure
  */
-function getFullTable($conn, $table, $filterColumn, $filter)
-{
+function getFullTable(
+    $conn,
+    $table,
+    $filterColumn,
+    $filter,
+    $orderBy = null,
+    $orderWay = null,
+    $offset = null,
+    $limit = null,
+) {
+    $orderBy = $orderBy ?? "id_$table";
+    $orderWay = $orderWay ?? "ASC";
+    $offset = $offset ?? null;
+    $limit = $limit ?? null;
     global $listOfTables;
     //logToConsole($filter);
     if (count($filterColumn) > 0) {
-        $quary = "SELECT * FROM `$table` WHERE";
+        $query = "SELECT * FROM `$table` WHERE";
         $types = "";
         for ($i = 0; $i < count($filterColumn); $i++) {
-            if ($i == 0) {
-                $quary .= " `$filterColumn[$i]` = ?";
-            } else {
-                $quary .= " AND `$filterColumn[$i]` = ?";
-            }
             $types .= "s";
+            if ($filterColumn[$i] == "date") {
+                if ($i == 0) {
+                    $query .= " CAST(`date` AS DATE) = ?";
+                } else {
+                    $query .= " AND CAST(`date` AS DATE) = ?";
+                }
+            } elseif ($i == 0) {
+                $query .= " `$filterColumn[$i]` = ?";
+            } else {
+                $query .= " AND `$filterColumn[$i]` = ?";
+            }
         }
-        $stmt = $conn->prepare($quary);
+        $query .= " ORDER BY `$orderBy` $orderWay";
+        if (isset($offset)) {
+            $query .= " OFFSET ? ROW";
+            $types .= "i";
+            $filter[] = $offset;
+        }
+        if (isset($limit)) {
+            $query .= "  FETCH NEXT ? ROWS ONLY";
+            $types .= "i";
+            $filter[] = $limit;
+        }
+        $stmt = $conn->prepare($query);
         $stmt->bind_param($types, ...$filter);
         if (!$stmt->execute()) {
             return [404];
         }
         $return = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     } else {
-        $result = $conn->query("SELECT * FROM `$table`");
+        $query = "SELECT * FROM `$table`";
+        $query .= " ORDER BY `$orderBy` $orderWay";
+        if (!is_null($offset)) {
+            $query .= " OFFSET $offset ROW";
+        }
+        if (!is_null($limit)) {
+            $query .= " FETCH NEXT $limit ROWS ONLY";
+        }
+        $result = $conn->query($query);
         if (!$result) {
             return [404];
         }
@@ -690,6 +731,23 @@ switch ($_SERVER["REQUEST_METHOD"]) {
     case "GET":
         $filterColumn = [];
         $filter = [];
+        $order_by = null;
+        $order_way = null;
+        $offset = null;
+        $limit = null;
+        if (isset($_GET["order_by"]) && !is_null($_GET["order_by"]) && $_GET["order_by"] != "") {
+            $order_by = $_GET["order_by"];
+        }
+        if (isset($_GET["order_way"]) && !is_null($_GET["order_way"]) && $_GET["order_way"] != "") {
+            $order_way = $_GET["order_way"];
+        }
+        if (isset($_GET["offset"]) && !is_null($_GET["offset"]) && $_GET["offset"] != "") {
+            $offset = $_GET["offset"];
+        }
+        if (isset($_GET["limit"]) && !is_null($_GET["limit"]) && $_GET["limit"] != "") {
+            $limit = $_GET["limit"];
+        }
+
         if (
             isset($_GET["id_vehicles"]) &&
             !is_null($_GET["id_vehicles"]) &&
@@ -699,7 +757,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             $filterColumn[] = "id_vehicles";
             $filter[] = $_GET["id_vehicles"];
             if ($uri[0] == $listOfTables[0]) {
-                heaDie(200, json_encode(getAllChecklistItemsForVehicle($conn, $filter), JSON_NUMERIC_CHECK));
+                heaDie(200, json_encode(getAllChecklistItemsForVehicle($conn, $filter[0]), JSON_NUMERIC_CHECK));
             }
         }
         if (
@@ -740,7 +798,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         }
 
         if (!isset($uri[1])) {
-            $return = getFullTable($conn, $uri[0], $filterColumn, $filter);
+            $return = getFullTable($conn, $uri[0], $filterColumn, $filter, $order_by, $order_way, $offset, $limit);
             if (gettype($return) == "array") {
                 heaDie($return[0], $return[1] ?? null);
             }
@@ -805,7 +863,6 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             heaDie($return[1], $return[2] ?? null);
         }
         heaDie(201, $return);
-
     case "PUT":
         if (isset($uri[1])) {
             switch (array_search($uri[0], $listOfTables)) {
@@ -880,7 +937,14 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         }
     case "DELETE":
         if (isset($uri[1])) {
-            if ($uri[0] == $listOfTables[0] && $uri[1] == 25) {
+            if (
+                ($uri[0] == $listOfTables[0] && $uri[1] == 25) ||
+                ($uri[0] == $listOfTables[1] && $uri[2] == 25) ||
+                ($uri[0] == $listOfTables[0] && $uri[1] == 1) ||
+                ($uri[0] == $listOfTables[1] && $uri[2] == 1) ||
+                ($uri[0] == $listOfTables[0] && $uri[1] == 2) ||
+                ($uri[0] == $listOfTables[1] && $uri[2] == 2)
+            ) {
                 //prevent deletion of oil checklist (mandatory item)
                 heaDie(400, ["error" => "Bad Request", "message" => "Can't delete this checklist item."]);
             }
@@ -891,6 +955,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             } else {
                 $return = deleteEntry($conn, $uri[0], $uri[1]);
             }
+
             if (gettype($return) == "array") {
                 heaDie($return[0], $return[1] ?? null);
             }

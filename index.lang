@@ -1,0 +1,18 @@
+{
+  "en": {
+    "logout": "Logout",
+    "mainMenu": "Main menu",
+    "subtitle": "Select the option bellow where do you want to go.",
+    "admin": "Admin",
+    "teacher": "Teacher",
+    "student": "Student"
+  },
+  "fi": {
+    "logout": "Kirjaudu ulos",
+    "mainMenu": "Päävalikko",
+    "subtitle": "Valitse alta vaihtoehto minne haluat mennä tästä",
+    "admin": "Admin",
+    "teacher": "Opettaja",
+    "student": "Oppilas"
+  }
+}

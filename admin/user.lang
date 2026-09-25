@@ -1,0 +1,36 @@
+{
+  "en": {
+    "title": "User",
+    "brand": "Hyria Garage Admin",
+    "userTitleEdit": "Edit",
+    "userTitleAdd": "Add",
+    "userTitle": "user",
+    "subTitle": "Manage user - change name, email and role.",
+    "username": "Username:",
+    "email": "Email:",
+    "role": "Role:",
+    "roleAdmin": "Admin",
+    "roleStudent": "Student",
+    "roleTeacher": "Teacher",
+    "submit": "Submit",
+    "changePassword": "Change password",
+    "exit": "Exit without saving"
+  },
+  "fi": {
+    "title": "käyttäjä",
+    "brand": "Hyria AutoTalli Admin",
+    "userTitleEdit": "Muokkaa",
+    "userTitleAdd": "Lisää",
+    "userTitle": "Käyttäjä",
+    "subTitle": "Hallitse käyttäjää – muuta nimeä, sähköpostiosoitetta ja roolia.",
+    "username": "Käyttäjätunnus:",
+    "email": "Sähköposti:",
+    "role": "Role:",
+    "roleAdmin": "Admin",
+    "roleStudent": "Oppilas",
+    "roleTeacher": "Opettaja",
+    "submit": "Lähetä",
+    "changePassword": "Vaihda salasana",
+    "exit": "Poistu tallentamatta"
+  }
+}

@@ -1,0 +1,190 @@
+<?php
+require __DIR__ . "/../assets/sharedUserFunctions.php";
+CheckAccessSession(["teacher", "admin"]);
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyria Garage</title>
+    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="./addvehicle.css">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="/teacher/index.php#home" aria-label="Hyria Garage home">
+            <span class="brand-mark" aria-hidden="true">&#x26DF;</span>
+            <strong>Hyria Garage</strong>
+        </a>
+        <nav class="main-nav" aria-label="Main navigation">
+            <a href="/teacher/index.php#home" data-view="home"><span>&#x2317;</span>Home</a>
+            <a href="/teacher/index.php#fleet" data-view="fleet"><span class="nav-icon" aria-hidden="true">&#x26DF;</span>Fleet</a>
+            <a href="/teacher/index.php#inspections" data-view="inspections"><span>&#x1F5B9;</span>Inspections</a>
+            <a href="/teacher/index.php#faults" data-view="faults"><span>&#x25B3;</span>Faults</a>
+            <a href="/teacher/index.php#reports" data-view="reports"><span>&#x25A5;</span>Reports</a>
+        </nav>
+        <div class="header-actions">
+            <button class="language-switch" type="button" data-language-switch>En</button>
+            <button class="logout" type="button">&#x21AA;&nbsp; Logout</button>
+        </div>
+    </header>
+    <main id="app" class="page">
+        <section class="vehicle-page-shell">
+            <div id="vehicle-heading" class="vehicle-detail-heading"></div>
+            <div class="vehicle-detail-layout">
+                <aside id="vehicle" class="vehicle-info-panel" aria-live="polite"></aside>
+                <section class="vehicle-inspection-panel" aria-live="polite">
+                    <div class="inspection-tabs" role="tablist" aria-label="Vehicle inspection tabs">
+                        <button class="inspection-tab is-active" type="button" role="tab" aria-selected="true">Inspections (0)</button>
+                        <button class="inspection-tab" type="button" role="tab" aria-selected="false">Faults (0)</button>
+                        <button class="inspection-tab" type="button" role="tab" aria-selected="false">Inspection list</button>
+                    </div>
+                    <div class="inspection-box"><div class="inspection-empty">No inspections yet</div></div>
+                </section>
+            </div>
+            <div class="inspection-action-buttons">
+                <aside id="vehicle" class="vehicle-edit-buttons" aria-live="polite"></aside>
+                    <section class="vehicle-inspection-edit-buttons" aria-live="polite">
+                        <button class="vehicle-inspection-edit-button" type="button" id="editmanagement">Edit</button>
+                        <button class="vehicle-inspection-delete-button" type="button" id="deletemanagement" onclick="deleteVehicle(name2)">Delete</button>
+
+                        <div id="addVehicleModal" class="vehicle-modal">
+    <div class="vehicle-modal-content">
+
+        <div class="vehicle-modal-header">
+            <h2>Edit Vehicle</h2>
+            <button type="button" class="vehicle-modal-close" id="closeVehicleModal">
+                &times;
+            </button>
+        </div>
+
+        <form id="addVehicleForm">
+
+            <!-- Vehicle information -->
+            <div class="vehicle-form-section">
+                <h3>Vehicle Information</h3>
+
+                <div class="vehicle-form-grid">
+
+                    <div class="vehicle-form-group">
+                        <label for="vehicleName">
+                            Vehicle name
+                        </label>
+                        <input type="text" id="vehicleName" name="name" placeholder="Enter vehicle name" required>
+                    </div>
+
+                    <div class="vehicle-form-group">
+                        <label for="vehicleType">Vehicle type</label>
+                        <input type="text" id="vehicleType" name="type" placeholder="Enter vehicle type" required>
+                    </div>
+
+                    <div class="vehicle-form-group">
+                        <label for="licensePlate">License plate</label>
+                        <input type="text" id="licensePlate" name="license_plate" placeholder="Enter license plate" required>
+                    </div>
+
+                    <div class="vehicle-form-group">
+                        <label for="vehicleCode">
+                            Vehicle code
+                        </label>
+                        <input type="text" id="vehicleCode" name="code" placeholder="Enter vehicle code" required>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <!-- Maintenance information -->
+            <div class="vehicle-form-section">
+                <h3>Maintenance</h3>
+
+                <div class="vehicle-form-grid">
+
+                    <div class="vehicle-form-group">
+                        <label for="lastMaintenance">Last maintenance</label>
+                        <input type="date" id="lastMaintenance" name="last_maintenance">
+                    </div>
+
+                    <div class="vehicle-form-group">
+                        <label for="lastMaintenanceKm">Last maintenance (km)</label>
+                        <input type="number" id="lastMaintenanceKm" name="last_maintenance_km" placeholder="e.g. 125000" min="0">
+                    </div>
+
+                    <div class="vehicle-form-group">
+                        <label for="nextMaintenance">
+                            Next maintenance
+                        </label>
+                        <input type="date" id="nextMaintenance" name="next_maintenance">
+                    </div>
+
+                    <div class="vehicle-form-group">
+                        <label for="maintenanceIntervalKm">
+                            Maintenance interval (km)
+                        </label>
+                        <input type="number" id="maintenanceIntervalKm" name="maintenance_interval_km" placeholder="e.g. 10000" min="0" >
+                    </div>
+
+                </div>
+            </div>
+
+
+            <!-- Vehicle state -->
+            <div class="vehicle-form-section">
+                <h3>Status</h3>
+
+                <div class="vehicle-form-group">
+                    <label for="vehicleState">State</label>
+
+                    <select id="vehicleState" name="state" required>
+                        <option value="">Select state</option>
+                        <option value="available">Available</option>
+                        <option value="in use">In Use</option>
+                        <option value="disable">Disable</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <!-- Vehicle file -->
+            <div class="vehicle-form-section">
+                <h3>Vehicle Image</h3>
+
+                <div class="vehicle-form-group">
+
+                    <label for="vehicleFile">Vehicle image</label>
+
+                    <input type="file" id="vehicleFile" name="id_files" accept="image/*">
+                    <div id="imagePreview" class="image-preview"></div>
+                    <small class="vehicle-file-info">Upload an image of the vehicle.</small>
+
+                </div>
+            </div>
+
+
+            <!-- Buttons -->
+            <div class="vehicle-modal-actions">
+
+                <button type="button" class="vehicle-btn vehicle-btn-cancel" id="cancelVehicleButton">
+                    Cancel
+                </button>
+
+                <button type="submit" class="vehicle-btn vehicle-btn-add">
+                    Edit Vehicle
+                </button>
+
+            </div>
+
+        </form>
+    </div>
+</div>
+                    </section>
+            </div>
+        </section>
+    </main>
+    <script src="vehicledetails.js"></script>
+    <script src="../assets/qrcodegen.js"></script>
+    <script src="editvehicle.js"></script>
+    <script src="deletevehicle.js"></script>
+</body>
+</html>

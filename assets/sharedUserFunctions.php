@@ -1,6 +1,21 @@
 <?php
-require_once __DIR__ . "/../errorPages/PHP/errorManager.php";
+require_once __DIR__ . "/errorManager.php";
 $API = "https://developmenterasmus.kolojar.cz/api";
+
+/**
+ * Gets URL based on role
+ * @param string $role User role
+ * @return string URL
+ */
+function GetURLBasedOnRole(string $role): string {
+    if($role == "admin") {
+        return "/admin/index.php";
+    } else if($role == "teacher") {
+        return "/teacher/index.php";
+    }
+    return "/user/index.php";
+}
+
 /**
  * Checks if user id in session is possible to login
  * @param array $roles Array of allowed roles
@@ -16,8 +31,8 @@ function CheckAccessSession(array $roles, bool $displayError = true): bool
 
     //Set session value if needed
     if (!isset($_SESSION["login"]) || $_SESSION["login"] == "" || $_SESSION["login"] == "-1") {
-        if (isset($_COOKIE["remember_me_username"]) && isset($_COOKIE["remember_me_password"])) {
-            $result = HandleLogin( $_COOKIE["remember_me_username"],$_COOKIE["remember_me_password"],true,null);
+        if (isset($_COOKIE["remember_me_email"]) && isset($_COOKIE["remember_me_password"])) {
+            $result = HandleLogin( $_COOKIE["remember_me_email"],$_COOKIE["remember_me_password"],true,null);
             if($result["code"] === 200) {
                 $_SESSION["login"]  = $result["id"];
             } else {
@@ -68,13 +83,13 @@ function CheckAccess(int $user, array $roles): int|true
 
 /**
  * Handles login of user
- * @param string $username Username
+ * @param string $email Email
  * @param string $password Password
  * @param bool $rememberMe Remember user
  * @param string|null $next Next URL, can be null
  * @param mixed Result of login
  */
-function HandleLogin(string $username, string $password, bool $rememberMe, string|null $next): mixed {
+function HandleLogin(string $email, string $password, bool $rememberMe, string|null $next): mixed {
     //Handle login - Get user info form API
     $users = SendRequestToAPI("/users","GET");
     if($users === false) {
@@ -86,13 +101,12 @@ function HandleLogin(string $username, string $password, bool $rememberMe, strin
 
     //Find user
     foreach ($users as $user) {
-        if ($user["username"] == $username) {
+        if ($user["email"] == $email) {
             //Verify password
             if (password_verify($password, $user["password"])) {
                 //Remember me
                 if($rememberMe) {
-                setcookie('remember_me_username', $username, [
-                    'expires'  => time() + 30 * 24 * 3600,
+                    setcookie('remember_me_email', 24 * 3600,[
                     'path'     => '/',
                     'secure'   => true,
                     'httponly' => true,
@@ -110,12 +124,8 @@ function HandleLogin(string $username, string $password, bool $rememberMe, strin
                 //Redirect to valid password
                 $_SESSION["login"] = $user["id_users"];
                 $result = [];
-                if($next !== null) {
-                    if($user["role"] == "admin") {
-                        $result["next"] = "./admin.php";
-                    } else if($user["role"] == "user") {
-                        $result["next"] = "../../userDashboard/PHP/index.php";
-                    }
+                if($next === null) {
+                    $result["next"] = GetURLBasedOnRole($user["role"]);
                 } else {
                     $result["next"] = $next;
                 }
@@ -125,7 +135,7 @@ function HandleLogin(string $username, string $password, bool $rememberMe, strin
                 return $result;
             }
             //Clear cookies
-            setcookie('remember_me_username', '', [
+            setcookie('remember_me_email', '', [
                 'expires'  => time() - 30 * 24 * 3600,
                 'path'     => '/',
                 'secure'   => true,
@@ -146,7 +156,7 @@ function HandleLogin(string $username, string $password, bool $rememberMe, strin
         }
     }
     //Clear cookies
-    setcookie('remember_me_username', '', [
+    setcookie('remember_me_email', '', [
         'expires'  => time() - 30 * 24 * 3600,
         'path'     => '/',
         'secure'   => true,
@@ -242,7 +252,7 @@ function SendRequestToAPI(string $path, string $method = "GET", mixed $body = nu
 
 /**
  * Gets POST data
- * @return mixed Values
+ * @return mixed Values from JSON
  */
 function GetPOSTData(): mixed
 {
@@ -280,7 +290,7 @@ function PathToURL(string $path)
 function HandleError(int $code, string|null $message = null, string|null $from = null, string $lang = "en", bool $redirect = false)
 {
     //Get paths
-    $path = __DIR__ . "/../errorPages/PHP/handleError.php";
+    $path = __DIR__ . "/assets/handleError.php";
     $url = PathToURL($path);
 
     //Chceck if from is null
@@ -305,16 +315,49 @@ function HandleError(int $code, string|null $message = null, string|null $from =
  * Generate error for API
  * @param int $code HTTP error code
  * @param string|null $message Status message, set to null for none
+ * @param int|null $responceCode HTTP responce code
+ * @param mixed $responce Responce data that will be converted to JSON
  * @return string Echoes responce as JSON
  */
-function GenerateAPIError(int $code, string|null $message = null)
+function GenerateAPIError(int $code, string|null $message = null, int | null $responceCode = null, $responce = [])
 {
-    http_response_code($code);
-    $responce = [];
+    http_response_code($responceCode === null ? $code : $responceCode);
     $responce["code"] = $code;
     if ($message !== null) {
         $responce["message"] = $message;
     }
     echo json_encode($responce);
     die();
+}
+
+/**
+ * Converts path to absolute with safety checks
+ * @param string $relative Relative path to be resolved
+ * @return string|bool Returns resolved path, false on non existent path or true on escape
+ */
+function ConvertToAbsolutePath(string $relative): string|bool {
+    //Gets root and merges it
+    $root = realpath($_SERVER['DOCUMENT_ROOT']);
+    $resolved = realpath($root . DIRECTORY_SEPARATOR . $relative);
+
+    //Check if exists
+    if($resolved === false) {
+        return false;
+    }
+
+    // Deny if path escaped the root
+    if (!str_starts_with($resolved, $root . DIRECTORY_SEPARATOR)) {
+        return true;
+    }
+
+    // Reject null bytes
+    if (str_contains($relative, "\0")) {
+        return true;
+    }
+    return $resolved;
+}
+
+function logToConsole(string $log)
+{
+    file_put_contents("php://stdout", $log . "\n");
 }

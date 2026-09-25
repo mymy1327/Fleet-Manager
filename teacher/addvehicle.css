@@ -1,0 +1,205 @@
+.vehicle-modal {
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    display: none;
+    position: fixed;
+    z-index: 999;
+
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.55);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+/* Modal container */
+.vehicle-modal-content {
+    width: 100%;
+    max-width: 30vw;
+    max-height: 70vh;
+    height: auto;
+    overflow-y: auto;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    overflow-y: auto;
+    animation: vehicleModalOpen 0.2s ease;
+}
+@keyframes vehicleModalOpen {
+    from {
+        opacity: 0;
+        transform: translateY(-15px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+.vehicle-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e5e5;
+}
+.vehicle-modal-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #222;
+}
+.vehicle-modal-close {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    font-size: 28px;
+    line-height: 1;
+    color: #666;
+    cursor: pointer;
+    border-radius: 6px;
+}
+.vehicle-modal-close:hover {
+    background: #f1f1f1;
+    color: #222;
+}
+#addVehicleForm {
+    padding: 24px;
+}
+.vehicle-form-section {
+    margin-bottom: 28px;
+}
+.vehicle-form-section:last-of-type {
+    margin-bottom: 10px;
+}
+.vehicle-form-section h3 {
+    margin: 0 0 16px 0;
+    font-size: 17px;
+    font-weight: 600;
+    color: #333;
+}
+/* Two-column layout */
+.vehicle-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+.vehicle-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+.vehicle-form-group label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #444;
+}
+.vehicle-form-group input,
+.vehicle-form-group select {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 42px;
+    padding: 9px 12px;
+    border: 1px solid #d3d3d3;
+    border-radius: 6px;
+    background: #fff;
+    font-size: 14px;
+    color: #222;
+    outline: none;
+}
+.vehicle-form-group input:focus,
+.vehicle-form-group select:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.12);
+}
+.vehicle-form-group input[type="file"] {
+    padding: 8px;
+}
+.vehicle-file-info {
+    font-size: 12px;
+    color: #777;
+}
+.vehicle-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e5e5;
+}
+.vehicle-btn {
+    min-width: 110px;
+    padding: 10px 18px;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.15s ease;
+}
+.vehicle-btn-cancel {
+    background: #eeeeee;
+    color: #333;
+}
+.vehicle-btn-cancel:hover {
+    background: #dedede;
+}
+.vehicle-btn-add {
+    background: #2868cb;
+    color: white;
+}
+.vehicle-btn-add:hover {
+    background: #1554b5;
+}
+.image-preview.show {
+    width: 100%;
+    min-height: 120px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px dashed #cfcfcf;
+    border-radius: 8px;
+    background: #f8f8f8;
+    overflow: hidden;
+}
+.image-preview {
+    display: none;
+}
+.image-preview-content {
+    display: block;
+    width: 100%;
+    max-width: 350px;
+    max-height: 220px;
+    object-fit: contain;
+    border-radius: 6px;
+}
+@media (max-width: 1400px) {
+    .vehicle-modal {
+        padding: 10px;
+    }
+    .vehicle-modal-content {
+        max-width: 70vw;
+        width: 100%;
+        max-height: 70vh;
+        border-radius: 10px;
+    }
+    #addVehicleForm {
+        padding: 18px;
+    }
+    .vehicle-form-grid {
+        grid-template-columns: 1fr;
+    }
+    .vehicle-modal-header {
+        padding: 16px 18px;
+    }
+    .vehicle-modal-header h2 {
+        font-size: 20px;
+    }
+    .vehicle-modal-actions {
+        flex-direction: column-reverse;
+    }
+    .vehicle-btn {
+        width: 100%;
+    }
+}
