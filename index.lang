@@ -5,7 +5,8 @@
     "subtitle": "Select the option below where do you want to go.",
     "admin": "Admin",
     "teacher": "Teacher",
-    "student": "Student"
+    "student": "Student",
+    "brand": "Hyria Garage"
   },
   "fi": {
     "logout": "Kirjaudu ulos",
@@ -13,6 +14,7 @@
     "subtitle": "Valitse alta vaihtoehto minne haluat mennä tästä",
     "admin": "Admin",
     "teacher": "Opettaja",
-    "student": "Oppilas"
+    "student": "Oppilas",
+    "brand": "Hyria AutoTalli"
   }
 }

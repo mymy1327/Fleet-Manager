@@ -88,14 +88,20 @@ class TranslationData {
     const elements = document.querySelectorAll("[data-i18n]");
     for (const element of elements) {
       //Translate
-      element.textContent = await this.Translate(element.getAttribute("data-i18n"), element.textContent);
+      const x = async () => {
+        element.textContent = await this.Translate(element.getAttribute("data-i18n"), element.textContent);
+      }
+      x();
     }
 
     //Get all placeholder elements to translate
     const elements2 = document.querySelectorAll("[data-i18n-placeholder]");
     for (const element of elements2) {
       //Translate
-      element.placeholder = await this.Translate(element.getAttribute("data-i18n-placeholder"), element.placeholder);
+      const x = async () => {
+        element.placeholder = await this.Translate(element.getAttribute("data-i18n-placeholder"), element.placeholder);
+      };
+      x();
     }
   }
 
