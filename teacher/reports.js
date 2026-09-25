@@ -21,7 +21,6 @@ async function loadReports() {
         reportVehicles = await vehiclesResponse.json();
         reportInspections = await inspectionsResponse.json();
         reportProblems = await problemsResponse.json();
-        console.log(reportProblems);
 
         reportVehicles = Array.isArray(reportVehicles) ? reportVehicles : [];
         reportInspections = Array.isArray(reportInspections) ? reportInspections : [];
