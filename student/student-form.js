@@ -277,7 +277,6 @@ async function renderInspectionHistory(inspections) {
             <p class="inspection-history-text">Aikaisemmat tarkastukset</p>
         </div>
     `;
-
     if (!inspections.length) {
         container.innerHTML += `<p class="no-inspections">Ei aikaisempia tarkastuksia.</p>`;
         return;
