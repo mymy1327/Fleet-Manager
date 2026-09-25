@@ -1,8 +1,10 @@
 {
   "en": {
-    "title": "Hyria Garage"
+    "title": "Hyria Garage",
+    "kmNotAvailable":"km not available"
   },
   "fi": {
-    "title": "Hyria AutoTalli"
+    "title": "Hyria AutoTalli",
+    "kmNotAvailable":"km ei saatavilla"
   }
 }

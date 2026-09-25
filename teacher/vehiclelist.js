@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const xhr = new XMLHttpRequest();
     xhr.open("GET", restapi + "/api/vehicles", true);
     xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.onload = () => {
+    xhr.onload = async () => {
       intelligeble = JSON.parse(xhr.responseText);
 
       const placeforit = document.getElementById("car");
@@ -82,12 +82,14 @@ document.addEventListener("DOMContentLoaded", function () {
         if (typeof intelligeble[x].km === "number") {
           vehicledistance.textContent = `${intelligeble[x].km} km`;
         } else {
-          vehicledistance.textContent = "km ei saatavilla";
+          vehicledistance.textContent = await GetTranslationData().Translate("kmNotAvailable","km ei saatavilla");
         }
 
         let vehiclelicense = document.createElement("span");
         vehiclelicense.classList.add("vehicle-license");
-        vehiclelicense.textContent = intelligeble[x].license_plate;
+        if(intelligeble[x] != undefined) {
+          vehiclelicense.textContent = intelligeble[x].license_plate;
+        }
 
         let vehiclecode = document.createElement("p");
         vehiclecode.classList.add("vehicle-code");
