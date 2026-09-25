@@ -270,7 +270,7 @@ function getUsername(userId) {
 async function renderInspectionHistory(inspections) {
     const container = document.querySelector(".inspection-history");
     if (!container) return;
-
+        console.log(inspections);
     container.innerHTML = `
         <div class="inspection-history-icon">
             <span class="material-symbols-outlined">history</span>
