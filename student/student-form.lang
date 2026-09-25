@@ -1,0 +1,14 @@
+{
+  "en": {
+    
+  },
+  "fi": {
+    "title": "Ajoneuvon tarkastus",
+    "brand": "Hyria AutoTalli",
+    "km": "Kilometrit",
+    "problem": "Avoit viat",
+    "inspection": "Aloita tarkastus",
+    "history": "Viimeisin tarkasts",
+    
+  }
+}
