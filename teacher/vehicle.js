@@ -6,7 +6,7 @@ const xhr = new XMLHttpRequest();
 const restapi = "developmenterasmus.kolojar.cz"
 function getInspections(editedvar){
     const xhr = new XMLHttpRequest();
-    xhr.open("GET", `http://${ip}/api/inspections`, true);
+    xhr.open("GET", `http://${restapi}/api/inspections`, true);
     xhr.setRequestHeader("Content-Type", "application/json");
     let total = 0
     xhr.onload = () => {
@@ -21,7 +21,7 @@ function getInspections(editedvar){
 }
 function getFaults(editedvarr){
     const xhr = new XMLHttpRequest();
-    xhr.open("GET", `http://${ip}/api/problems`, true);
+    xhr.open("GET", `http://${restapi}/api/problems`, true);
     xhr.setRequestHeader("Content-Type", "application/json");
     let total = 0
     xhr.onload = () => {
