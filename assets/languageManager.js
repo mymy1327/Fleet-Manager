@@ -58,20 +58,20 @@ class TranslationData {
         if (this.languageData === null) {
           if (fallback === "") {
             resolve("#" + key);
-            return
+            return;
           }
           resolve(fallback);
-          return
+          return;
         }
 
         //Check if key is present
         if (this.languageData[key] == null || this.languageData[key] == "") {
           if (fallback === "") {
             resolve("#" + key);
-            return
+            return;
           }
           resolve(fallback);
-          return
+          return;
         }
 
         //Translate
@@ -89,6 +89,13 @@ class TranslationData {
     for (const element of elements) {
       //Translate
       element.textContent = await this.Translate(element.getAttribute("data-i18n"), element.textContent);
+    }
+
+    //Get all placeholder elements to translate
+    const elements2 = document.querySelectorAll("[data-i18n-placeholder]");
+    for (const element of elements2) {
+      //Translate
+      element.placeholder = await this.Translate(element.getAttribute("data-i18n-placeholder"), element.placeholder);
     }
   }
 
@@ -154,7 +161,7 @@ function automaticTranslate() {
   const translationData = new TranslationData(urlMeta == null ? "" : urlMeta.getAttribute("content"));
   if (urlMeta === null) {
     translationData.loaded = true;
-    translationData.SaveToWindow()
+    translationData.SaveToWindow();
     console.log("Skipping automaticTranslate - no data-i18n-url meta tag found.");
     return;
   }
@@ -163,7 +170,7 @@ function automaticTranslate() {
   const languagesMeta = document.querySelector("meta[name='data-i18n-languages']");
   if (languagesMeta === null) {
     translationData.loaded = true;
-    translationData.SaveToWindow()
+    translationData.SaveToWindow();
     console.log("Skipping automaticTranslate - no data-i18n-languages meta tag found. Should contain language list: en;fi;es;...");
     return;
   }
@@ -198,10 +205,14 @@ function automaticTranslate() {
 //Automatic object detection
 const observer = new MutationObserver((mutations) => {
   mutations.forEach((mutation) => {
-    mutation.addedNodes.forEach((node) => {
-      if (node.nodeType === 1) { // Element node
-        if(node.hasAttribute("data-i18n")) {
-          node.textContent = window.GetTranslationData().Translate(node.getAttribute("data-i18n"), node.textContent)
+    mutation.addedNodes.forEach(async (node) => {
+      if (node.nodeType === 1) {
+        // Element node
+        if (node.hasAttribute("data-i18n")) {
+          node.textContent = await window.GetTranslationData().Translate(node.getAttribute("data-i18n"), node.textContent);
+        }
+        if (node.hasAttribute("data-i18n-placeholder")) {
+          element.placeholder = await this.Translate(element.getAttribute("data-i18n-placeholder"), element.placeholder);
         }
       }
     });
