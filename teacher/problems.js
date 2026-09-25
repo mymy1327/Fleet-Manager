@@ -23,7 +23,7 @@ async function loadProblems() {
     try {
         const [problemsResponse, vehiclesResponse] = await Promise.all([
             fetch(problemRestApi + "/api/problems"),
-            fetch(problemRestApi + "/api/vehicles")
+            fetch(problemRestApi + "/api/vehicles?order_by=name")
         ]);
 
         if (!problemsResponse.ok) {

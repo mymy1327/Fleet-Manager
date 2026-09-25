@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function getVehicleDetails(vehicleId) {
     const xhr = new XMLHttpRequest();
-    xhr.open("GET", restapi + "/api/vehicles", true);
+    xhr.open("GET", restapi + "/api/vehicles?order_by=name", true);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onload = async () => {
       intelligeble = JSON.parse(xhr.responseText);
