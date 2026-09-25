@@ -147,8 +147,8 @@ CheckAccessSession(["teacher", "admin"]);
                     <select id="vehicleState" name="state" required>
                         <option value="">Select state</option>
                         <option value="available">Available</option>
-                        <option value="in use">In Use</option>
-                        <option value="disable">Disable</option>
+                        <option value="in_use">In Use</option>
+                        <option value="disabled">Disabled</option>
                     </select>
                 </div>
             </div>
