@@ -14,6 +14,11 @@
     --lightBlue: #3b86ff;
 }
 
+html {
+    scrollbar-gutter: stable;
+    overflow-x: hidden;
+}
+
 /* Apply predictable sizing to every element and remove browser defaults. */
 * {
     box-sizing: border-box;
@@ -21,6 +26,7 @@
 
 body {
     margin: 0;
+    overflow-x: hidden;
     /* Keep the compact dashboard readable at the scale used by the mockup. */
     zoom: 1.3;
     color: var(--text);
@@ -851,7 +857,7 @@ button:disabled, button:hover:disabled {
 .vehicle-detail-layout {
     /* Vehicle information on the left, inspections on the right. */
     display: grid;
-    grid-template-columns: 300px 300px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 24px;
     align-items: start;
 }
@@ -867,9 +873,9 @@ button:disabled, button:hover:disabled {
 
 /* Info panel for vehicle details. */
 .vehicle-info-panel {
-    width: 300px;
-    min-width: 300px;
-    max-width: 300px;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: 14px 14px 18px;
     box-shadow: 3px 3px 2px #00000036;
     display: grid;
@@ -878,9 +884,9 @@ button:disabled, button:hover:disabled {
 
 .vehicle-inspection-panel {
     /* Right-hand inspection column with a stable minimum height. */
-    width: 300px;
-    min-width: 300px;
-    max-width: 300px;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     min-height: 320px;
     padding: 12px 12px 14px;
 }
@@ -931,7 +937,8 @@ button:disabled, button:hover:disabled {
     /* Keep the vehicle actions below the info panel and align them right. */
     display: flex;
     justify-content: flex-end;
-    width: 300px;
+    width: calc((100% - 24px) / 2);
+    margin-left: calc((100% + 24px) / 2);
     margin-top: 12px;
 }
 
@@ -993,6 +1000,30 @@ button:disabled, button:hover:disabled {
     }
 
     .vehicle-page-shell {
-        width: calc(100% - 24px);
+        width: 100%;
+    }
+
+    .vehicle-info-panel,
+    .vehicle-inspection-panel {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .inspection-tabs {
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    .inspection-tab {
+        flex: 1 1 0;
+        min-width: 0;
+        padding: 0 6px;
+        font-size: 10px;
+    }
+
+    .inspection-action-buttons {
+        width: 100%;
+        margin-left: 0;
     }
 }

@@ -1880,6 +1880,29 @@ function getInspectionType() {
 
   return "departure";
 }
+async function updateVehicleState(vehicleId, state) {
+    const response = await fetch(
+        `${restapi}/api/vehicles/${vehicleId}`,
+        {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                state: state
+            })
+        }
+    );
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+            `Vehicle state update failed: ${response.status} ${errorText}`
+        );
+    }
+
+    return true;
+}
 async function submitInspection(inspectionResult) {
   if (!validateInspectionAnswers()) return;
   const submitButton = document.getElementById("summary-submit");
@@ -1952,6 +1975,15 @@ async function submitInspection(inspectionResult) {
 
       await createProblem(inspectionId, checklist.id_checklists, answer.error.description || answer.answer, fileId, answer.error.priority || "medium");
     }
+    // Update vehicle state based on inspection type
+    if (type === "departure") {
+        await updateVehicleState(vehicleId, "in_use");
+    } else if (type === "return") {
+        await updateVehicleState(vehicleId, "available");
+    }
+
+alert("Tarkastus lähetetty onnistuneesti.");
+window.location.href = `studentForm.html?code=${encodeURIComponent(vehicleCode)}`;
 
     alert("Tarkastus lähetetty onnistuneesti.");
     window.location.href = `studentForm.html?code=${encodeURIComponent(vehicleCode)}`;

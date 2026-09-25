@@ -19,7 +19,7 @@ CheckAccessSession(["teacher", "admin"]);
 <body>
     <header class="topbar">
         <div class="topbar-row">
-            <a class="brand" href="#home" aria-label="Hyria Garage home">
+            <a class="brand" href="/" aria-label="Hyria Garage home">
                 <span class="brand-mark" aria-hidden="true">&#x26DF;</span>
                 <strong>Hyria Garage</strong>
             </a>
@@ -31,7 +31,7 @@ CheckAccessSession(["teacher", "admin"]);
         <div class="topbar-row">
             <nav class="main-nav" aria-label="Main navigation">
                 <a href="#home" data-view="home"><span>&#x2317;</span>Home</a>
-                <a href="#fleet" data-view="fleet"><span class="nav-icon" aria-hidden="true">&#x26DF;</span>Fleet</a>
+                <a href="#fleet" data-view="fleet"><span class="nav-icon" aria-hidden="true">&#x26DF;</span>Garage</a>
                 <a href="#inspections" data-view="inspections"><span>&#x1F5B9;</span>Inspections</a>
                 <a href="#faults" data-view="faults"><span>&#x25B3;</span>Faults</a>
                 <a href="#reports" data-view="reports"><span>&#x25A5;</span>Reports</a>

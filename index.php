@@ -42,7 +42,7 @@ if($responce === false) {
         <div class="page-heading">
             <div>
                 <h1 data-i18n='mainMenu'>Main menu</h1>
-                <p  data-i18n='subtitle' class="subtitle">Select the option bellow where do you want to go.</p>
+                <p  data-i18n='subtitle' class="subtitle">Select the option below where do you want to go.</p>
             </div>
         </div>
     <?php

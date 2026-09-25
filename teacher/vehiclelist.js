@@ -17,34 +17,18 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       newestkm = unintelligeble.id_inpsection;
 
-const restapi = "developmenterasmus.kolojar.cz"
-function getAllInspections(changing, vehicleId = null) {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", "/api/inspections?id_vehicles=" + vehicleId, true); // ?id_vehicles can be removed
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.onload = () => {
+      // work with response here (code: xhr.status, json response: xhr.responseText)
 
-            unintelligeble = JSON.parse(xhr.responseText)
-            let temp = 0
-            for (x in unintelligeble){
-                if (x.id_inspections > temp){
-                    temp = x.id_inspections
-                }
-            }
-            newestkm = unintelligeble.id_inpsection
-
-            // work with response here (code: xhr.status, json response: xhr.responseText)
-
-            changing.textContent = unintelligeble.km
-        };
-        xhr.send();
-    }
+      changing.textContent = unintelligeble.km;
+    };
+    xhr.send();
+  }
 
   function getVehicleDetails(vehicleId) {
     const xhr = new XMLHttpRequest();
     xhr.open("GET", restapi + "/api/vehicles", true);
     xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.onload = () => {
+    xhr.onload = async () => {
       intelligeble = JSON.parse(xhr.responseText);
 
       const placeforit = document.getElementById("car");
@@ -98,12 +82,14 @@ function getAllInspections(changing, vehicleId = null) {
         if (typeof intelligeble[x].km === "number") {
           vehicledistance.textContent = `${intelligeble[x].km} km`;
         } else {
-          vehicledistance.textContent = "km ei saatavilla";
+          vehicledistance.textContent = await GetTranslationData().Translate("kmNotAvailable","km ei saatavilla");
         }
 
         let vehiclelicense = document.createElement("span");
         vehiclelicense.classList.add("vehicle-license");
-        vehiclelicense.textContent = intelligeble[x].license_plate;
+        if(intelligeble[x] != undefined) {
+          vehiclelicense.textContent = intelligeble[x].license_plate;
+        }
 
         let vehiclecode = document.createElement("p");
         vehiclecode.classList.add("vehicle-code");
