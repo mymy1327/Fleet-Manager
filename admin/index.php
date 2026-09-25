@@ -56,11 +56,11 @@ CheckAccessSession(["admin"]);
         </div>
         <div class="table-responsive">
             <table id="usersTable" class="table table-hover align-middle mb-0">
-                <tr>
-                    <th data-i18n="uT1">Name</th>
-                    <th data-i18n="uT2">Email</th>
-                    <th data-i18n="uT3">Role</th>
-                    <th data-i18n="uT4">Actions</th>
+                <tr class="justify-content-center container-fluid align-items-center text-center">
+                    <th class="justify-self-center text-center" data-i18n="uT1">Name</th>
+                    <th class="justify-self-center text-center" data-i18n="uT2">Email</th>
+                    <th class="justify-self-center text-center" data-i18n="uT3">Role</th>
+                    <th class="justify-self-center text-center" data-i18n="uT4">Actions</th>
                 </tr>
             </table>
         </div>
