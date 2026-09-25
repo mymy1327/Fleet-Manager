@@ -8,11 +8,11 @@
     "student": "Student"
   },
   "fi": {
-    "logout": "Logout",
-    "mainMenu": "Main menu",
-    "subtitle": "Select the option bellow where do you want to go.",
+    "logout": "Kirjaudu ulos",
+    "mainMenu": "Päävalikko",
+    "subtitle": "Valitse alta vaihtoehto minne haluat mennä tästä",
     "admin": "Admin",
-    "teacher": "Teacher",
-    "student": "Student"
+    "teacher": "Opettaja",
+    "student": "Oppilas"
   }
 }
