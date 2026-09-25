@@ -7,12 +7,14 @@ CheckAccessSession(["teacher", "admin"]);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hyria Garage</title>
+    <title data-i18n='title'>Hyria Garage</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="/assets/style.css">
     <link rel="stylesheet" href="addvehicle.css">
     <link rel ="stylesheet" href="createChecklists.css">
     <link rel="stylesheet" href="inspection-report.css">
+    <meta name='data-i18n-url' content='./index.lang'>
+    <meta name='data-i18n-languages' content='fi;en'>
 </head>
 <body>
     <header class="topbar">
@@ -561,6 +563,8 @@ CheckAccessSession(["teacher", "admin"]);
     </div>
 </div>
     </main>
+    <script src="/assets/apiCommunication.js"></script>
+    <script src="/assets/languageManager.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <script src="app.js"></script>
     <script src="vehiclelist.js"></script>

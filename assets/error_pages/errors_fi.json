@@ -1,36 +1,36 @@
 {
   "400": {
-    "title": "400 - Bad request",
-    "desc": "User did not provide required arguments. Please retry it."
+    "title": "400 - Epäonnistunut pyyntö",
+    "desc": "Käyttäjä ei tarjonnut vaadittuja argumentteja. Yritä uudelleen."
   },
   "401": {
-    "title": "401 - Unauthorized",
-    "desc": "User did not provide any authorization information. Please log in.",
+    "title": "401 - Luvaton pääsy",
+    "desc": "Käyttäjä ei tarjonnut valtuutustietoja. Kirjaudu sisään.",
     "buttons": [
       {
-        "libraryId": "login"
+        "libraryId": "Kirjaudu sisään"
       }
     ]
   },
   "403": {
-    "title": "403 - Forbidden",
-    "desc": "User does not have access to this page. Navigate to other page or log out.",
+    "title": "403 - Kielletty pääsy",
+    "desc": "Käyttäjä ei ole valtuutettu tälle sivulle. Siirry toiselle sivulle tai kirjaudu ulos.",
     "buttons": [
       {
-        "libraryId": "logout"
+        "libraryId": "Kirjaudu ulos"
       }
     ]
   },
   "404": {
-    "title": "404 - Not found",
-    "desc": "Required path or request on API was not found."
+    "title": "404 - Ei löydy",
+    "desc": "Vaadittua polkua tai pyyntöä API:ssa ei löydy."
   },
   "500": {
-    "title": "500 - Internal server error",
-    "desc": "Server encountered error while processing request. Please try it again later."
+    "title": "500 - Sisäinen palvelinvirhe",
+    "desc": "Palvelin kohtasi virheen käsitellessään pyyntöä. Yritä uudelleen myöhemmin."
   },
   "503": {
-    "title": "503 - Service unavailable",
-    "desc": "Server can not process the request or API is not available. Please try it again later."
+    "title": "503 - Palvelu ei ole käytettävissä",
+    "desc": "Palvelin ei voi käsitellä pyyntöä, tai API ei ole käytettävissä. Yritä myöhemmin uudelleen."
   }
 }
